@@ -99,7 +99,7 @@ function autoRenderIfSpecial($file) {
 		return;
 	}
 
-	sectionId('file');
+	sectionId('file', 'container');
 	renderAny($file);
 	section('end');
 }

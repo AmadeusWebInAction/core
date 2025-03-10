@@ -192,6 +192,7 @@ function copyright_and_credits($separator = '<br />', $return = false) {
 	$copy = _copyright(true);
 	$cred = _credits('', true);
 	$result = $copy . $separator . $cred;
+	//TODO: $result = '<div class="row"><div class="col-md-6">' . $copy . '</div><div class="col-md-6">' . $cred . '</div></div>';
 	if ($return) return $result;
 	echo $result;
 }
@@ -214,7 +215,7 @@ function _credits($pre = '', $return = false) {
 	if (variable('dont_show_amadeus_credits')) return '';
 
 	$url = variable('main') . '?utm_content=site-credits&utm_referrer=' . variable('safeName');
-	$result = $pre . sprintf('Powered by <a href="%s" target="_blank" class="amadeus-credits" style="display: inline-block;"><img src="%s" height="20" alt="%s" style="vertical-align: middle;" /></a><br />', $url, variable('main') . 'amadeus-logo@2x.png', 'Amadeus Web');
+	$result = $pre . sprintf('Powered by <a href="%s" target="_blank" class="amadeus-credits" style="display: inline-block;"><img src="%s" height="50" alt="%s" style="vertical-align: middle;" /></a><br />', $url, variable('app-static') . 'amadeusweb/amadeusweb-logo@2x.png', 'Amadeus Web');
 
 	if ($return) return $result; else echo $result;
 }
