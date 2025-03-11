@@ -64,7 +64,7 @@ function menu($folderRelative = false, $settings = []) {
 	$menuLevel = valueIfSetAndNotEmpty($settings, 'menu-level', 1);
 
 	$result = '';
-	if (!$noul) $result .= '<ul' . cssClass($class_ul) . '>' . variable('nl');
+	if (!$noul) $result .= variable('nl') . '		<ul' . cssClass($class_ul) . '>' . variable('nl');
 
 	$isAbsolute = startsWith($folderRelative, ABSOLUTEPATHPREFIX);
 	$folderPrefix = $isAbsolute ? '' : variable('path');

@@ -68,6 +68,10 @@ function _substituteThemeVars($content, $what, $vars) {
 	if (function_exists('enrichThemeVars'))
 		$vars = enrichThemeVars($vars, $what);
 
+	if ($what == 'header') {
+		if ($vars['optional-slider'] == '')
+			$vars['body-classes'] = $vars['body-classes'] . ' no-slider';
+	}
 	return replaceItems($content[$what], $vars, '##');
 }
 
@@ -83,11 +87,12 @@ function setMenuSettings($after = false) {
 
 	//same as non-profit header
 	variable('menu-settings', [
-		'noOuterUl' => true,
-		'groupOuterUlClass' => 'sub-menu-container',
+		'noOuterUl' => false,
+		'groupOuterUlClass' => 'menu-container',
 		'outerUlClass' => 'menu-container',
 		'ulClass' => 'sub-menu-container',
 		'itemClass' => 'menu-item',
+		'subMenuClass' => 'sub-menu',
 		'itemActiveClass' => 'current',
 		'anchorClass' => 'menu-link',
 		'wrapTextInADiv' => true,

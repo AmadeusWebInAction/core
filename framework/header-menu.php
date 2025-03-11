@@ -1,25 +1,29 @@
 <?php
 extract(variable('menu-settings'));
 
-if (!$noOuterUl) echo '<ul class="' . $ulClass . '">';
+if (!isset($groupOuterUlClass)) $groupOuterUlClass = $outerUlClass;
+if (!$noOuterUl) echo variable('nl') . '<ul class="' . $groupOuterUlClass . '">';
 
 if (isset($diagonalSpacer)) echo $diagonalSpacer; //for anbagam!
 
 $mainMenu = variable('siteMenuName') . $topLevelAngle;
 if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
 
-echo '<li class="' . (variable('theme') == 'biz-land' ? '' : $itemClass) . '"><a class="' . $anchorClass . '" href="' . variable('url') . '">Home</a></li>';
+$homeText = 'Home';
+if ($wrapTextInADiv) $homeText = '<div>' . $homeText . '</div>';
+echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="' . variable('url') . '">' . $homeText . '</a></li>' . variable('nl');
 
-echo '<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();">' . $mainMenu . '</a>';
+echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();">' . $mainMenu . '</a>' . variable('nl');
 $append = variable('scaffold') ? array_merge(['----'], variable('scaffold')) : false;
 menu('/' . variable('folder'), [
 	'home-link-to-section' => variable('home-link-to-section'),
 	'files-to-append' => $append,
+	'a-class' => $anchorClass,
+	'ul-class' => $ulClass,
 ]);
 echo '</li>' . variable('nl');
 
 if ($groups = variable('section-groups')) {
-	if (!isset($groupOuterUlClass)) $groupOuterUlClass = $ulClass;
 	foreach ($groups as $group => $items) {
 		$isGroup = true;
 		if (is_string($items)) {
@@ -31,16 +35,16 @@ if ($groups = variable('section-groups')) {
 		$name = humanize($group);
 		if ($wrapTextInADiv) $name = '<div>' . $name . $topLevelAngle . '</div>';
 
-		if ($isGroup) echo '<li class="' . $itemClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
-		if ($isGroup) echo '<ul class="' . $groupOuterUlClass . '">';
+		if ($isGroup) echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>' . variable('nl');
+		if ($isGroup) echo '	<ul class="' . $ulClass . '">' . variable('nl');
 
 		foreach ($items as $slug) {
 			//if (cannot_access($slug)) continue;
 			renderHeaderMenu($slug);
 		}
 
-		if ($isGroup) echo '</li>';
-		if ($isGroup) echo '</ul>' . variable('nl');
+		if ($isGroup) echo '	</ul>' . variable('2nl');
+		if ($isGroup) echo '</li>' . variable('nl');
 	}
 	renderCurrentNodeMenu();
 } else {
@@ -58,10 +62,10 @@ function renderHeaderMenu($slug, $node = '') {
 	if ($wrapTextInADiv) $name = '<div>' . $name . $topLevelAngle . '</div>';
 	$parent = array_search($slug, ['gallery']) !== false ? $slug . '/' : '';
 	
-	echo '<li class="' . $itemClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
-	if ($slug)
+	echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
 	menu('/' . $slug . $node . '/', [
 		'a-class' => $anchorClass,
+		'ul-class' => $ulClass,
 		'list-only-folders' => true,
 		'home-link-to-section' => true,
 		'parent-slug-for-home-link' => $slug . '/',
@@ -71,6 +75,7 @@ function renderHeaderMenu($slug, $node = '') {
 
 //TODO: HIGH: cleanup and move to menu.php
 function renderCurrentNodeMenu() {
+	return; //TODO: bug!
 	//TODO: if (cannot_access(variable('section'))) return;
 
 	$folRelative = '/' . variable('section') . (variable('section') != variable('node') ? '/' . variable('node') : '') . '/';
