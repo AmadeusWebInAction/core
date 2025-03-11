@@ -25,6 +25,15 @@ function iframe($url, $wrapContainer = true) {
 	if ($wrapContainer) echo '</div>';
 }
 
+function boxDiv($id, $class = '') {
+	if ($id == 'end') { echo variable('nl') . '</div>' . variable('2nl'); return; }
+	$attrs = '';
+	if ($id) $attrs .= ' id="' . $id . '"';
+	if ($class) $class = ' ' . $class;
+	$attrs .= ' class="content-box' . $class . '"';
+	echo variable('nl') . '<div' . $attrs . '>' . variable('nl');
+}
+
 function div($what = 'start', $h1 = '', $class = 'video-container') {
 	if ($h1) $h1 = '<h1>' . $h1 . '</h1>';
 	echo $what == 'start' ? '<div class="' . $class . '">' . $h1 . variable('nl') : '</div>' . variable('2nl');
@@ -77,7 +86,8 @@ function replaceHtml($html) {
 			'%assets%' => variable('url') . 'assets/',
 			'%node%' => variable('node'),
 			'%amadeus-url%' => variable('main'),
-			'%network-url%' => variableOr('network-url', '#network-url-not-setup--'),
+			'%world-url%' => variable('world'),
+			//'%network-url%' => variableOr('network-url', '#network-url-not-setup--'),
 			'%phone%' => variableOr('phone', ''),
 			'%email%' => variableOr('email', ''),
 			'%whatsapp%' => 'https://wa.me/'. variableOr('whatsapp', '') . '?text=',
@@ -217,7 +227,8 @@ function getThemeIcon($id, $size = 'normal')  {
 
 function body_classes($return = false) {
 	$chatra = hasVariable('ChatraID') ? ' has-chatra' : '';
-	$op = 'theme-' . variable('theme') . ' site-' . variable('safeName') . $chatra;
+	$sub = variable('sub-theme') ? ' sub-theme-' . variable('sub-theme') : '';
+	$op = 'theme-' . variable('theme') . $sub . ' site-' . variable('safeName') . $chatra;
 	if ($return) return $op;
 	echo $op;
 }

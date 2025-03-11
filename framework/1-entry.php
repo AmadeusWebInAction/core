@@ -10,6 +10,7 @@
  */
 
 DEFINE('AMADEUSFOLDER', __DIR__ . '/'); //safe because ends with /
+DEFINE('AMADEUSFEATURES', realpath(__DIR__ . '/../features/') . '/');
 DEFINE('AMADEUSMODULES', realpath(__DIR__ . '/../modules/') . '/');
 DEFINE('AMADEUSTHEMESFOLDER', realpath(__DIR__ . '/../../themes/') . '/');
 
@@ -20,8 +21,12 @@ function runFrameworkFile($name) {
 	disk_include_once(AMADEUSFOLDER . $name . '.php');
 }
 
-function runModule($mod) {
-	disk_include_once(AMADEUSMODULES . $mod . '.php');
+function runModule($name) {
+	disk_include_once(AMADEUSMODULES . $name . '.php');
+}
+
+function runFeature($name) {
+	disk_include_once(AMADEUSFEATURES . $name . '.php');
 }
 
 runFrameworkFile('4-array');
@@ -64,8 +69,7 @@ function before_bootstrap() {
 
 	variable('app-themes', $local ? replaceVariables('http://localhost%port%/awe/themes/', 'port') : '//themes.amadeusweb.com/');
 	variable('app-static', $local ? replaceVariables('http://localhost%port%/awe/static/', 'port') : '//static.amadeusweb.com/');
-
-	variable('app-assets', variable('app') . 'assets/');
+	variable('app-common-assets', variable('app-static') . 'common-assets/');
 
 	$php = contains($_SERVER['DOCUMENT_ROOT'], 'magique') || contains($_SERVER['DOCUMENT_ROOT'], 'Magique');
 	variable('no_url_rewrite', $php);
@@ -192,7 +196,6 @@ function copyright_and_credits($separator = '<br />', $return = false) {
 	$copy = _copyright(true);
 	$cred = _credits('', true);
 	$result = $copy . $separator . $cred;
-	//TODO: $result = '<div class="row"><div class="col-md-6">' . $copy . '</div><div class="col-md-6">' . $cred . '</div></div>';
 	if ($return) return $result;
 	echo $result;
 }

@@ -42,10 +42,7 @@ function renderAnyFile($fwe, $settings = []) {
 			$fpe = $fwe . $extension; //name PLUS extension
 			$exists = disk_file_exists($fpe);
 			if ($exists) {
-				if (variable('auto-render'))
-					autoRenderIfSpecial($fpe);
-				else
-					_renderSingleFile($fpe);
+				autoRender($fpe);
 				if ($returnOnFirst) return true;
 			}
 		}
@@ -187,7 +184,6 @@ function _renderImplementation($fileOrRaw, $settings) {
 	$raw = replaceItems($raw, $plainReplaces, '');
 	$raw = replaceItems($raw, $builtinReplaces, '##');
 
-
 	if ($wasFile && variable('autofix-encoding')) $raw = simplify_encoding($raw);
 
 	if (variable('node') && is_string(variable('section'))) {
@@ -197,7 +193,7 @@ function _renderImplementation($fileOrRaw, $settings) {
 		$raw = replaceItems($raw, $assetsVars, '%');
 	}
 
-	if ($vars = variable('node-vars')) $raw = replaceItems($raw, $vars, '%', true);
+	if ($vars = variable('node-replaces')) $raw = replaceItems($raw, $vars, '%', true);
 
 	$markdownStart = variable('markdownStartTag');
 	$autopStart = variable('autopStart');

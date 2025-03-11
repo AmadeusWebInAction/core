@@ -58,7 +58,7 @@ function is_debug($value = false) {
 	return $qs || variable('debug');
 }
 
-function replaceVariables($text, $vars = 'url, app, app-assets')
+function replaceVariables($text, $vars = 'url, app, app-static, app-common-assets')
 {
 	if (!is_array($vars)) {
 		$bits = explode(', ', $vars);

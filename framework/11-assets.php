@@ -1,8 +1,4 @@
 <?php
-function flavourAssetsUrl($flavour) {
-	return variable('app') . 'flavours/' . $flavour . '/assets/';
-}
-
 function scriptTag($url) {
 	echo PHP_EOL . '	<script src="' . $url . '" type="text/javascript"></script>';
 }
@@ -49,11 +45,26 @@ function asset_url($slug) {
 	return strpos($slug, '%') !== false ? replaceVariables($slug) : ((startsWith($slug, 'http') || startsWith($slug, '//') ? '' : variable('url') . 'assets/') . $slug);
 }
 
+variables([
+	'styles' => [],
+	'scripts' => [],
+]);
+
+function addStyles($items) {
+	if (!is_array($items)) $items = [$items];
+	$existing = variable('styles');
+	foreach ($items as $item) {
+		if (in_array($item, $existing)) continue;
+		$existing[] = $item;
+	}
+	variable('styles', $existing);
+}
+
 function styles_and_scripts() {
 	$ver = version();
-	if (variable('styles')) foreach (variable('styles') as $file)
+	foreach (variable('styles') as $file)
 			cssTag(asset_url($file) . '.css' . $ver);
-	if (variable('scripts')) foreach (variable('scripts') as $file)
+	foreach (variable('scripts') as $file)
 			scriptTag(asset_url($file) . '.js' . $ver);
 }
 

@@ -1,24 +1,7 @@
 <?php
 variable('toggle-list', 'toggle-list-below');
 
-function get_menu_files($slug, $node = 'index') {
-	if (!variable('use-menu-files') || $node != 'index') return false;
-
-	$slug = str_replace('/', '', $slug); //assumes single / for content alone
-	$files = [
-		SITEPATH . '/data/order-for/' . $slug . '.txt',
-		SITEPATH . '/data/'. $slug . '-files.txt', //TODO: cleanup
-	];
-
-	foreach ($files as $item) {
-		if (disk_file_exists($item))
-			return txt_to_list(disk_file_get_contents($item));
-	}
-
-	return false;
-}
-
-function handle_slashes($file, $handle, $useMDash) {
+function _handleSlashes($file, $handle, $useMDash) {
 	if (!$handle || !contains($file, '/'))
 		return $file;
 
@@ -30,7 +13,7 @@ function handle_slashes($file, $handle, $useMDash) {
 	return $useMDash ? join(' &mdash; ', $bits) : array_pop($bits);
 }
 
-function skipExcludedFiles($files, $exclude = [], $stripExtension = false) {
+function _skipExcludedFiles($files, $exclude = [], $stripExtension = false) {
 	$op = [];
 	$checkExclusions = count($exclude) > 0;
 	foreach($files as $item) {
@@ -48,24 +31,7 @@ function skipExcludedFiles($files, $exclude = [], $stripExtension = false) {
 	return $op;
 }
 
-function menu_is_empty($files, $folder) {
-	if ($files) return false;
-
-	$files = disk_scandir($folder);
-
-	$specials = variable('special-folders');
-
-	foreach ($files as $file) {
-		if (in_array($file, $specials)) continue;
-
-		if ($file[0] == '.' || $file[0] == '_' || disk_is_dir($folder . $file))
-			unset($files[array_search($file, $files)]);
-	}
-
-	//parameterError('$files', [$files], false);
-	return count($files) == 1;
-}
-
+//TODO: remove? used in adesh/help.php
 function get_page_menu_variables() {
 	$menuOf = variable('node') . '/' . variable('page_parameter1') . '/';
 	$menuIn = '/' . variable('section') . '/' . variable('node') . '/' . 'data/' . variable('page_parameter1') . '/';
@@ -89,6 +55,8 @@ function menu($folderRelative = false, $settings = []) {
 	$class_active = arrayIfSetAndNotEmpty($settings, 'li-active-class', 'selected');
 	$class_link = arrayIfSetAndNotEmpty($settings, 'a-class');
 	$class_ul = arrayIfSetAndNotEmpty($settings, 'ul-class');
+
+	//NOTE: needed for can_access
 	$what = valueIfSetAndNotEmpty($settings, 'what');
 	$where = valueIfSetAndNotEmpty($settings, 'where', '');
 
@@ -102,7 +70,6 @@ function menu($folderRelative = false, $settings = []) {
 	$folderPrefix = $isAbsolute ? '' : variable('path');
 	if ($isAbsolute) $folderRelative = substr($folderRelative, strlen(ABSOLUTEPATHPREFIX));
 	$folder = $folderPrefix. ($folderRelative ? $folderRelative : (variable('folder') ? '/' . variable('folder') : '/'));
-	$specialFolders = variable('special-folders');
 
 	$filesGiven = false;
 	$couldHaveSlashes = isset($settings['could-have-slashes']) && $settings['could-have-slashes'];
@@ -113,8 +80,7 @@ function menu($folderRelative = false, $settings = []) {
 		$files = $givenFiles;
 		$filesGiven = true;
 	} else {
-		$files = skipExcludedFiles(disk_scandir($folder), ['home.md', 'home.tsv']);
-		$files = menuSpecial($folder, $files, $inHeader, true);
+		$files = _skipExcludedFiles(disk_scandir($folder), ['home.php', 'home.html', 'home.md', 'home.tsv']);
 
 		$config = getConfigValues($folder . '_menu-config-values.txt'); //for some reason, . in the filename doesnt work - does for .template.html though
 		if($config) {
@@ -144,13 +110,14 @@ function menu($folderRelative = false, $settings = []) {
 	$noLinks = valueIfSet($settings, 'no-links');
 	$blogHeading = valueIfSet($settings, 'blog-heading');
 
+	$section = explode('/', $folderRelative)[1];
 	$last = false;
 
 	if (isset($settings['home-link-to-section']) && $settings['home-link-to-section']) {
 		$homeBase = $base;
 		if ($homeBase == '' && isset($settings['parent-slug-for-home-link'])) $homeBase = $settings['parent-slug-for-home-link'];
 
-		$mainNode = (variable('section') == variable('node')) || startsWith($folderRelative, '/' . variable('section'));
+		$mainNode = ($section == variable('node')) || startsWith($folderRelative, '/' . variable('section'));
 		$result .= replaceItems(variable('nl') . '<li%li-classes%><a href="%url%"%style%%a-classes%><%wrap-in%>%text%</%wrap-in%></a>' . variable('nl'), [
 			'li-classes' => cssClass(array_merge($class_li, $mainNode ? ['selected'] : [], ['home-link'])),
 			'a-classes' => cssClass($class_link),
@@ -228,17 +195,19 @@ function menu($folderRelative = false, $settings = []) {
 				: am_page_url($base . $link) . ($link == '' ? '' : '/');
 		}
 
-		$file = handle_slashes($file, $filesGiven || $couldHaveSlashes, $couldHaveSlashes);
+		$file = _handleSlashes($file, $filesGiven || $couldHaveSlashes, $couldHaveSlashes);
+		/*
+		TODO: when to reinstate?
 		if ($what == 'page') { if (cannot_access_page($file)) continue; }
 		else { if (cannot_access($file, 'page')) continue; }
+		*/
 
-		$isSpecial = $folderRelative && in_array($file, variable('special-folders'));
 		$text = humanize($file, $onlySlugForSectionMenu);
 
 		//TODO: HIGH: LOOK FOR USAGE:
 
 		if (isset($settings['innerHtml'])) {
-			$innerHtml = $settings['innerHtml']($file, compact('extension', 'url', 'folder', 'isSpecial'));
+			$innerHtml = $settings['innerHtml']($file, compact('extension', 'url', 'folder'));
 		} else {
 			if ($wrapInDivVO) $text = '<div>' . $text . '</div>';
 			$innerHtml = getLink($text, $url, cssClass(array_merge($class_link)));
@@ -249,7 +218,7 @@ function menu($folderRelative = false, $settings = []) {
 		if ($noLinks) {
 			$result .= variable('nl') . '	<' . $itemTag . cssClass($class_li) . '>' . $innerHtml . '</' . $itemTag . '>' . variable('nl');
 		} else {
-			if ($inHeader && $isSpecial) {
+			if ($inHeader) {
 				$result .= '<hr />' . variable('2nl') . '<h2 class="' . variable('toggle-list') . '">' . humanize($file) .'</h2>' . variable('nl');
 				$result .= menu($folderRelative . $file . '/', [
 					'parent-slug' => variable('node') . '/',
@@ -286,26 +255,4 @@ function menu($folderRelative = false, $settings = []) {
 	$return = isset($settings['return']) ? $settings['return'] : false;
 	if ($return) return $result;
 	echo $result;
-}
-
-function render_subsites_menu($sites = false, $outer = true) {
-	if (!$sites) $sites = variable('content-subsites');
-	foreach ($sites as $site) {
-		if ($outer) echo '<li class="menu-item"><a class="menu-link" href="' . variable('url') . $site . '/"><div>' . humanize($site) . '</div></a>' . variable('nl');
-		echo '<ul class="sub-menu-container dont-capitalize">' . variable('nl');
-		render_menu(get_content_items($site . '/'), 1);
-		echo '</ul>' . variable('nl');
-		if ($outer) echo '</li>' . variable('nl');
-	}
-}
-
-function render_menu($menu, $level = 1, $asPlainLinks = false) {
-	$left = str_pad('', $level + 1, '	');
-	foreach ($menu as $slug => $text) {
-		$link = startsWith($slug, 'http') ? $slug : variable('url') . $slug;
-
-		if (!$asPlainLinks) echo $left . '<li class="menu-item">';
-		echo prepareLinks('<a' . ($level == 2 || $asPlainLinks ? '' : ' class="menu-link dont-capitalize"') . 'href="' . $link . '">' . $text . '</a>');
-		echo ($asPlainLinks ? '' : '</li>') . variable('nl');
-	}
 }

@@ -10,62 +10,10 @@ variables([
 		'rich-pages' => 'tsv',
 		'tables' => 'md',
 	],
-	'special-folders' => array_keys($sfe),
 	'exclude-folders' => ['assets', 'data', 'engage', 'home', 'images', 'thumbnails'],
 ]);
 
-function isSpecialNode() {
-	$node = variable('node');
-	if (!$node) return false;
-	if (variable('site-lock')) return true;
-
-	if (
-			_isLinks($node)
-		 || _isScaffold($node)
-		) return true;
-
-	return false;
-}
-
-//NOTE: this is for special folders inside section->node
-function isSpecial($fol) {
-	if (variable('section') == 'gallery') return true;
-
-	$page = variable('page_parameter1');
-	foreach (variable('special-folders') as $special) {
-		$extnsAllowed = subVariable('special-folder-extensions', $special);
-		$fwe = $fol . '/' . $special . '/' . $page;
-
-		$itemExtn = disk_one_of_files_exist($fwe . '.', $extnsAllowed);
-		if (!$itemExtn) continue;
-
-		variables([
-			'special-fwe' => $fwe,
-			'special-folder' => $special,
-			'special-root-folder' => $fol . '/',
-			'special-filename' => humanize($page),
-			'special-filename-websafe' => $page,
-			'file-extension' => $itemExtn,
-		]);
-
-		if ($special == 'blurbs') _setupBlurbs($fwe, $page);
-		else if ($special == 'code') _setupCode($fwe, $page);
-		else if ($special == 'decks') _setupDeck($fwe, $page);
-		else if ($special == 'dossiers') _setupDossiers($fwe, $page);
-
-		return true;
-	}
-
-	return false;
-}
-
-function needsSpecialRender($file) {
-	$raw = disk_file_exists($file) ? disk_file_get_contents($file) : '[RAW]';
-	$tbl = endsWith($file, '.tsv') && startsWith($raw, '|is-table');
-	return $tbl;
-}
-
-function autoRenderIfSpecial($file) {
+function autoRender($file) {
 	if (endsWith($file, '.php')) {
 		renderAnyFile($file);
 		return;
@@ -99,7 +47,7 @@ function autoRenderIfSpecial($file) {
 		return;
 	}
 
-	sectionId('file', 'container');
+	sectionId('file', 'container content-box');
 	renderAny($file);
 	section('end');
 }
@@ -130,34 +78,6 @@ function renderedSpecial() {
 	}
 
 	return true;
-}
-
-function menuSpecial($folder, $files, $specialFoldersOnly, $sort) {
-	if (hasVariable('engine')) return $files;
-
-	$mergeFromSpecial = [];
-
-	foreach (variable('special-folders') as $special) {
-		if (!disk_is_dir($folder . $special))
-			continue;
-
-		unset($files[array_search($special, $files)]);
-
-		if ($specialFoldersOnly) {
-			$mergeFromSpecial[] = $special;
-		} else {
-			$specialFiles = skipExcludedFiles(disk_scandir($folder . $special));
-			$mergeFromSpecial = array_merge($mergeFromSpecial, ['~' . humanize($special)], $specialFiles);
-		}
-	}
-
-	if ($sort) usort($files, 'strnatcmp'); //https://www.php.net/manual/en/function.strnatcmp.php
-
-	if (count($mergeFromSpecial)) {
-		$files = array_merge($files, $mergeFromSpecial);
-	}
-
-	return $files;
 }
 
 // ************************************ Region: Private (Internal) Functions

@@ -149,13 +149,9 @@ _always($siteVars);
 $safeName = $siteVars['safeName'];
 $network = variable('network');
 
-$css = [];
-if (disk_file_exists(SITEPATH . '/assets/site.css')) $css[] = 'site';
+if (disk_file_exists(SITEPATH . '/assets/site.css')) addStyles('site');
 
 variables($op = [
-	'flavour' => variableOr('flavour', 'yieldmore'),
-    'engine' => 'light',
-	'auto-render' => true,
 	//version done above using textToArray
 	'folder' => 'content/',
 	//sections also done above in parseSectionsAndGroups
@@ -175,10 +171,9 @@ __testSiteVars($op);
 
 //TODO: add_foot_hook(AMADEUSTHEMEFOLDER . 'media-kit.php');
 
-if ($network) setupNetworkLinks($network, $css);
-variable('styles', $css); //network file may get added in the function above
+if ($network) setupNetworkLinks($network);
 
-function setupNetworkLinks($network, &$css) {
+function setupNetworkLinks($network) {
 	$data = siteRealPath('/../' . $network . '/data/network.tsv');
 	//if (!disk_file_exists($data)) return; //NOTE: Design By Contract - let it throw
 
@@ -234,7 +229,7 @@ function setupNetworkLinks($network, &$css) {
 				variable('network-url', $item[$networkKey][0][$val]);
 			
 			if (disk_file_exists(siteRealPath('/../' . $site . '/assets/network.css')))
-				$css[] = $url . 'assets/network';
+				addStyles($url . 'assets/network');
 
 			if (disk_file_exists($nfn = siteRealPath('/../' . $site . '/code/network.php')))
 				disk_include_once($nfn, ['name' => $name, 'byline' => $byline, 'networkName' => $networkName, 'siteTheme' => $theme]);
@@ -263,10 +258,10 @@ function setupNetworkLinks($network, &$css) {
 	variable('is-network-site', variable('safeName') == $nw['safeName']);
 }
 
-if (disk_file_exists(SITEPATH . '/site-cms.php'))
-	disk_include_once(SITEPATH . '/site-cms.php');
+if (disk_file_exists($cms = SITEPATH . '/cms.php'))
+	disk_include_once($cms);
 else
-	bootstrap([]);
+	runFrameworkFile('cms');
 
 if (hasPageParameter('embed')) variable('embed', true);
 

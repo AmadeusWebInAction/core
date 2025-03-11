@@ -9,8 +9,10 @@ function run_theme_part($what) {
 		$file = getThemeFile(variable('sub-theme') . '.html');
 		$bits = explode('##content##', disk_file_get_contents($file));
 		$content = ['header' => $bits[0], 'footer' => $bits[1]];
+		$content['footer-widgets'] = disk_file_get_contents(getThemeFile('footer-widgets.html'));
 		variable('theme-template', $content);
 	}
+
 	$vars = [
 		'theme' => getThemeBaseUrl(),
 		'optional-slider' => '',
@@ -32,15 +34,22 @@ function run_theme_part($what) {
 
 		echo _renderRaw($bits[0]);
 		setMenuSettings();
-		if (function_exists('header_menu')) header_menu(); else menu();
+		runFrameworkFile('header-menu');
 		setMenuSettings(true);
 		echo _renderRaw($bits[1]);
 	} else if ($what == 'footer') {
-		$suffix = !variable('footer-message') ? '' : ' &mdash; ' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . '<hr />' . variable('nl');
-		$vars['footer-logo'] = '<u>' . variable('name') . '</u>' . $suffix . variable('nl');
-		$vars['footer-widgets'] = footerWidgets();
-		$vars['copyright'] = copyright_and_credits(BRTAG, true);
-		$vars['social-icons'] = socialWidgets();
+		$logo = concatSlugs(['<a href="', variable('url'), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" class="img-fluid img-max-',
+		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
+		$suffix = !variable('footer-message') ? '' : ' &mdash; ' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
+		$fwVars = [
+			'footer-logo' => $logo . '<u>' . variable('name') . '</u>' . $suffix . variable('nl'),
+			'site-widgets' => siteWidgets(),
+			'copyright' => _copyright(true),
+			'credits' => _credits('', true),
+			'social-icons' => socialWidgets(),
+		];
+
+		$vars['footer-widgets'] = _substituteThemeVars($content, 'footer-widgets', $fwVars);
 
 		$footer = _substituteThemeVars($content, 'footer', $vars);
 
@@ -68,26 +77,34 @@ function _renderRaw($html) {
 
 function setMenuSettings($after = false) {
 	if ($after) {
-		variable('site-menu-settings', false);
+		variable('menu-settings', false);
 		return;
 	}
 
 	//same as non-profit header
-	variable('site-menu-settings', [
-		'group-outer-ul-class' => 'sub-menu-container',
-		'outer-ul-class' => 'menu-container',
-		'ul-class' => 'sub-menu-container',
-		'li-class' => 'menu-item',
-		'li-active-class' => 'current',
-		'a-class' => 'menu-link',
-		'wrap-text-in-a-div' => true,
-		'top-level-angle' => '<i class="icon-angle-down"></i>',
+	variable('menu-settings', [
+		'noOuterUl' => true,
+		'groupOuterUlClass' => 'sub-menu-container',
+		'outerUlClass' => 'menu-container',
+		'ulClass' => 'sub-menu-container',
+		'itemClass' => 'menu-item',
+		'itemActiveClass' => 'current',
+		'anchorClass' => 'menu-link',
+		'wrapTextInADiv' => true,
+		'topLevelAngle' => '<i class="icon-angle-down"></i>',
 	]);
 }
 
-function footerWidgets() {
+function siteWidgets() {
+	if (variable('node-alias')) return '';
+
 	$sites = variable('network-site-configs');
-	if (!$sites || variable('node-alias')) return '';
+	if (!$sites) {
+		$op = [];
+		foreach (variable('sections') as $slug)
+			$op[] = makeLink(humanize($slug), $slug . '/');
+		return implode(variable('nl'), $op);
+	}
 
 	$result = '';
 	foreach ($sites as $site) {
