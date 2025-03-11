@@ -13,14 +13,23 @@ function _handleSlashes($file, $handle, $useMDash) {
 	return $useMDash ? join(' &mdash; ', $bits) : array_pop($bits);
 }
 
-function _skipExcludedFiles($files, $exclude = [], $stripExtension = false) {
+function _skipExcludedFiles($files, $excludeNames = 'home', $excludeExtensions = 'jpg, png', $stripExtension = false) {
 	$op = [];
-	$checkExclusions = count($exclude) > 0;
+
+	$excludeNames = explode(', ', $excludeNames);
+	$checkNames = count($excludeNames) > 0;
+
+	$excludeExtensions = explode(', ', $excludeExtensions);
+	$checkExtensions = count($excludeExtensions) > 0;
+
 	foreach($files as $item) {
 		if ($item[0] == '.' OR $item[0] == '_')
 			continue;
 
-		if ($checkExclusions && in_array($item, $exclude))
+		if ($checkNames && in_array(stripExtension($item), $excludeNames))
+			continue;
+
+		if ($checkExtensions && in_array(getExtension($item), $excludeExtensions))
 			continue;
 
 		if ($stripExtension)
@@ -28,6 +37,7 @@ function _skipExcludedFiles($files, $exclude = [], $stripExtension = false) {
 
 		$op[] = $item;
 	}
+
 	return $op;
 }
 
@@ -80,7 +90,7 @@ function menu($folderRelative = false, $settings = []) {
 		$files = $givenFiles;
 		$filesGiven = true;
 	} else {
-		$files = _skipExcludedFiles(disk_scandir($folder), ['home.php', 'home.html', 'home.md', 'home.tsv']);
+		$files = _skipExcludedFiles(disk_scandir($folder));
 
 		$config = getConfigValues($folder . '_menu-config-values.txt'); //for some reason, . in the filename doesnt work - does for .template.html though
 		if($config) {

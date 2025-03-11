@@ -7,36 +7,57 @@ function before_render() {
 		if ($slug == $node = variable('node')) {
 			variable('directory_of', $node);
 			variable('section', $slug);
-			return _callAndVoid();
+			afterSectionSet();
+			return;
 		}
 
-		$page = variable('page_parameter1') ? variable('page_parameter1') : 'home';
-		$fwes = [
-			variable('path') . '/' . $slug . '/' . $node . '/' . $page . '.',
-			variable('path') . '/' . $slug . '/' . $node . '.',
-		];
+		$page1 = variable('page_parameter1') ? variable('page_parameter1') : 'home';
+		$folUptoNode = variable('path') . '/' . $slug . '/' . $node;
+		$level1 = [$folUptoNode . '/' . $page1 . '.', $folUptoNode . '.'];
 
-		foreach ($fwes as $fwe) {
-			$ext = disk_one_of_files_exist($fwe, 'php, md, tsv, html');
-			if ($ext) {
-				variable('file', $fwe . $ext);
-				variable('section', $slug);
-				return _callAndVoid();
+		if (ifOneOfFilesExists($slug, $level1)) return;
+
+		if (disk_is_dir($folInNode = $folUptoNode . '/')) {
+			$in1 = variable('page_parameter1');
+			$folInPage1 = $folInNode . $in1;
+			$in2 = variable('page_parameter2');
+			$folInPage2 = $folInPage1 .'/' . $in2;
+
+			//do in reverse
+			if (disk_is_dir($folInPage2)) {
+				$page3 = variable('page_parameter3') ? variable('page_parameter3') : 'home';
+				$level3 = [$folInPage2 . '/' . $page3 . '.', $folInPage2 . '.'];
+				if (ifOneOfFilesExists($slug, $level3, $in1 . '/' . $in2, 2)) {
+					variable('node-folder-item1', $in1);
+					return;
+				}
 			}
-		}
 
-		if (disk_is_dir($fol = variable('path') . '/' . $slug . '/' . $node . '/')) {
-			$ext = disk_one_of_files_exist($fwes[0], 'php, md, tsv, html');
-			if ($ext) {
-				variable('file', $fwes[0] . $ext);
-				variable('section', $slug);
-				return _callAndVoid();
+			if (disk_is_dir($folInPage1)) {
+				$page2 = variable('page_parameter2') ? variable('page_parameter2') : 'home';
+				$level2 = [$folInPage1 . '/' . $page2 . '.', $folInPage1 . '.'];
+				if (ifOneOfFilesExists($slug, $level2, $in1)) return;
 			}
 		}
 	}
 }
 
-function _callAndVoid() {
+function ifOneOfFilesExists($section, $fwes, $nodeFolderItem = false, $nodeFolderLevel = 1) {
+	foreach ($fwes as $fwe) {
+		$ext = disk_one_of_files_exist($fwe, 'php, md, tsv, html');
+		if (!$ext) continue;
+
+		variable('file', $fwe . $ext);
+		variable('section', $section);
+		if ($nodeFolderItem) variable($key = 'node-folder-item' . $nodeFolderLevel, $nodeFolderItem);
+
+		afterSectionSet();
+		return true;
+	}
+	return false;
+}
+
+function afterSectionSet() {
 	if (function_exists('site_before_render')) site_before_render();
 }
 

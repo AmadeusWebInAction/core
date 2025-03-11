@@ -24,6 +24,7 @@ menu('/' . variable('folder'), [
 echo '</li>' . variable('nl');
 
 if ($groups = variable('section-groups')) {
+	renderIfCurrentMenu();
 	foreach ($groups as $group => $items) {
 		$isGroup = true;
 		if (is_string($items)) {
@@ -46,43 +47,76 @@ if ($groups = variable('section-groups')) {
 		if ($isGroup) echo '	</ul>' . variable('2nl');
 		if ($isGroup) echo '</li>' . variable('nl');
 	}
-	renderCurrentNodeMenu();
 } else {
+	renderIfCurrentMenu();
 	foreach (variable('sections') as $slug) {
 		//if (cannot_access($slug)) continue;
 		renderHeaderMenu($slug);
 	}
-	renderCurrentNodeMenu();
 }
 
 function renderHeaderMenu($slug, $node = '') {
-	$name = humanize($slug);
+	$parentSlug = $node ? $node : $slug;
+
+	if (contains($node, '/'))  { $bits = explode('/', $node); array_pop($bits); $name = humanize(array_pop($bits)) . ' (' . humanize(array_pop($bits)) . ')'; }
+	else if ($node) { $name = humanize($node) . ' (' . humanize($slug) . ')'; }
+	else { $name = humanize($parentSlug); }
 
 	extract(variable('menu-settings'));
 	if ($wrapTextInADiv) $name = '<div>' . $name . $topLevelAngle . '</div>';
-	$parent = array_search($slug, ['gallery']) !== false ? $slug . '/' : '';
 	
 	echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
-	menu('/' . $slug . $node . '/', [
+
+	if ($node) $slug .= '/' . $node;
+	menu('/' . $slug . '/', [
 		'a-class' => $anchorClass,
-		'ul-class' => $ulClass,
-		'list-only-folders' => true,
+		'ul-class' => $ulClass . ($node ? ' of-node node-' . $node : ''),
+		'list-only-folders' => $node == '',
 		'home-link-to-section' => true,
-		'parent-slug-for-home-link' => $slug . '/',
+		'parent-slug-for-home-link' => $parentSlug . '/',
+		'parent-slug' => $node ? $node . '/' : '',
 	]);
 	echo '</li>' . variable('nl');
 }
 
-//TODO: HIGH: cleanup and move to menu.php
-function renderCurrentNodeMenu() {
-	return; //TODO: bug!
+function renderIfCurrentMenu() {
+	$items = getCurrentMenus();
+	if (count($items) == 0) return;
+
+	extract(variable('menu-settings'));
+	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();"><div>((Current Menu))</div></a>' . variable('nl');
+	echo '		<ul' . cssClass([$ulClass]) . '>' . variable('nl');
+
+	foreach ($items as $params) {
+		renderHeaderMenu($params[0], $params[1]);
+	}
+
+	echo '		</ul>' . variable('nl');
+	echo '	</li>' . variable('2nl');
+}
+
+function getCurrentMenus() {
 	//TODO: if (cannot_access(variable('section'))) return;
+	if (variable('section') == variable('node'))
+		return [];
 
-	$folRelative = '/' . variable('section') . (variable('section') != variable('node') ? '/' . variable('node') : '') . '/';
-	$folAbsolute = variable('path') . $folRelative;
+	$result = [];
 
-	if (!disk_is_dir($folAbsolute)) return;
-	renderHeaderMenu(variable('section'), '/' . variable('node'));
+	$toCheck = [
+		'/' . variable('section') . '/' . variable('node') . '/'
+			=> [ variable('section'), variable('node') ],
+		'/' . variable('section') . '/' . variable('node') . '/' . $nfi1 = variableOr('node-folder-item1', 'nothing') . '/'
+			=> [ variable('section'), variable('node') . '/' . $nfi1 ],
+		'/' . variable('section') . '/' . variable('node') . '/' . $nfi2 = variableOr('node-folder-item2', 'nothing') . '/'
+			=> [ variable('section'), variable('node') . '/' . $nfi2 ],
+	];
+
+	foreach ($toCheck as $folRelative => $params) {
+		if (!disk_is_dir(variable('path') . $folRelative)) break;
+		$result[] = $params;
+	}
+
+	return $result;
 }
 
 if (function_exists('after_menu')) after_menu();

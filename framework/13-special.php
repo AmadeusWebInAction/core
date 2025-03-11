@@ -21,30 +21,21 @@ function autoRender($file) {
 
 	$raw = disk_file_exists($file) ? disk_file_get_contents($file) : '[RAW]';
 
-	if (endsWith($file, '.md') && startsWith($raw, '<!--is-blurbs-->')) {
-		_renderedBlurbs($file);
-		return;
+	if (endsWith($file, '.md')) {
+		if (startsWith($raw, '<!--is-blurbs-->'))
+			return _renderedBlurbs($file);
+		if (startsWith($raw, '<!--is-deck-->'))
+			return _renderedDeck($file, variable('all_page_parameters') . '/');
 	}
 
-	if (endsWith($file, '.tsv') && startsWith($raw, '|is-deck')) {
-		renderSheetAsDeck($file, variableOr('all_page_parameters', variable('node')) . '/');
-		return;
-	}
-
-	if (endsWith($file, '.md') && startsWith($raw, '<!--is-deck-->')) {
-		_renderedDeck($file, variable('all_page_parameters') . '/');
-		return;
-	}
-
-	if (endsWith($file, '.tsv') && startsWith($raw, '|is-rich-page')) {
-		renderRichPage($file);
-		return;
-	}
-
-	if (endsWith($file, '.tsv') && startsWith($raw, '|is-table')) {
-		$template = dirname($file) . '/.template.html';
-		table(pathinfo($file, PATHINFO_FILENAME), false, $file, 'auto', disk_file_get_contents($template));
-		return;
+	if (endsWith($file, '.tsv')) {
+		runFeature('tables');
+		if (startsWith($raw, '|is-deck'))
+			return renderSheetAsDeck($file, variableOr('all_page_parameters', variable('node')) . '/');
+		if (startsWith($raw, '|is-rich-page'))
+			return renderRichPage($file);
+		if (startsWith($raw, '|is-table'))
+			return add_table(pathinfo($file, PATHINFO_FILENAME), $file, 'auto', disk_file_get_contents(dirname($file) . '/.template.html'));
 	}
 
 	sectionId('file', 'container content-box');
@@ -268,7 +259,7 @@ function _renderedDossiers($data) {
 
 	section('end');
 
-	table($page, false, $data, 'auto', disk_file_get_contents($html));
+	add_table($page, false, $data, 'auto', disk_file_get_contents($html));
 }
 
 //TODO: Refactor and move away? or make it a kind of special section

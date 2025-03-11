@@ -105,8 +105,7 @@ function stripExtension($file) {
 	return pathinfo($file, PATHINFO_FILENAME);
 }
 
-//todo: TYPO
-function getExtention($file) {
+function getExtension($file) {
 	return pathinfo($file, PATHINFO_EXTENSION);
 }
 

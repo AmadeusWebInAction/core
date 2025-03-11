@@ -208,7 +208,7 @@ function getSheet($name, $groupBy = 'section') {
 function siteHumanize() {
 	if (!sheetExists('humanize')) return [];
 
-	$sheet = get_sheet('humanize', false);
+	$sheet = getSheet('humanize', false);
 	$cols = $sheet->columns;
 	$result = [];
 
