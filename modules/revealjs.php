@@ -7,25 +7,21 @@
 		<title><?php echo title('params-only') . ' [' . title(true) . ']';?></title>
 		<link href="<?php echo variable('url'); ?><?php echo variable('safeName'); ?>-icon.png" rel="icon" />
 
-<?php $url = variable('app-static') . 'revealjs/'; ?>
-		<link rel="stylesheet" href="<?php echo $url;?>dist/reset.css" />
-		<link rel="stylesheet" href="<?php echo $url;?>dist/reveal.css" />
-		<link rel="stylesheet" href="<?php echo $url;?>dist/theme/white.css" />
+		<?php cssTag(assetUrl('reveal.css', 'app-static--3p'));?>
+		<?php cssTag(assetUrl('reveal-white.css', 'app-static--3p'));?>
 
 		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="<?php echo $url;?>plugin/highlight/monokai.css" />
-		<?php cssTag(asset_url('%app-common-assets%presentation2.css') . version()); ?>
+		<?php cssTag(assetUrl('presentation2.css', 'app-static--common-assets')); ?>
 		<?php main::analytics(); ?>
 	</head>
 	<body id="<?php echo variable('all_page_params'); ?>">
 		<!-- header thanks to: https://www.raymondcamden.com/2014/04/01/Adding-an-Absolutely-Positioned-Header-to-Revealjs -->
-		<header id="topbar" class="box-shadow">
-			<?php if (!isset($_GET['iframe'])) {
-				echo concatSlugs(['<a id="home-link" href="', variable('url'), variable('all_page_parameters'), '/" class="standard-logo">',
+		<header id="topbar-wrapper">
+			<div id="topbar" class="box-shadow"><?php if (!isset($_GET['iframe'])) {
+				echo concatSlugs(['<a id="home-link" href="', variable('url'), variable('all_page_parameters'), '/">',
 					variable('nl'), '				<img src="', replaceVariables('%url%%safeName%-icon.png" ', 'url, safeName'),
-					'alt="', variable('name'), '" height="30px" /></a>', variable('nl') ], '');
-			}?>
-			<span id="hash-id" style="color: #fff; font-size: 16px;">[slide-id]</span>
+					'alt="', variable('name'), '" height="30px" /></a>', variable('nl') ], ''); }?>
+			<span id="hash-id" style="color: #fff; font-size: 16px;">[slide-id]</span></div>
 		</header>
 
 		<div class="reveal">
@@ -37,10 +33,7 @@
 			</div>
 		</div>
 
-		<script src="<?php echo $url;?>dist/reveal.js"></script>
-		<script src="<?php echo $url;?>plugin/notes/notes.js"></script>
-		<script src="<?php echo $url;?>plugin/markdown/markdown.js"></script>
-		<script src="<?php echo $url;?>plugin/highlight/highlight.js"></script>
+		<?php scriptTag(assetUrl('reveal.js', 'app-static--3p'));?>
 		<script>
 			// More info about initialization & config:
 			// - https://revealjs.com/initialization/
@@ -49,9 +42,9 @@
 
 			Reveal.initialize({
 				hash: true,
-
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				// NOTE: making it superlight
+				// plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
 			}).then(setMissingHashIds);
 
 			function setMissingHashIds(event) {

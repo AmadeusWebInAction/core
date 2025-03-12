@@ -186,9 +186,10 @@ function _renderedDeck($deck, $params = []) {
 
 	$embedUrl = $url .'?embed=1';
 
-	echo '<section class="deck-toolbar" style="text-align: center;">';
+	sectionId('deck-toolbar', 'text-center');
 	h2(valueIfSet($params, 'title', 'Presentation'));
-	echo '<div class="box-shadow">DECK: ' . variable('nl');
+	boxDiv('deck', 'toolbar');
+	echo 'PRESENTATION: ' . variable('nl');
 	$links = [];
 
 	//TODO: UI FIX: if (!$expanded) $links[] = '<a class="toggle-deck-fullscreen" href="javascript: $(\'.deck-container\').show();"><span class="text">maximize</span> ' . getIconSpan('expand', 'normal') . '</a>';
@@ -200,7 +201,8 @@ function _renderedDeck($deck, $params = []) {
 	if (!$expanded) $links[] = makeLink('toggle deck below', 'javascript: $(\'.deck-container\').toggle();', false);
 
 	echo implode(' &nbsp;&nbsp;&mdash;&nbsp;&nbsp; ' . variable('nl'), $links);
-	echo '</div></section>' . variable('2nl');
+	boxDiv('end');
+	section('end');
 
 	if ($expanded) {
 		$deck = __parseDeck($deck);
@@ -210,7 +212,7 @@ function _renderedDeck($deck, $params = []) {
 	} else {
 		echo sprintf('<section class="deck-container">'
 			. '<iframe src="%s&iframe=1"></iframe></section>', $embedUrl);
-		addScripts('%app-common-assets%presentation-toolbar');
+		addScript('presentation-toolbar', 'app-static--common-assets');
 	}
 }
 

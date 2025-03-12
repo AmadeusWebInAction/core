@@ -36,7 +36,7 @@ function disk_call($function, $parameter, $timeER) {
 		$parameter = str_replace(SITEPATH, 'SITE', $parameter);
 	}
 
-	$parameter = str_replace(AMADEUSFOLDER, 'CORE/', $parameter);
+	$parameter = str_replace(AMADEUSCORE, 'CORE/', $parameter);
 	$exact = time_r($timeER[0], 'micro', true); $time = $timeER[1];
 	$call = count($disk_calls) + 1;
 	$disk_calls[] = compact('call', 'function', 'parameter', 'exact', 'time');
@@ -54,7 +54,7 @@ function file_stats($file, $call) {
 	$size = filesize($file);
 	$stat_all_size += $size;
 	
-	$folder = replaceItems(dirname($file), [SITEPATH => 'SITE', AMADEUSFOLDER => 'CORE/']);
+	$folder = replaceItems(dirname($file), [SITEPATH => 'SITE', AMADEUSCORE => 'CORE/']);
 	$name = basename($file);
 	$size = size_r($size);
 

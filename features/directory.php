@@ -2,9 +2,9 @@
 $of = variable('directory_of');
 $section = variable('section');
 
-sectionId('directory', 'container');
-
-boxDiv('sections', 'plain text-center');
+sectionId('directory', 'text-center');
+h2('Directory Of');
+boxDiv('', 'toolbar', true);
 echo 'Navigate: ' . variable('nl');
 foreach (variable('sections') as $item) {
 	//TODO: reinstate - if (cannot_access($item)) continue;

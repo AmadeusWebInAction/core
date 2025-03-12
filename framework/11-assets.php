@@ -35,18 +35,52 @@ function title($return = false) {
 	echo $r;
 }
 
-function version($what = 'site') {
-	$key = 'version_for_' . $what; //cache it to prevent long manipulations below
-	if ($result = variable($key)) return $result;
+function assetMeta($location = 'site', $setValueOr = false) {
+	$key = '__assetmanager_meta_' . $location; //cache it to prevent long manipulations/file reads below
 
-	$ver = variable($what == 'site' ? 'version' : $what . 'Version');
-	$result = $ver ? '?v=' . $ver['id'] . (false ? '&for=' . $what : '') . '&date=' . urlize($ver['date']) : '';
-	variable($key, $result);
+	if (is_array($setValueOr)) {
+		variable($key, $setValueOr);
+		return;
+	}
+
+	//dont do early return as get could be for one item of array alone
+	if (!($result = variable($key))) {
+		$bits = explode('--', $location);
+		$twoBits = explode('-', $bits[0], 2);
+
+		$mainFol = SITEPATH . '/';
+		$mainUrl = variable('url') . 'assets/';
+		if ($twoBits[0] == 'app') {
+			$mainFol = AMADEUSROOT . $twoBits[1] . '/';
+			$mainUrl = variable($bits[0]);
+		} //else support network + site
+
+		$middlePath = isset($bits[1]) ? $bits[1] . '/' : '';
+
+		$versionFile = $mainFol . $middlePath .'_version.txt';
+		$version = disk_file_exists($versionFile) ? '?' . disk_file_get_contents($versionFile) : '';
+		$location = $mainUrl . $middlePath;
+
+		$result = ['location' => $location, 'version' => $version];
+
+		//print_r($result);
+		variable($key, $result);
+	}
+
+	if ($setValueOr == 'version')
+		return $result['version'];
+	//TODO: not yet implemented for url!
+
 	return $result;
 }
 
-function asset_url($slug) {
-	return strpos($slug, '%') !== false ? replaceVariables($slug) : ((startsWith($slug, 'http') || startsWith($slug, '//') ? '' : variable('url') . 'assets/') . $slug);
+//TODO: support for network-static and site-static
+function assetUrl($file, $location) {
+	if (startsWith($file, 'http') || startsWith($file, '//'))
+		parameterError('ASSETMANAGER: direct urls not supported in beta', $file, DOTRACE, DODIE);
+
+	$meta = assetMeta($location);
+	return $meta['location'] . $file . $meta['version'];
 }
 
 variables([
@@ -54,30 +88,32 @@ variables([
 	'scripts' => [],
 ]);
 
-function addStyles($items) {
-	_addAssets($items, 'styles');
+function addStyle($name, $location = 'site') {
+	_addAssets($name, $location, 'styles');
 }
 
-function addScripts($items) {
-	_addAssets($items, 'scripts');
+function addScript($name, $location = 'site') {
+	_addAssets($name, $location, 'scripts');
 }
 
-function _addAssets($items, $type) {
-	if (!is_array($items)) $items = [$items];
+function _addAssets($names, $location, $type) {
 	$existing = variable($type);
-	foreach ($items as $item) {
-		if (in_array($item, $existing)) continue;
-		$existing[] = $item;
+
+	if (!is_array($names)) $names = [$names]; //magic - single or array. location can be defined only once
+	foreach ($names as $name) {
+		$key = concatSlugs([$type, $location, $name]);
+		if (isset($existing[$key])) return;
+
+		$existing[$key] = [ 'name' => $name, 'location' => $location ];
 	}
 	variable($type, $existing);
 }
 
 function styles_and_scripts() {
-	$ver = version();
-	foreach (variable('styles') as $file)
-			cssTag(asset_url($file) . '.css' . $ver);
-	foreach (variable('scripts') as $file)
-			scriptTag(asset_url($file) . '.js' . $ver);
+	foreach (variable('styles') as $item)
+			cssTag(assetUrl($item['name'] . '.css', $item['location']));
+	foreach (variable('scripts') as $item)
+			scriptTag(assetUrl($item['name'] . '.js', $item['location']));
 }
 
 function head_hooks() {

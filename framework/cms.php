@@ -1,6 +1,6 @@
 <?php
 function before_render() {
-	addStyles('%app-common-assets%amadeusweb7');
+	addStyle('amadeusweb7', 'app-static--common-assets');
 	//TODO: high! read_seo_info();
 
 	foreach (variable('sections') as $slug) {

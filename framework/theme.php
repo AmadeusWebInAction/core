@@ -14,18 +14,21 @@ function run_theme_part($what) {
 	}
 
 	$vars = [
-		'theme' => getThemeBaseUrl(),
+		'theme' => getThemeBaseUrl(), //TODO: /version can be maintained on the individual file?
 		'optional-slider' => '',
 	];
 
 	if ($what == 'header') {
 		$vars['title'] = title(true);
 		$vars['icon'] = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192" />',
-			['url' => variable('url'), 'safeName' => variable('safeName'), 'version' => version()], '%');
+			['url' => variable('url'), 'safeName' => variable('safeName'),
+				'version' => assetMeta('site', 'version')], '%'); //TODO: simplify this version stuff?
 		$vars['seo'] = seo_tags(true);
 		$vars['body-classes'] = body_classes(true);
 
-		$vars['logo'] = concatSlugs(['<a href="', variable('url'), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" class="img-fluid img-max-',
+		//TODO: if network exists, else if node is sub site else yada-yada-yada
+		$imgUrl = assetUrl(variable('safeName') . '/' . variable('safeName') . '-logo@2x.png', 'app-static');
+		$vars['logo'] = concatSlugs(['<a href="', variable('url'), '"><img src="', $imgUrl, '" class="img-fluid img-max-',
 		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
 
 		$header = _substituteThemeVars($content, 'header', $vars);
@@ -103,7 +106,7 @@ function siteWidgets() {
 	$start = '<div class="col-md-4 row">' . variable('nl');
 	if (variable('node-alias')) return '';
 
-	$sites = variable('network-site-configs');
+	$sites = variable('network-sites');
 	if (!$sites) {
 		$op = [$start];
 		$op[] = '<u>Sections</u>'; //TODO: Network + Showcase + Misc

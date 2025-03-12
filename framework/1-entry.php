@@ -6,19 +6,22 @@
  * Author: Imran Ali Namazi <imran@amadeusweb.com>
  * Website: https://amadeusweb.com/
  * Source:  https://github.com/AmadeusWebInAction/amadeusweb
- * Note: AmadeusWeb v7.1 is based on 25 years of Imran's programming experience.
+ * Note: AmadeusWeb v7.1 is based on 25 years of Imran's programming experience:
+ *     * https://imran.yieldmore.org/career-past/
  */
 
-DEFINE('AMADEUSFOLDER', __DIR__ . '/'); //safe because ends with /
-DEFINE('AMADEUSFEATURES', realpath(__DIR__ . '/../features/') . '/');
-DEFINE('AMADEUSMODULES', realpath(__DIR__ . '/../modules/') . '/');
-DEFINE('AMADEUSTHEMESFOLDER', realpath(__DIR__ . '/../../themes/') . '/');
+DEFINE('AMADEUSROOT', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR);
+DEFINE('AMADEUSFRAMEWORK', __DIR__ . DIRECTORY_SEPARATOR);
+DEFINE('AMADEUSCORE', dirname(__DIR__) . DIRECTORY_SEPARATOR);
+DEFINE('AMADEUSFEATURES', AMADEUSCORE . 'features/');
+DEFINE('AMADEUSMODULES', AMADEUSCORE . 'modules/');
+DEFINE('AMADEUSTHEMESFOLDER', AMADEUSROOT . 'themes/');
 
-include_once AMADEUSFOLDER . '2-stats.php'; //start time, needed to log disk load in files.php
-include_once AMADEUSFOLDER . '3-files.php'; //disk_calls, needed first to measure include times
+include_once AMADEUSFRAMEWORK . '2-stats.php'; //start time, needed to log disk load in files.php
+include_once AMADEUSFRAMEWORK . '3-files.php'; //disk_calls, needed first to measure include times
 
 function runFrameworkFile($name) {
-	disk_include_once(AMADEUSFOLDER . $name . '.php');
+	disk_include_once(AMADEUSFRAMEWORK . $name . '.php');
 }
 
 function runModule($name) {
@@ -63,13 +66,11 @@ function before_bootstrap() {
 
 	if (DEFINED('AMADEUSURL')) variable('app', AMADEUSURL);
 
-	variable('old-main', $local ? replaceVariables('http://localhost%port%/amadeusweb/we/', 'port') : '//v2.amadeusweb.com/');
 	variable('main', $local ? replaceVariables('http://localhost%port%/awe/web/', 'port') : '//amadeusweb.com/');
 	variable('world', $local ? replaceVariables('http://localhost%port%/awe/world/', 'port') : '//amadeusweb.world/');
 
 	variable('app-themes', $local ? replaceVariables('http://localhost%port%/awe/themes/', 'port') : '//themes.amadeusweb.com/');
 	variable('app-static', $local ? replaceVariables('http://localhost%port%/awe/static/', 'port') : '//static.amadeusweb.com/');
-	variable('app-common-assets', variable('app-static') . 'common-assets/');
 
 	$php = contains($_SERVER['DOCUMENT_ROOT'], 'magique') || contains($_SERVER['DOCUMENT_ROOT'], 'Magique');
 	variable('no_url_rewrite', $php);

@@ -40,11 +40,6 @@ foreach ($sheet->rows as $row) {
 
 variable('site-vars', $siteVars);
 
-if (isset($siteVars['version'])) {
-	variable('version', $version = textToArray($siteVars['version']));
-	__testSiteVars(['version' => $version]);
-}
-
 if (contains($url = $siteVars[variable('site-url-key')], 'localhost')) {
 	$url = replaceItems($url, ['localhost' => 'localhost' . variable('port')]);
 	__testSiteVars(['url-for-localhost' => $url]);
@@ -149,10 +144,10 @@ _always($siteVars);
 $safeName = $siteVars['safeName'];
 $network = variable('network');
 
-if (disk_file_exists(SITEPATH . '/assets/site.css')) addStyles('site');
+//TODO: impl needed if using static?! if (disk_file_exists(SITEPATH . '/assets/site.css')) addStyle('site', 'site');
 
 variables($op = [
-	//version done above using textToArray
+	//version will be done with txt file if needed (see 11-assets.php)
 	'folder' => 'content/',
 	//sections also done above in parseSectionsAndGroups
 	'image-in-logo' => disk_file_exists(SITEPATH . '/' . $safeName . '-logo.png') ? '-logo.png' : false,
@@ -213,8 +208,14 @@ function setupNetworkLinks($network) {
 
 		$networkName = false; $networkByline = false; $networkMessage = false;
 		if ($site == $network) {
-			if (!variable('version') && isset($item['version']))
-				variable('version', textToArray($item['version'][0][$val]));
+			if (isset($item[$networkKey = 'network-' . variable('site-url-key')]))
+				variable('network-url', $networkUrl = $item[$networkKey][0][$val]);
+			
+			//NOTE: expects url to be set above
+			if (isset($item['network-version'])) assetMeta('network', [
+					'version' => $item['network-version'][0][$val],
+					'baseurl' => $networkUrl . 'assets/',
+				]);
 
 			if (isset($item['network-name']))
 				$networkName = $item['network-name'][0][$val];
@@ -225,11 +226,8 @@ function setupNetworkLinks($network) {
 			if (isset($item['network-message']))
 				$networkMessage = $item['network-message'][0][$val];
 
-			if (isset($item[$networkKey = 'network-' . variable('site-url-key')]))
-				variable('network-url', $item[$networkKey][0][$val]);
-			
 			if (disk_file_exists(siteRealPath('/../' . $site . '/assets/network.css')))
-				addStyles($url . 'assets/network');
+				addStyle('network', 'network');
 
 			if (disk_file_exists($nfn = siteRealPath('/../' . $site . '/code/network.php')))
 				disk_include_once($nfn, ['name' => $name, 'byline' => $byline, 'networkName' => $networkName, 'siteTheme' => $theme]);
@@ -253,8 +251,8 @@ function setupNetworkLinks($network) {
 	variable('network-links', $op);
 	__testSiteVars(['network-links' => $op]);
 
-	variable('network-site-configs', $configs);
-	variable('network-configs', $nw = $configs[$network]);
+	variable('network-sites', $configs);
+	variable('network', $nw = $configs[$network]);
 	variable('is-network-site', variable('safeName') == $nw['safeName']);
 }
 

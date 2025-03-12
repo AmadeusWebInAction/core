@@ -272,9 +272,14 @@ function raiseParameterError($message, $first, $later = []) {
 	parameterError($message, $first);
 }
 
-function parameterError($msg, $param, $trace = true) {
+DEFINE('DODIE', true);
+DEFINE('DOTRACE', true);
+DEFINE('DONTTRACE', false);
+
+function parameterError($msg, $param, $trace = true, $die = false) {
 	if (startsWith($msg, '$')) $msg = 'PARAMETER ERROR: ' . $msg;
 	echo variable('_errorStart') . $msg . '<hr /><pre>' . print_r($param, 1);
 	if ($trace) { echo '</pre><br />STACK TRACE:<hr/><pre>'; debug_print_backtrace(); }
 	echo '</pre></div>';
+	if ($die) die();
 }
