@@ -194,6 +194,10 @@ function makeSpecialLink($what, $typesList, $text = '') {
 	return $op;
 }
 
+function makeRelativeLink($text, $relUrl) {
+	return '<a href="' . variable('url') . $relUrl . '">' . $text . '</a>';
+}
+
 function makeLink($text, $link, $relative = true, $noLink = false) {
 	if ($noLink) return $text; //Used when a variable needs to control this, else it will be a ternary condition, complicating things
 	if ($relative == 'external') $link .= '" target="_blank'; //hacky - will never 

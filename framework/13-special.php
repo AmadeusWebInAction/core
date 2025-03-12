@@ -64,7 +64,7 @@ function renderedSpecial() {
 	} else if ($special == 'dossiers') {
 		_renderedDossiers($file);
 	} else if ($special == 'rich-pages') {
-		variable('home', get_sheet($file));
+		variable('home', getSheet($file));
 		renderThemeFile('home');
 	}
 
@@ -130,14 +130,13 @@ function renderInPageDeck($section, $node, $name) {
 }
 
 function renderSheetAsDeck($deck, $link) {
+	$params = ['relativeUrl' => $link, 'title' => title('params-only')];
 	if (!hasPageParameter('embed') && !hasPageParameter('expanded')) {
-		_renderedDeck($deck, ['relativeUrl' => $link,
-			'title' => humanize(variable('page_parameter2') . '--' . variable('page_parameter1')),
-		]);
+		_renderedDeck($deck, $params);
 		return;
 	}
 
-	$sheet = get_sheet($deck, false);
+	$sheet = getSheet($deck, false);
 	$op = [];
 	foreach ($sheet->rows as $item) {
 		$type = $item[$sheet->columns['type']];
@@ -163,50 +162,56 @@ function renderSheetAsDeck($deck, $link) {
 	}
 
 	variable('nodeLink', $link);
-	variable('deck', implode(variable('nl'), $op));
-	runModule('revealjs');
+	$op = replaceItems($op, ['<hr>' => '</section><section>']);
+	$op = implode(variable('nl'), $op);
+	_renderedDeck($op, $params);
 }
 
 function _renderedDeck($deck, $params = []) {
-	$expanded = hasPageParameter('expanded');
+	function __parseDeck($deck) {
+		if (!endsWith($deck, '.md'))
+			$deck = renderMarkdown($deck, [ 'echo' => false ]);
+		return $deck;
+	}
 
-	if (!hasPageParameter('embed')) {
-		$url = variable('url') . valueIfSetAndNotEmpty($params, 'relativeUrl',
-			variable('node') . '/' . variable('page_parameter1') . '/');
-
-		$embedUrl = $url .'embed/';
-
-		echo '<section class="deck-toolbar" style="text-align: center;">';
-		h2(humanize(valueIfSetAndNotEmpty($params, 'title', variable('special-filename'))));
-		echo 'DECK: ' . variable('nl');
-		$links = [];
-
-		if (!$expanded) $links[] = '<a class="toggle-deck-fullscreen" href="javascript: $(\'.deck-container\').show();"><span class="text">maximize</span> ' . getIconSpan('expand', 'normal') . '</a>';
-		if ($expanded) $links[] = makeLink('open deck page', $url, false);
-		$links[] = makeLink('open deck fully', $embedUrl, false);
-		$links[] = $expanded ? 'expanded deck below' : makeLink('open deck expanded', $url . 'expanded/', false);
-		//TODO: get this working and support multi decks
-		//$(this).closest(\'.deck-toolbar\').next(\'.deck-container\').toggle();
-		if (!$expanded) $links[] = makeLink('toggle deck below', 'javascript: $(\'.deck-container\').toggle();', false);
-
-		echo implode(' &nbsp;&nbsp;&mdash;&nbsp;&nbsp; ' . variable('nl'), $links);
-
-		if ($expanded) {
-			$op = renderMarkdown($deck, [ 'echo' => false ]);
-			$op = replaceItems($op, ['<hr>' => '</section><section>']);
-			echo $op;
-		} else {
-			echo sprintf('<section class="deck-container" style="padding: 10px; background-color: %s;">'
-				. '<iframe src="%s?iframe=1"></iframe></section>', '#ccf', $embedUrl);
-		}
-
-		echo '</section>' . variable('2nl');
+	if (hasPageParameter('embed')) {
+		$deck = __parseDeck($deck);
+		variable('deck', $deck);
+		runModule('revealjs');
 		return true;
 	}
 
-	variable('deck', $deck);
-	runModule('revealjs');
-	return true;
+	$expanded = hasPageParameter('expanded');
+	$url = variable('url') . variable('all_page_parameters') . '/';
+
+	$embedUrl = $url .'?embed=1';
+
+	echo '<section class="deck-toolbar" style="text-align: center;">';
+	h2(valueIfSet($params, 'title', 'Presentation'));
+	echo '<div class="box-shadow">DECK: ' . variable('nl');
+	$links = [];
+
+	//TODO: UI FIX: if (!$expanded) $links[] = '<a class="toggle-deck-fullscreen" href="javascript: $(\'.deck-container\').show();"><span class="text">maximize</span> ' . getIconSpan('expand', 'normal') . '</a>';
+	if ($expanded) $links[] = makeLink('open deck page', $url, false);
+	$links[] = makeLink('open deck fully', $embedUrl, false);
+	$links[] = $expanded ? 'expanded deck below' : makeLink('open deck expanded', $url . '?expanded=1', false);
+	//TODO: get this working and support multi decks
+	//$(this).closest(\'.deck-toolbar\').next(\'.deck-container\').toggle();
+	if (!$expanded) $links[] = makeLink('toggle deck below', 'javascript: $(\'.deck-container\').toggle();', false);
+
+	echo implode(' &nbsp;&nbsp;&mdash;&nbsp;&nbsp; ' . variable('nl'), $links);
+	echo '</div></section>' . variable('2nl');
+
+	if ($expanded) {
+		$deck = __parseDeck($deck);
+		$cb = '<section class="content-box">';
+		$deck = $cb . replaceItems($deck, ['<hr>' => variable('nl') . '</section>' . $cb . variable('nl')]);
+		echo $deck;
+	} else {
+		echo sprintf('<section class="deck-container">'
+			. '<iframe src="%s&iframe=1"></iframe></section>', $embedUrl);
+		addScripts('%app-common-assets%presentation-toolbar');
+	}
 }
 
 function _setupDossiers($fwe, $name) {
@@ -266,7 +271,7 @@ function _renderedDossiers($data) {
 function did_wiki_topic_humanize($txt, $field, $sheetName = 'wiki') {
 	$sheetName = trim($sheetName);
 	$txt = str_replace(' ', '-', strtolower($txt));
-	$sheet = get_sheet($sheetName, 'slug'); //NOTE: Its cached automatically by the framework
+	$sheet = getSheet($sheetName, 'slug'); //NOTE: Its cached automatically by the framework
 
 	if (isset($sheet->sections[$txt]))
 		return $sheet->sections[$txt][0][$sheet->columns['no']] . ' &mdash; ' . humanize($txt, 'no-site');
@@ -276,14 +281,14 @@ function did_wiki_topic_humanize($txt, $field, $sheetName = 'wiki') {
 
 function wiki_pages_after_file($sheetName = 'wiki', $wikiSlug = 'wiki') {
 	$sheetName = trim($sheetName);
-	$sheet = get_sheet($sheetName, 'slug');
+	$sheet = getSheet($sheetName, 'slug');
 	$page = variable('page_parameter1');
 	if (!$page || !isset($sheet->sections[$page])) return;
 
 	$row = $sheet->sections[$page][0];
 	$no = $row[$sheet->columns['no']];
 
-	$sheet = get_sheet($sheetName, 'parent');
+	$sheet = getSheet($sheetName, 'parent');
 	$items = $sheet->sections[$no];
 
 	foreach ($items as $item) {

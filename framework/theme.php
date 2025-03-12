@@ -38,8 +38,7 @@ function run_theme_part($what) {
 		setMenuSettings(true);
 		echo _renderRaw($bits[1]);
 	} else if ($what == 'footer') {
-		$logo = concatSlugs(['<a href="', variable('url'), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" class="img-fluid img-max-',
-		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
+		$logo = concatSlugs(['<a href="', variable('url'), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
 		$suffix = !variable('footer-message') ? '' : ' &mdash; ' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
 		$fwVars = [
 			'footer-logo' => $logo . '<u>' . variable('name') . '</u>' . $suffix . variable('nl'),
@@ -101,13 +100,16 @@ function setMenuSettings($after = false) {
 }
 
 function siteWidgets() {
+	$start = '<div class="col-md-4 row">' . variable('nl');
 	if (variable('node-alias')) return '';
 
 	$sites = variable('network-site-configs');
 	if (!$sites) {
-		$op = [];
+		$op = [$start];
+		$op[] = '<u>Sections</u>'; //TODO: Network + Showcase + Misc
 		foreach (variable('sections') as $slug)
-			$op[] = makeLink(humanize($slug), $slug . '/');
+			$op[] = makeRelativeLink(humanize($slug), $slug . '/');
+		$op[] = '</div>'; $op[] = '';
 		return implode(variable('nl'), $op);
 	}
 

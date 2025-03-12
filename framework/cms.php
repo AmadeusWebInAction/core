@@ -21,11 +21,11 @@ function before_render() {
 			$in1 = variable('page_parameter1');
 			$folInPage1 = $folInNode . $in1;
 			$in2 = variable('page_parameter2');
-			$folInPage2 = $folInPage1 .'/' . $in2;
+			$folInPage2 = $folInPage1 .'/' . $in2 .'/';
 
 			//do in reverse
-			if (disk_is_dir($folInPage2)) {
-				$page3 = variable('page_parameter3') ? variable('page_parameter3') : 'home';
+			if ($in2 && disk_is_dir($folInPage2)) {
+				$page3 = variableOr('page_parameter3', 'home');
 				$level3 = [$folInPage2 . '/' . $page3 . '.', $folInPage2 . '.'];
 				if (ifOneOfFilesExists($slug, $level3, $in1 . '/' . $in2, 2)) {
 					variable('node-folder-item1', $in1);
@@ -33,8 +33,8 @@ function before_render() {
 				}
 			}
 
-			if (disk_is_dir($folInPage1)) {
-				$page2 = variable('page_parameter2') ? variable('page_parameter2') : 'home';
+			if ($in1 && disk_is_dir($folInPage1)) {
+				$page2 = variableOr('page_parameter2', 'home');
 				$level2 = [$folInPage1 . '/' . $page2 . '.', $folInPage1 . '.'];
 				if (ifOneOfFilesExists($slug, $level2, $in1)) return;
 			}

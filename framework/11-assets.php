@@ -19,14 +19,18 @@ function title($return = false) {
 	$siteRoot = $page == 'index' || variable('under-construction');
 
 	if ($return === 'title-only') return $page;
-	$r = (!$siteRoot ? humanize($page) . ' - ' : '') . variable('name') . ($siteRoot ? ' | ' . variable('byline') : '');
-	$exclude = ['print', 'embed', 'decks', 'articles']; //TODO: SoC: maintain this where special is defined
+	$r = [];
 
-	foreach(array_reverse(variableOr('page_parameters', [])) as $slug)
-		if (!in_array($slug, $exclude)) $r = humanize($slug) . ' - ' . $r;
+	if ($return !== 'params-only')
+		$r[] = (!$siteRoot ? humanize($page) . ' - ' : '') . variable('name') . ($siteRoot ? ' | ' . variable('byline') : '');
 
-	$r = replaceItems($r, ['<strong>' => '', '</strong>' => '', '<br />' => ' &mdash; ']);
+	if ($return !== true) {
+		$exclude = ['print', 'embed'];
+		foreach(array_reverse(variableOr('page_parameters', [])) as $slug)
+			if (!in_array($slug, $exclude)) $r[] = humanize($slug);
+	}
 
+	$r = implode(' <- ', $r);
 	if ($return) return $r;
 	echo $r;
 }
@@ -51,13 +55,21 @@ variables([
 ]);
 
 function addStyles($items) {
+	_addAssets($items, 'styles');
+}
+
+function addScripts($items) {
+	_addAssets($items, 'scripts');
+}
+
+function _addAssets($items, $type) {
 	if (!is_array($items)) $items = [$items];
-	$existing = variable('styles');
+	$existing = variable($type);
 	foreach ($items as $item) {
 		if (in_array($item, $existing)) continue;
 		$existing[] = $item;
 	}
-	variable('styles', $existing);
+	variable($type, $existing);
 }
 
 function styles_and_scripts() {

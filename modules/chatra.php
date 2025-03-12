@@ -1,11 +1,11 @@
 <?php
-if (!am_var('ChatraID') || am_var('local')) return;
-if (has_var('live') && am_var('live') === false) return;
+if (!variable('ChatraID') || variable('local')) return;
+if (has_var('live') && variable('live') === false) return;
 ?>
 <!-- Chatra {literal} -->
 <script>
     (function(d, w, c) {
-        w.ChatraID = '<?php echo am_var("ChatraID"); ?>';
+        w.ChatraID = '<?php echo variable("ChatraID"); ?>';
         var s = d.createElement('script');
         w[c] = w[c] || function() {
             (w[c].q = w[c].q || []).push(arguments);

@@ -242,7 +242,8 @@ function _renderImplementation($fileOrRaw, $settings) {
 		$output = str_replace(variable('markdownStart'), '', $output);
 
 	if (contains($output, '%fileName%'))
-		$output = str_replace('%fileName%', '<u>EDIT FILE:</u> .' . str_replace(SITEPATH, '', $fileName), $output);
+		$output = replaceItems($output, ['%fileName%' => '<u>EDIT FILE:</u> ' .
+			replaceItems($fileName, [SITEPATH => '', '//' => '/'])]);
 
 	if (isset($settings['wrap-in-section']))
 		$output = '<section>' . variable('nl') . $output . variable('nl') . '</section>' . variable('2nl');
@@ -252,7 +253,7 @@ function _renderImplementation($fileOrRaw, $settings) {
 }
 
 function renderRichPage($sheetFile, $groupBy = 'section', $templateName = 'home') {
-	variable('home', get_sheet($sheetFile, $groupBy));
+	variable('home', getSheet($sheetFile, $groupBy));
 	$call = variable('theme_folder') . $templateName . '.php';
 	disk_include_once($call);
 }

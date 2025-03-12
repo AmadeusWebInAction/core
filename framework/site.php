@@ -193,7 +193,7 @@ function setupNetworkLinks($network) {
 		$sheetFile = siteRealPath('/../' . $site . '/data/site.tsv');
 		if (!sheetExists($sheetFile)) { continue; }
 
-		$sheet = get_sheet($sheetFile, 'key');
+		$sheet = getSheet($sheetFile, 'key');
 		$val = $sheet->columns['value'];
 
 		$img = $imgIndex ? $row[$imgIndex] : '';

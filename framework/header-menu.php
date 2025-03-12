@@ -58,7 +58,7 @@ if ($groups = variable('section-groups')) {
 function renderHeaderMenu($slug, $node = '') {
 	$parentSlug = $node ? $node : $slug;
 
-	if (contains($node, '/'))  { $bits = explode('/', $node); array_pop($bits); $name = humanize(array_pop($bits)) . ' (' . humanize(array_pop($bits)) . ')'; }
+	if (contains($node, '/'))  { $bits = explode('/', $node); $name = humanize(array_pop($bits)) . ' (' . humanize(array_pop($bits)) . ')'; }
 	else if ($node) { $name = humanize($node) . ' (' . humanize($slug) . ')'; }
 	else { $name = humanize($parentSlug); }
 
@@ -105,9 +105,9 @@ function getCurrentMenus() {
 	$toCheck = [
 		'/' . variable('section') . '/' . variable('node') . '/'
 			=> [ variable('section'), variable('node') ],
-		'/' . variable('section') . '/' . variable('node') . '/' . $nfi1 = variableOr('node-folder-item1', 'nothing') . '/'
+		'/' . variable('section') . '/' . variable('node') . '/' . ($nfi1 = variableOr('node-folder-item1', 'nothing')) . '/'
 			=> [ variable('section'), variable('node') . '/' . $nfi1 ],
-		'/' . variable('section') . '/' . variable('node') . '/' . $nfi2 = variableOr('node-folder-item2', 'nothing') . '/'
+		'/' . variable('section') . '/' . variable('node') . '/' . ($nfi2 = variableOr('node-folder-item2', 'nothing')) . '/'
 			=> [ variable('section'), variable('node') . '/' . $nfi2 ],
 	];
 
