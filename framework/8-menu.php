@@ -113,7 +113,6 @@ function menu($folderRelative = false, $settings = []) {
 	$onlyFiles = valueIfSet($settings, 'list-only-files');
 	$onlyFolders = valueIfSet($settings, 'list-only-folders');
 
-	$extensions = valueIfSet($settings, 'add-extension');
 	$excludeExtensions = valueIfSet($settings, 'exclude-extensions', []);
 
 	$base = valueIfSet($settings, 'parent-slug', '');
@@ -132,7 +131,7 @@ function menu($folderRelative = false, $settings = []) {
 			'li-classes' => cssClass(array_merge($class_li, $mainNode ? ['selected'] : [], ['home-link'])),
 			'a-classes' => cssClass($class_link),
 			'wrap-in' => $wrapInDivVO ? 'div' : 'u',
-			'url' => am_page_url('no-rewrite-safe') . $homeBase,
+			'url' => pageUrl() . $homeBase,
 			'style' => $mainNode ? ' style="background-color: var(--amw-home-link-color);"' : '',
 			'text' => 'Home'
 		], '%');
@@ -155,23 +154,20 @@ function menu($folderRelative = false, $settings = []) {
 			$bits = [$info['filename']]; //TODO: move to files.php
 			if (isset($info['extension'])) $bits[] = $info['extension'];
 
-			$file = $bits[0];
-			$isDir = false;
+			$extension = getExtension($file);
+			$file = stripExtension($file);
+			$isDir = disk_is_dir($folder . $file);
+			if ($isDir) $extension = '';
 
-			if ($file && $file[0] != '~' && !isset($bits[1]) && !($isDir = disk_is_dir($folder . $file))) {
+			if ($file && $file[0] != '~' && !$extension && !$isDir) {
 				if (variable('local')) {
 					parameterError('$settings', $settings);
-					parameterError('$folder, $file & $bits', [ 'folder' => $folder, 'file' => $file, 'bits' => $bits]);
+					parameterError('file with no extension - skipping', [ 'folder' => $folder, 'file' => $file]);
 				}
 				continue;
 			}
 
-			if ($isDir) {
-				$extension = '';
-			} else {
-				$extension = $extensions ? '.' . $bits[1] : '';
-				if (in_array($extension, $excludeExtensions)) continue;
-			}
+			if ($extension && in_array($extension, $excludeExtensions)) continue;
 		} else {
 			$extension = 'none';
 		}
@@ -196,14 +192,8 @@ function menu($folderRelative = false, $settings = []) {
 		if (isset($settings['visible']) && !$settings['visible']($file)) continue;
 		$last = $file;
 
-		$link = $file; //TODO: affects global peace index - str_replace('index', '', $file);
-		if ($filesGiven) {
-			$url = variable('url') . $base . $link . '/';
-		} else {
-			$url = $extensions
-				? variable('url') . $base . $link . $extension . '" target="_blank'
-				: am_page_url($base . $link) . ($link == '' ? '' : '/');
-		}
+		//note removed the $extensions - guess used in archives for jpg linking to jpg or something..
+		$url = pageUrl($base . $file); //new method will autoadd trailing slash
 
 		$file = _handleSlashes($file, $filesGiven || $couldHaveSlashes, $couldHaveSlashes);
 		/*
@@ -255,7 +245,7 @@ function menu($folderRelative = false, $settings = []) {
 		$thisAClass = array_merge($class_link);
 		$result .= sprintf(PHP_EOL . '<li%s><a href="%s"%s>%s</a>',
 			cssClass($thisClass),
-			am_page_url('no-rewrite-safe'),
+			pageUrl(),
 			cssClass($thisAClass),	
 			'** Back to ' . variable('abbr'));
 	}

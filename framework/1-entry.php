@@ -54,26 +54,29 @@ runFrameworkFile('14-main');
 
 function before_bootstrap() {
 	$port = $_SERVER['SERVER_PORT'];
-	variable('port', $port != 80 ? ':' . $port : '');
-	variable('is_mobile_server', startsWith(__DIR__, '/storage/'));
+
+	$testMobile = 80; //80 for normal, 8000 to simulate mobile/no-url-rewrite
+	$isMobile = $testMobile != 80 || startsWith(__DIR__, '/storage/');
+	
+	variable('port', $port != $testMobile ? ':' . $port : '');
+	variable('is_mobile_server', $isMobile);
 
 	variable('local', $local = startsWith($_SERVER['HTTP_HOST'], 'localhost'));
 
-	variable('app', $local && !variable('is_mobile_server')
-		? replaceVariables('http://localhost%port%/amadeusweb/core/', 'port') : '//v7.amadeusweb.com/');
+	variable('app', $local && !$isMobile ? replaceVariables('http://localhost%port%/amadeusweb/core/', 'port') : '//v7.amadeusweb.com/');
 
 	if (DEFINED('AMADEUSURL')) variable('app', AMADEUSURL);
 
 	variable('main', $local ? replaceVariables('http://localhost%port%/awe/web/', 'port') : '//amadeusweb.com/');
 	variable('world', $local ? replaceVariables('http://localhost%port%/awe/world/', 'port') : '//amadeusweb.world/');
 
-	variable('app-themes', $local ? replaceVariables('http://localhost%port%/awe/themes/', 'port') : '//themes.amadeusweb.com/');
-	variable('app-static', $local ? replaceVariables('http://localhost%port%/awe/static/', 'port') : '//static.amadeusweb.com/');
+	variable('app-themes', $local && !$isMobile ? replaceVariables('http://localhost%port%/awe/themes/', 'port') : '//themes.amadeusweb.com/');
+	variable('app-static', $local && !$isMobile ? replaceVariables('http://localhost%port%/awe/static/', 'port') : '//static.amadeusweb.com/');
 
 	$php = contains($_SERVER['DOCUMENT_ROOT'], 'magique') || contains($_SERVER['DOCUMENT_ROOT'], 'Magique');
-	variable('no_url_rewrite', $php);
+	variable('no_url_rewrite', $isMobile || $php);
+	if ($isMobile || $php) variable('scriptNameForUrl', 'index.php/'); //do here so we can simulate usage in site.php
 
-	//v6.5 - no more allowing disable for these
 	runModule('markdown');
 	runModule('wordpress');
 }
@@ -84,17 +87,17 @@ before_bootstrap();
 function bootstrap($config) {
 	variables($config);
 
-	$php = variable('no_url_rewrite');
-	if ($php) $node = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
+	$noRewrite = variable('no_url_rewrite');
+	if ($noRewrite) $node = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 	else $node = isset($_GET['node']) && $_GET['node'] ? $_GET['node'] : '';
 
 	if (endsWith($node, '/')) $node = substr($node, 0, strlen($node) - 1);
 	if (startsWith($node, '/')) $node = substr($node, 1);
 
 	if ($node == '') $node = 'index';
+	variable('all_page_parameters', $node); //let it always be available
 
-	if (variableOr('support_page_parameters', true) && strpos($node, '/') !== false) {
-		variable('all_page_parameters', $node);
+	if (strpos($node, '/') !== false) {
 		$slugs = explode('/', $node);
 		$node = array_shift($slugs);
 		variable('page_parameters', $slugs);

@@ -57,7 +57,7 @@ function assetMeta($location = 'site', $setValueOr = false) {
 		$twoBits = explode('-', $bits[0], 2);
 
 		$mainFol = SITEPATH . '/';
-		$mainUrl = variable('url') . 'assets/';
+		$mainUrl = fileUrl('assets/');
 		if ($twoBits[0] == 'app') {
 			$mainFol = AMADEUSROOT . $twoBits[1] . '/';
 			$mainUrl = variable($bits[0]);
@@ -122,18 +122,4 @@ function styles_and_scripts() {
 			cssTag(assetUrl($item['name'] . '.css', $item['location']));
 	foreach (variable('scripts') as $item)
 			scriptTag(assetUrl($item['name'] . '.js', $item['location']));
-}
-
-function head_hooks() {
-	if (variable('head_hooks')) foreach (variable('head_hooks') as $hook) disk_include_once($hook);
-	main::analytics();
-	main::chat();
-}
-
-function foot_hooks() {
-	if (variable('foot_hooks')) foreach (variable('foot_hooks') as $hook) disk_include_once($hook);
-}
-
-function add_foot_hook($file) {
-	variable('foot_hooks', array_merge(variableOr('foot_hooks', []), [$file]));
 }

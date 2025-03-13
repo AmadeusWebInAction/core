@@ -159,7 +159,8 @@ variables($op = [
 	'scaffold' => isset($siteVars['scaffold']) ? explode(', ', $siteVars['scaffold']) : [],
 
 	'path' => SITEPATH,
-	'url' => $url,
+	'assets-url' => $url,
+	'page-url' => scriptSafeUrl($url),
 ]);
 
 __testSiteVars($op);

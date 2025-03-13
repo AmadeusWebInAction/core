@@ -1,6 +1,6 @@
 <?php
 if (!variable('ChatraID') || variable('local')) return;
-if (has_var('live') && variable('live') === false) return;
+if (hasVariable('live') && variable('live') === false) return;
 ?>
 <!-- Chatra {literal} -->
 <script>

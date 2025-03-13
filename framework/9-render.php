@@ -95,8 +95,6 @@ function renderExcerpt($file, $link, $prefix = '', $echo = true) {
 	$prefix = $prefix ? renderMarkdown($prefix) : '';
 	$raw = renderAny($file, ['excerpt' => true, 'echo' => false, 'markdown' => endsWith($file, '.md')]);
 
-	//NOTE: http vs https bug - if (!contains($link, 'http:')) $link = variable('url') . $link;
-
 	$result = $prefix . _excludeFromGoogleSearch($raw)
 		. '<a class="read-more" href="' . $link . '">Read More&hellip;</a>';
 	
@@ -186,14 +184,16 @@ function _renderImplementation($fileOrRaw, $settings) {
 
 	if ($wasFile && variable('autofix-encoding')) $raw = simplify_encoding($raw);
 
-	if (variable('node') && is_string(variable('section'))) {
-		$assetsUrl = variable('url') . variable('section') . '/assets/' . variable('node') . '/';
+	/**** rethink this
+	if (variable('node') && variable('section')) {
+		$assetsUrl = fileUrl('url') . variable('section') . '/assets/' . variable('node') . '/';
 		$assetsFol = SITEPATH . '/'. variable('section') . '/assets/' . variable('node') . '/';
 		variables($assetsVars = ['assetsUrl' => $assetsUrl, 'assetsFol' => $assetsFol]);
 		$raw = replaceItems($raw, $assetsVars, '%');
 	}
 
 	if ($vars = variable('node-replaces')) $raw = replaceItems($raw, $vars, '%', true);
+	*/
 
 	$markdownStart = variable('markdownStartTag');
 	$autopStart = variable('autopStart');

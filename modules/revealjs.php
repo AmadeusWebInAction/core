@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 		<title><?php echo title('params-only') . ' [' . title(true) . ']';?></title>
-		<link href="<?php echo variable('url'); ?><?php echo variable('safeName'); ?>-icon.png" rel="icon" />
+		<link href="<?php echo fileUrl(variable('safeName')); ?>-icon.png" rel="icon" />
 
 		<?php cssTag(assetUrl('reveal.css', 'app-static--3p'));?>
 		<?php cssTag(assetUrl('reveal-white.css', 'app-static--3p'));?>
@@ -18,9 +18,9 @@
 		<!-- header thanks to: https://www.raymondcamden.com/2014/04/01/Adding-an-Absolutely-Positioned-Header-to-Revealjs -->
 		<header id="topbar-wrapper">
 			<div id="topbar" class="box-shadow"><?php if (!isset($_GET['iframe'])) {
-				echo concatSlugs(['<a id="home-link" href="', variable('url'), variable('all_page_parameters'), '/">',
-					variable('nl'), '				<img src="', replaceVariables('%url%%safeName%-icon.png" ', 'url, safeName'),
-					'alt="', variable('name'), '" height="30px" /></a>', variable('nl') ], ''); }?>
+				echo concatSlugs(['<a id="home-link" href="', currentUrl() , '">',
+					variable('nl'), '				<img src="', fileUrl(variable('safeName') . '-icon.png'),
+					'" alt="', variable('name'), '" height="30px" /></a>', variable('nl') ], ''); }?>
 			<span id="hash-id" style="color: #fff; font-size: 16px;">[slide-id]</span></div>
 		</header>
 
@@ -28,7 +28,7 @@
 			<div class="slides">
 <section>
 				<?php echo replaceItems(variable('deck'), ['<hr>' => variable('nl') . '</section><section>' . variable('nl')]); ?>
-<section>
+</section>
 
 			</div>
 		</div>

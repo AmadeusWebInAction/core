@@ -11,7 +11,7 @@ if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
 
 $homeText = 'Home';
 if ($wrapTextInADiv) $homeText = '<div>' . $homeText . '</div>';
-echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="' . variable('url') . '">' . $homeText . '</a></li>' . variable('nl');
+echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="' . pageUrl() . '">' . $homeText . '</a></li>' . variable('nl');
 
 echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();">' . $mainMenu . '</a>' . variable('nl');
 $append = variable('scaffold') ? array_merge(['----'], variable('scaffold')) : false;

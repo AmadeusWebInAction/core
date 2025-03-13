@@ -28,8 +28,8 @@ function _table_row_values($item, $cols, $tsv) {
 			$r[$key] = '';
 		else if (endsWith($key, '_link') && $key != '_link')
 			$r[$key] = _table_link($item, $c);
-		else if (endsWith($key, '_md'))
-			$r[$key] = renderSingleLineMarkdown($item[$c]);
+		else if (endsWith($key, '_md') || in_array($key, ['about', 'content']))
+			$r[$key] = renderSingleLineMarkdown($item[$c], ['echo' => false]);
 		else
 			$r[$key] = $item[$c];
 

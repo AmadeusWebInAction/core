@@ -21,14 +21,14 @@ function run_theme_part($what) {
 	if ($what == 'header') {
 		$vars['title'] = title(true);
 		$vars['icon'] = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192" />',
-			['url' => variable('url'), 'safeName' => variable('safeName'),
+			['url' => fileUrl(), 'safeName' => variable('safeName'),
 				'version' => assetMeta('site', 'version')], '%'); //TODO: simplify this version stuff?
 		$vars['seo'] = seo_tags(true);
 		$vars['body-classes'] = body_classes(true);
 
 		//TODO: if network exists, else if node is sub site else yada-yada-yada
 		$imgUrl = assetUrl(variable('safeName') . '/' . variable('safeName') . '-logo@2x.png', 'app-static');
-		$vars['logo'] = concatSlugs(['<a href="', variable('url'), '"><img src="', $imgUrl, '" class="img-fluid img-max-',
+		$vars['logo'] = concatSlugs(['<a href="', pageUrl(), '"><img src="', $imgUrl, '" class="img-fluid img-max-',
 		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
 
 		$header = _substituteThemeVars($content, 'header', $vars);
@@ -43,7 +43,7 @@ function run_theme_part($what) {
 			echo _renderRaw($bits[1]);
 		}
 	} else if ($what == 'footer') {
-		$logo = concatSlugs(['<a href="', variable('url'), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
+		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
 		$suffix = !variable('footer-message') ? '' : ' &mdash; ' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
 		$fwVars = [
 			'footer-logo' => $logo . '<u>' . variable('name') . '</u>' . $suffix . variable('nl'),
@@ -61,7 +61,6 @@ function run_theme_part($what) {
 		$bits = explode($atBody ? '</body>' : '##footer-includes##', $footer);
 
 		echo _renderRaw($bits[0]);
-		foot_hooks();
 		styles_and_scripts();
 		if ($atBody) echo '</body>';
 		echo _renderRaw($bits[1]);
@@ -115,7 +114,7 @@ function siteWidgets() {
 		$op[] = $start;
 		$op[] = '<u>' . variable('name') . '</u>';
 		foreach ($sections as $slug)
-			$op[] = makeRelativeLink(humanize($slug), $slug . '/');
+			$op[] = makeRelativeLink(humanize($slug), $slug);
 		$op[] = '</div>'; $op[] = '';
 	}
 

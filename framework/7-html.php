@@ -1,6 +1,26 @@
 <?php
 ///Tag Helpers
 
+function currentUrl() {
+	return pageUrl(variable('all_page_parameters'));
+}
+
+function pageUrl($relative = '') {
+	if ($relative == '') return variable('page-url');
+	$hasQuerysting = contains($relative, '?');
+	if (!endsWith($relative, '/') && !$hasQuerysting)
+		$relative .= '/';
+	return variable('page-url') . $relative;
+}
+
+function scriptSafeUrl($url) {
+	return $url . variableOr('scriptNameForUrl', '');
+}
+
+function fileUrl($relative = '') {
+	return variable('assets-url') . $relative;
+}
+
 function cssClass($items) {
 	if (!count($items)) return '';
 	return ' class="' . implode(' ', $items) . '"';
@@ -25,8 +45,8 @@ function iframe($url, $wrapContainer = true) {
 	if ($wrapContainer) echo '</div>';
 }
 
-function boxDiv($id, $class = '', $return = false) {
-	if ($id == 'end') { 
+function contentBox($id, $class = '', $return = false) {
+	if ($id == 'end') {
 		$result = variable('nl') . '</div>' . variable('2nl');
 		if ($return) return $result;
 		echo $result;
@@ -60,14 +80,6 @@ function listItem($html) {
 
 ///Internal Variables & its replacements
 
-//Needed in site-var for header + footer message! expects url to have already been set (peace/site-cms.php)
-function replaceHtmlOnly($html) {
-	return replaceItems($html, [
-		'[url]' => variable('url'),
-		'<marquee>' => variable('_marqueeStart'),
-	]);
-}
-
 function replaceSpecialChars($html) {
 	$replaces = [
 		'|' => variable('nl'),
@@ -86,13 +98,12 @@ function replaceHtml($html) {
 	$replaces = variable($key);
 	if (!$replaces) {
 		variable($key, $replaces = [
-			//TODO: @<team> - all assets links should use this and then %url% should become rewrite safe
 			//Also, we should incorporate dev tools like w3c & broken link checkers
-			'%url%' => variable('url'),
-			'%assets%' => variable('url') . 'assets/',
+			'%url%' => variable('page-url'),
+			'%assets%' => variable('assets-url') . 'assets/',
 			'%node%' => variable('node'),
-			'%amadeus-url%' => variable('main'),
-			'%world-url%' => variable('world'),
+			'%amadeus-url%' => scriptSafeUrl(variable('main')),
+			'%world-url%' => scriptSafeUrl(variable('world')),
 			//'%network-url%' => variableOr('network-url', '#network-url-not-setup--'),
 			'%phone%' => variableOr('phone', ''),
 			'%email%' => variableOr('email', ''),
@@ -150,7 +161,7 @@ function featureHeading($id, $return = 'full', $text = false) {
 
 ///Other Amadeus Stuff
 function makePLImages($prefix, $echo = true) {
-	$prefix = variable('url') . $prefix;
+	$prefix = fileUrl($prefix);
 	$format = '<img src="%s-%s.jpg" class="img-fluid show-in-%s" />' . variable('nl');
 	$result =
 		sprintf($format, $prefix, 'portrait', 'portrait') .
@@ -161,28 +172,16 @@ function makePLImages($prefix, $echo = true) {
 
 /// Expects the whole link(s) html to be provided so href to target blank and mailto can be substituted.
 function prepareLinks($output) {
-	$output = str_replace(variable('url'), '%url%', $output); //so site urls dont open in new tab. not sure when this became a problem. maybe a double call to prepareLinks as the render methods got more complex.
+	$output = str_replace(pageUrl(), '%url%', $output); //so site urls dont open in new tab. not sure when this became a problem. maybe a double call to prepareLinks as the render methods got more complex.
 	$output = str_replace('href="http','target="_blank" href="http', $output); //yea, baby! no need a js solution!
 	$output = str_replace('href="mailto','target="_blank" href="mailto', $output); //if gmail in chrome is the default, it will hijack current window
-	$output = str_replace('%url%', variable('url'), $output);
+	$output = str_replace('%url%', pageUrl(), $output);
 
 	//TODO: " class="analytics-event" data-payload="{clickFrom:'%safeName%' //leave end " as a hack to pile on attributes
 	$campaign = isset($_GET['utm_campaign']) ? '&utm_campaign=' . $_GET['utm_campaign'] : '';
-	$output = str_replace('#utm','?utm_source=' . variable('safeName') . $campaign, $output);
+	$output = str_replace('#utm', '?utm_source=' . variable('safeName') . $campaign, $output);
 
 	return $output;
-}
-
-//When apache is not used - Magique has to be the folder name
-function am_page_url($relativeUrl = '') {
-	return variable('url') . ($relativeUrl != '' && variable('no_url_rewrite') ? 'index.php/' : '') . ($relativeUrl == 'no-rewrite-safe' ? '' : $relativeUrl);
-}
-
-function get_back_or_home_href() {
-	if (isset($_SERVER['HTTP_REFERER']) && startsWith($_SERVER['HTTP_REFERER'], variable('url')))
-		return 'javascript: history.go(-1);';
-
-	return variable('url');
 }
 
 function makeSpecialLink($what, $typesList, $text = '') {
@@ -202,13 +201,13 @@ function makeSpecialLink($what, $typesList, $text = '') {
 }
 
 function makeRelativeLink($text, $relUrl) {
-	return '<a href="' . variable('url') . $relUrl . '">' . $text . '</a>';
+	return '<a href="' . pageUrl($relUrl) . '">' . $text . '</a>';
 }
 
 function makeLink($text, $link, $relative = true, $noLink = false) {
 	if ($noLink) return $text; //Used when a variable needs to control this, else it will be a ternary condition, complicating things
 	if ($relative == 'external') $link .= '" target="_blank'; //hacky - will never 
-	else if ($relative) $link = variable('url') . $link;
+	else if ($relative) $link = pageUrl($link);
 	return prepareLinks('<a href="' . $link . '">' . $text . '</a>');
 }
 
@@ -242,11 +241,6 @@ function body_classes($return = false) {
 	$op = 'theme-' . variable('theme') . $sub . ' site-' . variable('safeName') . $chatra;
 	if ($return) return $op;
 	echo $op;
-}
-
-//TODO: replace all and remove
-function chat_class_on_body() {
-	echo hasVariable('ChatraID') ? ' has-chatra' : '';
 }
 
 function isMobile() {

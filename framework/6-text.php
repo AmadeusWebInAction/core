@@ -89,13 +89,6 @@ function contact_r($text) {
 	return $text;
 }
 
-function excerpt($fileName, $link, $text = '') {
-	$bits = explode('<!--more-->', file_get_contents(variable('path') . $fileName));
-	$contents = markdown($bits[count($bits) > 2 ? 1 : 0]);
-	$contents .= '<br />' . markdown("[$text](" . variable('url') . $link . ')');
-	return wpautop($contents);
-}
-
 function explodeByArray(array $delimeters, string $input, int $limit = -1): array {
 	if($delimeters===[]) return [$input];
 
@@ -103,4 +96,3 @@ function explodeByArray(array $delimeters, string $input, int $limit = -1): arra
 	$step = str_replace($delimeters, $unidelim, $input);
 	return explode($unidelim, $step, $limit);
 }
-

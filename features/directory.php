@@ -2,31 +2,31 @@
 $of = variable('directory_of');
 $section = variable('section');
 
-sectionId('directory', 'text-center');
+sectionId('directory', 'container text-center');
 h2('Directory Of');
-boxDiv('', 'toolbar', true);
+contentBox('', 'toolbar');
 echo 'Navigate: ' . variable('nl');
 foreach (variable('sections') as $item) {
 	//TODO: reinstate - if (cannot_access($item)) continue;
 	echo sprintf(variable('nl') . '<a class="btn btn-%s" href="%s">%s</a> ',
 		$item == $section ? 'primary' : 'secondary',
-		variable('url') . $item . '/',
+		pageUrl($item),
 		humanize($item)
 	);
 }
-boxDiv('end');
+contentBox('end');
 
 $folder = SITEPATH . '/' . $of . '/';
 if (disk_file_exists($home = $folder . 'home.md')) {
-	boxDiv('home');
+	contentBox('home');
 	renderFile($home);
-	boxDiv('end');
+	contentBox('end');
 
-	boxDiv('nodes');
+	contentBox('nodes');
 	runFeature('tables');
 	add_table('nodes-table', $folder . '_nodes.tsv', 'name, about, tags',
 		'<tr><td><a href="%url%%name_urlized%/">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
-	boxDiv('end');
+	contentBox('end');
 }
 
-echo '</section>' . variable('2nl');
+section('end');

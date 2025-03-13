@@ -101,8 +101,7 @@ function _setupBlurbs($fwe, $page) {
 		variable('embed', true);
 }
 
-function _renderedBlurbs($blurb, $name = false, $actualUrl = false) {
-	$url = replaceItems($blurb, ['/' . variable('section') => '']);
+function _renderedBlurbs($blurb, $name = false) {
 	if (!$name) $name = variable('special-filename');
 
 	if (hasPageParameter('embed')) {
@@ -110,8 +109,8 @@ function _renderedBlurbs($blurb, $name = false, $actualUrl = false) {
 		return;
 	}
 
-	$url = $actualUrl ? $actualUrl : variable('url') . variable('node') . '/' . variable('page_parameter1');
-	$embedUrl = $actualUrl ? $url . '?embed=1' : $url .'/embed/';
+	$url = currentUrl();
+	$embedUrl = $url . '?embed=1';
 	echo '<section class="blurb-container" style="text-align: center;">BLURBS: '
 		. makeLink($name, $embedUrl, false) . ' (opens in new tab)<hr />' . variable('nl');
 	echo '<iframe style="height: 80vh; width: 100%; border-radius: 30px;" src="' . $embedUrl . '"></iframe>' . variable('nl');
@@ -203,13 +202,13 @@ function _renderedDeck($deck, $params = []) {
 	}
 
 	$expanded = hasPageParameter('expanded');
-	$url = variable('url') . variable('all_page_parameters') . '/';
+	$url = currentUrl();
 
 	$embedUrl = $url .'?embed=1';
 
 	sectionId('deck-toolbar', 'text-center');
 	h2(valueIfSet($params, 'title', 'Presentation'));
-	boxDiv('deck', 'toolbar');
+	contentBox('deck', 'toolbar');
 	echo 'PRESENTATION: ' . variable('nl');
 	$links = [];
 
@@ -222,7 +221,7 @@ function _renderedDeck($deck, $params = []) {
 	if (!$expanded) $links[] = makeLink('toggle deck below', 'javascript: $(\'.deck-container\').toggle();', false);
 
 	echo implode(' &nbsp;&nbsp;&mdash;&nbsp;&nbsp; ' . variable('nl'), $links);
-	boxDiv('end');
+	contentBox('end');
 	section('end');
 
 	if ($expanded) {

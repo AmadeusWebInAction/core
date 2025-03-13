@@ -43,7 +43,7 @@ function parseCompositeWork($raw, $param1IsPage) {
 	$pieceOnly = $param1IsPage ? (isset($_GET['item']) ? $_GET['item'] : false) : 
 	(variable('page_parameter' . $paramToUse) && variable('page_parameter' . $paramToUse) != 'print' ? variable('page_parameter' . $paramToUse) : false);
 
-	$base = variable('url') . variable('node') . '/' . ($paramToUse == 2 ? variable('page_parameter1') . '/' : '') . ($param1IsPage ? variable('page_parameter' . $paramToUse) . '/' : '');
+	$base = pageUrl(variable('node')) . ($paramToUse == 2 ? variable('page_parameter1') . '/' : '') . ($param1IsPage ? variable('page_parameter' . $paramToUse) . '/' : '');
 
 	if (!$noCategory) {
 		$categoryStart = 'Category: ';
@@ -173,7 +173,7 @@ function parseCompositeWork($raw, $param1IsPage) {
 	$printFooter = $noFooter ? '' : replaceItems('<div id="print-footer">' . variable('nl')
 		.'<img src="%imgUrl%" style="height: 40px;" alt="footer logo" /> <span>&copy; %year% &mdash; by <u>%name%</u></span></div>',
 		['year' => date('Y'), 'node' => humanize(variable('node')), 'name' => variable('name'),
-			'imgUrl' => variable('url') . variable('safeName') . '-logo.png'], '%') . variable('2nl');
+			'imgUrl' => fileUrl() . variable('safeName') . '-logo.png'], '%') . variable('2nl');
 
 	$result = $printBtn . $start . $front . variable('2nl') . $links . $result . $back . $printHeader . $printFooter;
 
