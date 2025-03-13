@@ -106,23 +106,28 @@ function siteWidgets() {
 	$start = '<div class="col-md-4 row">' . variable('nl');
 	if (variable('node-alias')) return '';
 
-	$sites = variable('network-sites');
-	if (!$sites) {
-		$op = [$start];
-		$op[] = '<u>Sections</u>'; //TODO: Network + Showcase + Misc
+	//TODO: Showcase + Misc
+	$op = [];
+
+	$sections = variableOr('sections', []);
+	if (count($sections)) {
+		$op[] = $start;
+		$op[] = '<u>' . variable('name') . '</u>';
 		foreach (variable('sections') as $slug)
 			$op[] = makeRelativeLink(humanize($slug), $slug . '/');
 		$op[] = '</div>'; $op[] = '';
-		return implode(variable('nl'), $op);
 	}
 
-	$result = '';
-	foreach ($sites as $site) {
-		$h3Class = ' site-' . $site['safeName'] . '-bgd';
-		$result .= renderNetworkPanel($site, 'footer', ['h3-class' => $h3Class, 'return' => true]);
+	$sites = variable('network-sites');
+	if ($sections) {
+		$op[] = $start;
+		$op[] = '<u>Network</u>';
+		foreach ($sites as $site)
+		$op[] =  getLink($site['name'], $site['url']);
+		$op[] = '</div>'; $op[] = '';
 	}
 
-	return $result;
+	return implode(variable('nl'), $op);
 }
 
 function socialWidgets() {

@@ -20,6 +20,7 @@ function autoRender($file) {
 	}
 
 	$raw = disk_file_exists($file) ? disk_file_get_contents($file) : '[RAW]';
+	$embed = hasPageParameter('embed');
 
 	if (endsWith($file, '.md')) {
 		if (startsWith($raw, '<!--is-blurbs-->'))
@@ -29,13 +30,18 @@ function autoRender($file) {
 	}
 
 	if (endsWith($file, '.tsv')) {
+		if (!$embed) sectionId('special-table', 'container content-box');
 		runFeature('tables');
 		if (startsWith($raw, '|is-deck'))
-			return renderSheetAsDeck($file, variableOr('all_page_parameters', variable('node')) . '/');
-		if (startsWith($raw, '|is-rich-page'))
-			return renderRichPage($file);
-		if (startsWith($raw, '|is-table'))
-			return add_table(pathinfo($file, PATHINFO_FILENAME), $file, 'auto', disk_file_get_contents(dirname($file) . '/.template.html'));
+			renderSheetAsDeck($file, variableOr('all_page_parameters', variable('node')) . '/');
+		else if (startsWith($raw, '|is-rich-page'))
+			renderRichPage($file);
+		else if (startsWith($raw, '|is-table'))
+			add_table(pathinfo($file, PATHINFO_FILENAME), $file, 'auto', disk_file_get_contents(dirname($file) . '/.template.html'));
+		else
+			parameterError('unsupported tsv file - see line 1 for type definition', $file);
+		if (!$embed) section('end');
+		return;
 	}
 
 	sectionId('file', 'container content-box');

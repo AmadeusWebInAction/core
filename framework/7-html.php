@@ -25,13 +25,21 @@ function iframe($url, $wrapContainer = true) {
 	if ($wrapContainer) echo '</div>';
 }
 
-function boxDiv($id, $class = '') {
-	if ($id == 'end') { echo variable('nl') . '</div>' . variable('2nl'); return; }
+function boxDiv($id, $class = '', $return = false) {
+	if ($id == 'end') { 
+		$result = variable('nl') . '</div>' . variable('2nl');
+		if ($return) return $result;
+		echo $result;
+		return;
+	}
+
 	$attrs = '';
 	if ($id) $attrs .= ' id="' . $id . '"';
 	if ($class) $class = ' ' . $class;
 	$attrs .= ' class="content-box' . $class . '"';
-	echo variable('nl') . '<div' . $attrs . '>' . variable('nl');
+	$result = variable('nl') . '<div' . $attrs . '>' . variable('nl');
+	if ($return) return $result;
+	echo $result;
 }
 
 function div($what = 'start', $h1 = '', $class = 'video-container') {
