@@ -19,10 +19,11 @@ function run_theme_part($what) {
 	];
 
 	if ($what == 'header') {
-		$vars['title'] = title(true);
-		$vars['icon'] = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192" />',
+		$icon = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192" />',
 			['url' => fileUrl(), 'safeName' => variable('safeName'),
 				'version' => assetMeta('site', 'version')], '%'); //TODO: simplify this version stuff?
+
+		$vars['head-includes'] = '<title>' . title(true) . '</title>' . NEWLINES2 . '	' . $icon . NEWLINES2 . main::runAndReturn();
 		$vars['seo'] = seo_tags(true);
 		$vars['body-classes'] = body_classes(true);
 

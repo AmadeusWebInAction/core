@@ -109,6 +109,19 @@ function getExtension($file) {
 	return pathinfo($file, PATHINFO_EXTENSION);
 }
 
+function doToBuffering($what) {
+	if ($what == 'initialize' || $what == 1) {
+		ob_flush();
+		ob_start();
+	} else if ($what == 'get' || $what == 2) {
+		return ob_get_contents();
+	} else if ($what == 'finalize' || $what == 3) {
+		ob_end_clean();
+	} else {
+		parameterError('Unknown buffering verb', $what, DOTRACE, DODIE);
+	}
+}
+
 function disk_one_of_files_exist($fwe, $extensions = 'php, html') {
 	$extensions = explode(', ', $extensions);
 

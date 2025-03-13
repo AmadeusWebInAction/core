@@ -4,8 +4,10 @@ $safeNL = "\r"; //platform safe
 $nl = "\r\n"; $br = '<br />';
 
 variable('safeNL', $safeNL);
-variable('nl', $nl);
-variable('2nl', $nl . $nl);
+DEFINE('NEWLINE', $nl);
+variable('nl', NEWLINE);
+DEFINE('NEWLINES2', $nl . $nl);
+variable('2nl', NEWLINES2);
 variable('3nl', $nl . $nl . $nl);
 
 DEFINE('BRTAG', $br);

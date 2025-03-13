@@ -12,6 +12,17 @@ class main {
 		]);
 	}
 
+	static function runAndReturn() {
+		variable('local', false);
+		doToBuffering(1);
+		main::analytics();
+		echo NEWLINES2;
+		main::chat();
+		$result = doToBuffering(2);
+		doToBuffering(3);
+		return $result;
+	}
+
 	static function chat() {
 		$val = variable('ChatraID');
 		$val = $val && $val != 'none' ? ($val != '--use-amadeusweb' ? $val : 'wqzHJQrofB47q5oFj') : false;
