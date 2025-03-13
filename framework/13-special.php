@@ -22,6 +22,18 @@ function autoRender($file) {
 	$raw = disk_file_exists($file) ? disk_file_get_contents($file) : '[RAW]';
 	$embed = hasPageParameter('embed');
 
+	if (startsWith($raw, '|is-engage')) {
+		if (!endsWith($file, '.tsv'))
+			parameterError('ENGAGE SUPPORTS ONLY TSV IN BETA', $file, DOTRACE, DODIE);
+
+		runFeature('engage');
+
+		sectionId('special-form', 'container');
+		_runEngageFromSheet(getPageName(), $file);
+		section('end');
+		return;
+	}
+
 	if (endsWith($file, '.md')) {
 		if (startsWith($raw, '<!--is-blurbs-->'))
 			return _renderedBlurbs($file);
@@ -31,7 +43,9 @@ function autoRender($file) {
 
 	if (endsWith($file, '.tsv')) {
 		if (!$embed) sectionId('special-table', 'container content-box');
+
 		runFeature('tables');
+
 		if (startsWith($raw, '|is-deck'))
 			renderSheetAsDeck($file, variableOr('all_page_parameters', variable('node')) . '/');
 		else if (startsWith($raw, '|is-rich-page'))
@@ -40,6 +54,7 @@ function autoRender($file) {
 			add_table(pathinfo($file, PATHINFO_FILENAME), $file, 'auto', disk_file_get_contents(dirname($file) . '/.template.html'));
 		else
 			parameterError('unsupported tsv file - see line 1 for type definition', $file);
+
 		if (!$embed) section('end');
 		return;
 	}
@@ -281,8 +296,8 @@ function did_wiki_topic_humanize($txt, $field, $sheetName = 'wiki') {
 	$txt = str_replace(' ', '-', strtolower($txt));
 	$sheet = getSheet($sheetName, 'slug'); //NOTE: Its cached automatically by the framework
 
-	if (isset($sheet->sections[$txt]))
-		return $sheet->sections[$txt][0][$sheet->columns['no']] . ' &mdash; ' . humanize($txt, 'no-site');
+	if (isset($sheet->group[$txt]))
+		return $sheet->group[$txt][0][$sheet->columns['no']] . ' &mdash; ' . humanize($txt, 'no-site');
 	else
 		return false;
 }
@@ -291,13 +306,13 @@ function wiki_pages_after_file($sheetName = 'wiki', $wikiSlug = 'wiki') {
 	$sheetName = trim($sheetName);
 	$sheet = getSheet($sheetName, 'slug');
 	$page = variable('page_parameter1');
-	if (!$page || !isset($sheet->sections[$page])) return;
+	if (!$page || !isset($sheet->group[$page])) return;
 
-	$row = $sheet->sections[$page][0];
+	$row = $sheet->group[$page][0];
 	$no = $row[$sheet->columns['no']];
 
 	$sheet = getSheet($sheetName, 'parent');
-	$items = $sheet->sections[$no];
+	$items = $sheet->group[$no];
 
 	foreach ($items as $item) {
 		$content = $item[$sheet->columns['has_content']];

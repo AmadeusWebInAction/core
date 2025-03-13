@@ -85,8 +85,6 @@ function replaceHtml($html) {
 	$key = 'htmlSitewideReplaces';
 	$replaces = variable($key);
 	if (!$replaces) {
-		$s = variable('section');
-		$s = is_string($s) ? humanize($s) : '';
 		variable($key, $replaces = [
 			//TODO: @<team> - all assets links should use this and then %url% should become rewrite safe
 			//Also, we should incorporate dev tools like w3c & broken link checkers
@@ -99,9 +97,10 @@ function replaceHtml($html) {
 			'%phone%' => variableOr('phone', ''),
 			'%email%' => variableOr('email', ''),
 			'%whatsapp%' => 'https://wa.me/'. variableOr('whatsapp', '') . '?text=',
-			'%siteName%' => variable('name'),
-			'%section%' => $s,
-			'%sectionAndNode%' => is_string(variable('section')) ? variable('section') . '/' . variable('node') : '', //section is array in archives
+			'%siteName%' => $sn = variable('name'),
+			'%section%' => variable('section'), //let archives break!
+			'%page-location%' => $loc = title('params-only'),
+			'%enquiry%' => '*enquiry*+(for)+' . $sn . '+(at)+' . $loc,
 			'<marquee>' => variable('_marqueeStart'),
 		]);
 	}

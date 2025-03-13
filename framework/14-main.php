@@ -6,7 +6,10 @@ main::initialize();
 class main {
 
 	static function initialize() {
-		variable('systemEmail', 'imran@amadeusweb.com');
+		variables([
+			//TODO: once reinstated! 'assistantEmail' => 'assistant@amadeusweb.world',
+			'systemEmail' => 'team@amadeusweb.com',
+		]);
 	}
 
 	static function chat() {

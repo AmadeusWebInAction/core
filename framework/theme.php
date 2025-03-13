@@ -36,10 +36,12 @@ function run_theme_part($what) {
 		$bits = explode('##menu##', $header);
 
 		echo _renderRaw($bits[0]);
-		setMenuSettings();
-		runFrameworkFile('header-menu');
-		setMenuSettings(true);
-		echo _renderRaw($bits[1]);
+		if (isset($bits[1])) {
+			setMenuSettings();
+			runFrameworkFile('header-menu');
+			setMenuSettings(true);
+			echo _renderRaw($bits[1]);
+		}
 	} else if ($what == 'footer') {
 		$logo = concatSlugs(['<a href="', variable('url'), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
 		$suffix = !variable('footer-message') ? '' : ' &mdash; ' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
@@ -109,17 +111,16 @@ function siteWidgets() {
 	//TODO: Showcase + Misc
 	$op = [];
 
-	$sections = variableOr('sections', []);
-	if (count($sections)) {
+	if (count($sections = variableOr('sections', []))) {
 		$op[] = $start;
 		$op[] = '<u>' . variable('name') . '</u>';
-		foreach (variable('sections') as $slug)
+		foreach ($sections as $slug)
 			$op[] = makeRelativeLink(humanize($slug), $slug . '/');
 		$op[] = '</div>'; $op[] = '';
 	}
 
-	$sites = variable('network-sites');
-	if ($sections) {
+	$sites;
+	if ($sites = variable('network-sites')) {
 		$op[] = $start;
 		$op[] = '<u>Network</u>';
 		foreach ($sites as $site)

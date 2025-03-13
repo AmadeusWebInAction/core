@@ -188,7 +188,7 @@ function setupNetworkLinks($network) {
 		$networkSheet = getSheet($networkSheetFile, 'key');
 		$networkVal = $networkSheet->columns['value'];
 
-		$networkItem = $networkSheet->sections;
+		$networkItem = $networkSheet->group;
 		if (isset($networkItem[$networkKey = 'network-' . variable('site-url-key')]))
 			variable('network-url', $networkUrl = $networkItem[$networkKey][0][$networkVal]);
 		
@@ -229,7 +229,7 @@ function setupNetworkLinks($network) {
 		$theme = $themeIndex === false ? false : $row[$themeIndex];
 		$group = $groupIndex === false ? false : $row[$sitesSheet->columns['group']];
 
-		$item = $sheet->sections;
+		$item = $sheet->group;
 
 		if (contains($url = $item[variable('site-url-key')][0][$val], 'localhost'))
 			$url = replaceItems($url, ['localhost' => 'localhost' . variable('port')]);

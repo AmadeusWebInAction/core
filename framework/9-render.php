@@ -212,7 +212,7 @@ function _renderImplementation($fileOrRaw, $settings) {
 		$inProgress = '<!--render-processing-->';
 		if (is_engage($raw) && !contains($raw, $inProgress)) {
 			includeFeature('engage');
-			$output = renderEngageOrMd(ENGAGENODE, $raw . $inProgress, 'Engage Us', true, false);
+			$output = _renderEngage(getPageName(), $raw . $inProgress, true, false);
 		} else {
 			$output = $md || $endsWithMd ? markdown($raw) : wpautop($raw);
 		}

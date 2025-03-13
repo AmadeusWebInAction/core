@@ -139,22 +139,41 @@ function textToList($data) {
 	return $r;
 }
 
+DEFINE('VALUESTART', '||');
+
 ///SHEET (TSV) FUNCTIONS
-function tsvToArray($data, &$cols = null) {
-	$r = array();
+function tsvToSheet($data) {
+	$rows = [];
+	$columns = null;
+	$values = [];
 	$lines = explode(variable('safeNL'), $data);
-	foreach ($lines as $lin)
+
+	foreach ($lines as $line)
 	{
-		$lin = trimCrLf($lin);
-		if ($lin == '' || $lin[0] == '#' || $lin[0] == '|')
-		{
-			if ($lin != '' && $lin[0] != '|')
-				if ($cols === 'object') tsv_set_cols($lin, $cols); else $cols = array_flip(explode("	", substr($lin, 1)));
+		$line = trimCrLf($line);
+		if ($line == '') continue;
+
+		if ($line[0] == '#') {
+			if ($columns != null) parameterError('Set Columns Only Once', [$columns, $line], DOTRACE, DODIE);
+			$columns = array_flip(explode("	", substr($line, 1)));
 			continue;
 		}
-		$r[] = explode("	", $lin);
+
+		if ($line[0] == '|')
+		{
+			if (substr($line, 0, 2) == VALUESTART) {
+				$bits = explode(': ', substr($line, strlen(VALUESTART)));
+				$value = str_replace('||',variable('brnl'), $bits[1]);
+				$values[$bits[0]] = $value; //dbc - let it throw
+			}
+
+			continue;
+		}
+
+		$rows[] = explode("	", $line);
 	}
-	return $r;
+
+	return compact('rows', 'columns', 'values');
 }
 
 function tsvSetCols($lin, &$c)
@@ -180,26 +199,18 @@ function sheetExists($name) {
 
 function getSheet($name, $groupBy = 'section') {
 	$varName = 'sheet_' . $name . '_' . $groupBy;
-	$existing = variable($varName);
-	if ($existing) {
-		variable('sectionColumns', $existing->columns);
-		return $existing;
-	}
+	if ($existing = variable($varName)) return $existing;
 
-	$cols = true;
 	$file = _sheetPath($name);
-
-	//if (!disk_file_exists($file)) $file = $name; //NOTE: some new problem with php8
-
-	$rows = tsvToArray(disk_file_get_contents($file), $cols);
+	extract(tsvToSheet(disk_file_get_contents($file)));
 
 	$r = new stdClass();
-	$r->columns = $cols;
+	$r->columns = $columns;
 	$r->rows = $rows;
+	$r->values = $values;
 
-	variable('sectionColumns', $cols);
 	if($groupBy !== false)
-		$r->sections = arrayGroupBy($rows, $cols[$groupBy]);
+		$r->group = arrayGroupBy($rows, $columns[$groupBy]);
 
 	variable($varName, $r);
 	return $r;
@@ -223,7 +234,7 @@ function getPageValue($sectionName, $key, $default = false) {
 
 	if (!$values) {
 		$sheet = variable('rich-page');
-		$section = $sheet->sections[$sectionName];
+		$section = $sheet->group[$sectionName];
 
 		$valueIndex = $sheet->columns['value'];
 		$values = [];

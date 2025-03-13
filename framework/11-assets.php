@@ -7,6 +7,14 @@ function cssTag($url) {
 	echo PHP_EOL . '	<link href="' . $url . '" rel="stylesheet" type="text/css" /> ';
 }
 
+function getPageName($tailOnly = true) {
+	if ($tailOnly) {
+		$tail = explode('/', variableOr('all_page_parameters', variable('node')));
+		return end($tail);
+	}
+	//todo - alternatives??
+}
+
 function title($return = false) {
 	if (variable('node-alias')) {
 		$r = humanize(variable('name')) . ' | ' . variable('byline');
@@ -26,7 +34,7 @@ function title($return = false) {
 
 	if ($return !== true) {
 		$exclude = ['print', 'embed'];
-		foreach(array_reverse(variableOr('page_parameters', [])) as $slug)
+		foreach(array_reverse(array_merge([variable('node')], variableOr('page_parameters', []))) as $slug)
 			if (!in_array($slug, $exclude)) $r[] = humanize($slug);
 	}
 

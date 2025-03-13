@@ -52,8 +52,6 @@ runFrameworkFile('13-special');
 //v6.5
 runFrameworkFile('14-main');
 
-//v7 - optional theme.php
-
 function before_bootstrap() {
 	$port = $_SERVER['SERVER_PORT'];
 	variable('port', $port != 80 ? ':' . $port : '');
