@@ -19,13 +19,13 @@ function _sections($current) {
 
 $folder = SITEPATH . '/' . $of . '/';
 if (disk_file_exists($home = $folder . 'home.md')) {
+	h2(humanize($section) . currentLevel(), 'amadeus-icon');
 	contentBox('home');
 	renderFile($home);
 	contentBox('end');
 
 	contentBox('nodes', 'after-content');
 	_sections($section);
-	//h2('Sites Of: ' . humanize($section));
 	runFeature('tables');
 	add_table('sections-table', $folder . '_nodes.tsv', 'name, about, tags',
 		'<tr><td><a href="%url%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');

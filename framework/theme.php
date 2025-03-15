@@ -23,7 +23,7 @@ function run_theme_part($what) {
 			['url' => fileUrl(), 'safeName' => variable('safeName'),
 				'version' => assetMeta('site', 'version')], '%'); //TODO: simplify this version stuff?
 
-		$vars['head-includes'] = '<title>' . title(true) . '</title>' . NEWLINES2 . '	' . $icon . NEWLINES2 . main::runAndReturn();
+		$vars['head-includes'] = '<title>' . title(true) . '</title>' . NEWLINE . '	' . $icon . NEWLINE . main::runAndReturn();
 		$vars['seo'] = seo_tags(true);
 		$vars['body-classes'] = body_classes(true);
 

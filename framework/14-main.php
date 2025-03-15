@@ -22,10 +22,8 @@ class main {
 	}
 
 	static function runAndReturn() {
-		variable('local', false);
 		doToBuffering(1);
 		main::analytics();
-		echo NEWLINES2;
 		main::chat();
 		$result = doToBuffering(2);
 		doToBuffering(3);

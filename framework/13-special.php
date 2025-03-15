@@ -43,9 +43,9 @@ function autoRender($file) {
 		if (startsWith($raw, '<!--is-blurbs-->'))
 			_renderedBlurbs($file);
 		else if (startsWith($raw, '<!--is-deck-->'))
-			_renderedDeck($file, ['title' => $pageName]);
+			_renderedDeck($file, $pageName);
 		else
-			renderAny($file, ['use-content-box' => true, 'heading' => $pageName, 'strip-paragraph-tag' => true]);
+			renderAny($file, ['use-content-box' => true, 'heading' => $pageName]);
 
 		section('end');
 		pageMenu($file);
@@ -171,14 +171,14 @@ function _setupDeck($fwe, $name) {
 function renderInPageDeck($section, $node, $name) {
 	$deck = concatSlugs([variable('path'), $section, $node, 'decks', $name . '.md']);
 	$params = [ 'relativeUrl' => concatSlugs([$node, $name, '']),
-		'title' => $node . ' &raquo; ' . $name];
+		'title' => humanize($node) . ' &raquo; ' . $name]; //todo - bring to 7.1 convention
 	_renderedDeck($deck, $params);
 }
 
 function renderSheetAsDeck($deck, $link) {
-	$params = ['relativeUrl' => $link, 'title' => title('params-only')];
+	$title = title('params-only');
 	if (!hasPageParameter('embed') && !hasPageParameter('expanded')) {
-		_renderedDeck($deck, $params);
+		_renderedDeck($deck, $title);
 		return;
 	}
 
@@ -209,10 +209,10 @@ function renderSheetAsDeck($deck, $link) {
 
 	variable('nodeLink', $link);
 	$op = implode(variable('nl'), $op);
-	_renderedDeck($op, $params);
+	_renderedDeck($op, $title);
 }
 
-function _renderedDeck($deck, $params = []) {
+function _renderedDeck($deck, $title) {
 	function __parseDeck($deck) {
 		if (endsWith($deck, '.md'))
 			$deck = renderMarkdown($deck, [ 'echo' => false ]);
@@ -232,7 +232,7 @@ function _renderedDeck($deck, $params = []) {
 	$embedUrl = $url .'?embed=1';
 
 	sectionId('deck-toolbar', 'text-center');
-	h2(valueIfSet($params, 'title', 'Presentation'));
+	h2($title . currentLevel(), 'amadeus-icon', true);
 	contentBox('deck', 'toolbar');
 	echo 'PRESENTATION: ' . variable('nl');
 	$links = [];

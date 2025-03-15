@@ -5,6 +5,17 @@ function currentUrl() {
 	return pageUrl(variable('all_page_parameters'));
 }
 
+function currentLevel($wrap = true) {
+	if (hasVariable('page_parameter2'))
+		$level = 'Sub-Page';
+	else if (hasVariable('page_parameter1'))
+		$level = 'Page';
+	else
+		$level = variable('node') == variable('section') ? 'Section' : 'Site';
+
+	return $wrap ? ' (' . $level . ')' : $level;
+}
+
 function pageUrl($relative = '') {
 	if ($relative == '') return variable('page-url');
 	$hasQuerysting = contains($relative, '?');
@@ -73,11 +84,13 @@ function div($what = 'start', $h1 = '', $class = 'video-container') {
 	echo $what == 'start' ? '<div class="' . $class . '">' . $h1 . variable('nl') : '</div>' . variable('2nl');
 }
 
-function h2($text, $class = '') {
+function h2($text, $class = '', $return = false) {
 	if ($class) $class = ' class="' . $class . '"';
-	echo '<h2'.$class.'>';
-	renderSingleLineMarkdown($text);
-	echo '</h2>' . variable('nl');
+	$result = '<h2'.$class.'>';
+	$result .= renderSingleLineMarkdown($text, ['echo' => false]);
+	$result .= '</h2>' . variable('nl');
+	if ($return) return $result;
+	echo $result;
 }
 
 function listItem($html) {
