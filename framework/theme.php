@@ -51,7 +51,7 @@ function run_theme_part($what) {
 			'site-widgets' => siteWidgets(),
 			'copyright' => _copyright(true),
 			'credits' => _credits('', true),
-			'social-icons' => socialWidgets(),
+			//TODO: 'social-icons' now removed -> use footer-widgets in all templates!
 		];
 
 		$vars['footer-widgets'] = _substituteThemeVars($content, 'footer-widgets', $fwVars);
@@ -113,7 +113,7 @@ function siteWidgets() {
 
 	if (count($sections = variableOr('sections', []))) {
 		$op[] = $start;
-		$op[] = '<u>' . variable('name') . '</u>';
+		$op[] = '<u>Sections</u>';
 		foreach ($sections as $slug)
 			$op[] = makeRelativeLink(humanize($slug), $slug);
 		$op[] = '</div>'; $op[] = '';
@@ -128,19 +128,15 @@ function siteWidgets() {
 		$op[] = '</div>'; $op[] = '';
 	}
 
-	return implode(variable('nl'), $op);
-}
-
-function socialWidgets() {
-	$social = variable('social');
-	if (!$social) return '';
-
-	$op = ['<div class="normal-social-icons contrasting-bg-color">'];
-	foreach($social as $item) {
-		$op[] = '<a target="_blank" href="' . $item['link'] . '" class="social-icon si-mini rounded-circle border-0 text-light bg-' . $item['type'] . '">';
-		$op[] = '	<i class="fa-brands fa-' . $item['type'] . '">' . contact_r($item['link']) . '</i></a>';
-		$op[] = '';
+	if ($social = variableOr('social', main::defaultSocial())) {
+		$op[] = $start;
+		$op[] = '<u>Social</u>';
+		foreach($social as $item) {
+			$op[] = '<a target="_blank" href="' . $item['link'] . '" class="mt-2">';
+			$op[] = '	<i class="social-icon text-light si-mini rounded-circle fa-brands fa-' . $item['type'] . ' bg-' . $item['type'] . '"></i> ' . $item['name'] . '</a>';
+			$op[] = '';
+		}
 	}
-	$op[] =	'<hr style="clear: both; margin: 0;" /></div>';
+
 	return implode(variable('nl'), $op);
 }

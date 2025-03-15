@@ -5,7 +5,7 @@ $section = variable('section');
 sectionId('directory', 'container text-center');
 h2('Directory Of');
 contentBox('', 'toolbar');
-echo 'Navigate: ' . variable('nl');
+echo 'Sections: ' . variable('nl');
 foreach (variable('sections') as $item) {
 	//TODO: reinstate - if (cannot_access($item)) continue;
 	echo sprintf(variable('nl') . '<a class="btn btn-%s" href="%s">%s</a> ',
@@ -23,9 +23,10 @@ if (disk_file_exists($home = $folder . 'home.md')) {
 	contentBox('end');
 
 	contentBox('nodes');
+	h2('Sites Of: ' . humanize($section));
 	runFeature('tables');
-	add_table('nodes-table', $folder . '_nodes.tsv', 'name, about, tags',
-		'<tr><td><a href="%url%%name_urlized%/">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
+	add_table('sections-table', $folder . '_nodes.tsv', 'name, about, tags',
+		'<tr><td><a href="%url%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
 	contentBox('end');
 }
 

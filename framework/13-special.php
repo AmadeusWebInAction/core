@@ -16,6 +16,7 @@ variables([
 function autoRender($file) {
 	if (endsWith($file, '.php')) {
 		renderAnyFile($file);
+		pageMenu($file);
 		return;
 	}
 
@@ -31,6 +32,8 @@ function autoRender($file) {
 		sectionId('special-form', 'container');
 		_runEngageFromSheet(getPageName(), $file);
 		section('end');
+
+		pageMenu($file);
 		return;
 	}
 
@@ -56,12 +59,27 @@ function autoRender($file) {
 			parameterError('unsupported tsv file - see line 1 for type definition', $file);
 
 		if (!$embed) section('end');
+		pageMenu($file);
 		return;
 	}
 
 	sectionId('file', 'container content-box');
 	renderAny($file);
 	section('end');
+	pageMenu($file);
+}
+
+function pageMenu($file) {
+	if (!(variable('section'))) return;
+	$folder = dirname($file) . '/';
+	if (!disk_file_exists($tsv = $folder . '_pages.tsv')) return;
+
+	contentBox('pages', 'container');
+	h2('Pages Of: ' . humanize(variable('node')));
+	runFeature('tables');
+	add_table('pages-table', $tsv, 'name, about, tags',
+		'<tr><td><a href="%node-url%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
+	contentBox('end');
 }
 
 function renderedSpecial() {

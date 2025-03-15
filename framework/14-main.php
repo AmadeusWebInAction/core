@@ -12,6 +12,15 @@ class main {
 		]);
 	}
 
+	static function defaultSocial() {
+		return [
+			[ 'type' => 'linkedin', 'link' => 'https://www.linkedin.com/company/amadeusweb/', 'name' => 'Amadeus Web' ],
+			[ 'type' => 'linkedin', 'link' => 'https://www.linkedin.com/imran-ali-namaze/', 'name' => 'Founder Imran' ],
+			[ 'type' => 'youtube', 'link' => 'https://www.youtube.com/@amadeuswebbuilder', 'name' => 'AMW Core' ],
+			[ 'type' => 'github', 'link' => 'https://github.com/AmadeusWebInAction/', 'name' => 'AMW Network Code' ],
+		];
+	}
+
 	static function runAndReturn() {
 		variable('local', false);
 		doToBuffering(1);

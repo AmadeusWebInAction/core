@@ -110,6 +110,7 @@ function replaceHtml($html) {
 			'%whatsapp%' => 'https://wa.me/'. variableOr('whatsapp', '') . '?text=',
 			'%siteName%' => $sn = variable('name'),
 			'%section%' => variable('section'), //let archives break!
+			'%node-url%' => variable('section') ? variable('page-url') . variable('node') . '/' : '##not-in-a-node',
 			'%page-location%' => $loc = title('params-only'),
 			'%enquiry%' => '*enquiry*+(for)+' . $sn . '+(at)+' . $loc,
 			'<marquee>' => variable('_marqueeStart'),
