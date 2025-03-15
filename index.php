@@ -2,12 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-define('SITEPATH', realpath(__DIR__ . '/../web'));
+define('SITEPATH', __DIR__);
 include_once 'framework/1-entry.php';
-
-variables([
-	'node-alias' => '_core',
-	'sub-theme' => 'go',
-]);
 
 runFrameworkFile('site');

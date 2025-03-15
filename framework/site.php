@@ -253,10 +253,10 @@ function setupNetworkLinks($network) {
 	variable('network-sites', $sites);
 }
 
+runFrameworkFile('cms');
+
 if (disk_file_exists($cms = SITEPATH . '/cms.php'))
 	disk_include_once($cms);
-else
-	runFrameworkFile('cms');
 
 if (hasPageParameter('embed')) variable('embed', true);
 
