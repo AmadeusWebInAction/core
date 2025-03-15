@@ -62,7 +62,13 @@ function _table_link($item, $c) {
 function add_table($id, $dataFile, $columnList, $template) {
 	variable('allow-internal', variable('local') || isset($_GET['internal']));
 	$tsv = is_string($dataFile) && endsWith($dataFile, '.tsv');
-	if ($columnList == 'auto' || is_string($columnList)) {
+	$json = is_string($dataFile) && endsWith($dataFile, '.json');
+
+	if (!$tsv && !$json) {
+		$rows = $dataFile;
+		$columns = explode(', ', $columnList);
+		$headingNames = array_map('humanize', $columns);
+	} else if ($columnList == 'auto' || is_string($columnList)) {
 		if (!$tsv) { parameterError('TSV Expected', $dataFile, false); die(); }
 		$sheet = getSheet($dataFile, false);
 		$cols = $columnList == 'auto' ? array_keys($sheet->columns) : explode(', ', $columnList);
@@ -83,7 +89,7 @@ function add_table($id, $dataFile, $columnList, $template) {
 		$columnNames = explode(', ', is_string($columnList) ? $columnList : implode(', ', $columnList));
 		$columns = array_map('strtolower', $columnNames);
 
-		$rows = is_string($dataFile) ? json_to_array($dataFile) : $dataFile;
+		$rows = $json ? json_to_array($dataFile) : $dataFile;
 	}
 	$headings = implode('</th>' . variable('nl') . '			<th>', $headingNames);
 

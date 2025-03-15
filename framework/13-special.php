@@ -22,6 +22,7 @@ function autoRender($file) {
 
 	$raw = disk_file_exists($file) ? disk_file_get_contents($file) : '[RAW]';
 	$embed = hasPageParameter('embed');
+	$pageName = title('params-only');
 
 	if (startsWith($raw, '|is-engage')) {
 		if (!endsWith($file, '.tsv'))
@@ -38,10 +39,17 @@ function autoRender($file) {
 	}
 
 	if (endsWith($file, '.md')) {
+		sectionId('special-md', 'container');
 		if (startsWith($raw, '<!--is-blurbs-->'))
-			return _renderedBlurbs($file);
-		if (startsWith($raw, '<!--is-deck-->'))
-			return _renderedDeck($file, variable('all_page_parameters') . '/');
+			_renderedBlurbs($file);
+		else if (startsWith($raw, '<!--is-deck-->'))
+			_renderedDeck($file, ['title' => $pageName]);
+		else
+			renderAny($file, ['use-content-box' => true, 'heading' => $pageName, 'strip-paragraph-tag' => true]);
+
+		section('end');
+		pageMenu($file);
+		return;
 	}
 
 	if (endsWith($file, '.tsv')) {
@@ -74,7 +82,7 @@ function pageMenu($file) {
 	$folder = dirname($file) . '/';
 	if (!disk_file_exists($tsv = $folder . '_pages.tsv')) return;
 
-	contentBox('pages', 'container');
+	contentBox('pages', 'container after-content');
 	h2('Pages Of: ' . humanize(variable('node')));
 	runFeature('tables');
 	add_table('pages-table', $tsv, 'name, about, tags',
@@ -200,14 +208,13 @@ function renderSheetAsDeck($deck, $link) {
 	}
 
 	variable('nodeLink', $link);
-	$op = replaceItems($op, ['<hr>' => '</section><section>']);
 	$op = implode(variable('nl'), $op);
 	_renderedDeck($op, $params);
 }
 
 function _renderedDeck($deck, $params = []) {
 	function __parseDeck($deck) {
-		if (!endsWith($deck, '.md'))
+		if (endsWith($deck, '.md'))
 			$deck = renderMarkdown($deck, [ 'echo' => false ]);
 		return $deck;
 	}
@@ -244,8 +251,7 @@ function _renderedDeck($deck, $params = []) {
 
 	if ($expanded) {
 		$deck = __parseDeck($deck);
-		$cb = '<section class="content-box">';
-		$deck = $cb . replaceItems($deck, ['<hr>' => variable('nl') . '</section>' . $cb . variable('nl')]);
+		$deck = cbWrapAndReplaceHr($deck); //in revealjs we will use plain sections
 		echo $deck;
 	} else {
 		echo sprintf('<section class="deck-container">'

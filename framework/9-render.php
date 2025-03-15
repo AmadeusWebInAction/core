@@ -248,6 +248,11 @@ function _renderImplementation($fileOrRaw, $settings) {
 	if (isset($settings['wrap-in-section']))
 		$output = '<section>' . variable('nl') . $output . variable('nl') . '</section>' . variable('2nl');
 
+	if (isset($settings['use-content-box']))
+		$output = cbWrapAndReplaceHr($output);
+
+	if (isset($settings['heading'])) $output =  '<h2 class="amadeus-icon breadcrumb">' . $settings['heading'] . '</h2>' . NEWLINES2 . $output;
+
 	if (!$echo) return $output;
 	echo $output;
 }

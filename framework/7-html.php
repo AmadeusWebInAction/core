@@ -45,6 +45,12 @@ function iframe($url, $wrapContainer = true) {
 	if ($wrapContainer) echo '</div>';
 }
 
+function cbWrapAndReplaceHr($raw) {
+	$closeAndOpen = ($end = contentBox('end', '', true)) . ($start = contentBox('', '', true));
+	
+	return $start . str_replace('<hr>', $closeAndOpen, $raw) . $end;
+}
+
 function contentBox($id, $class = '', $return = false) {
 	if ($id == 'end') {
 		$result = variable('nl') . '</div>' . variable('2nl');
@@ -102,6 +108,7 @@ function replaceHtml($html) {
 			'%url%' => variable('page-url'),
 			'%assets%' => variable('assets-url') . 'assets/',
 			'%node%' => variable('node'),
+			'%core-url%' => scriptSafeUrl(variable('app')),
 			'%amadeus-url%' => scriptSafeUrl(variable('main')),
 			'%world-url%' => scriptSafeUrl(variable('world')),
 			//'%network-url%' => variableOr('network-url', '#network-url-not-setup--'),

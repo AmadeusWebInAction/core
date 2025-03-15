@@ -34,11 +34,11 @@ function title($return = false) {
 
 	if ($return !== true) {
 		$exclude = ['print', 'embed'];
-		foreach(array_reverse(array_merge([variable('node')], variableOr('page_parameters', []))) as $slug)
+		foreach(array_merge([variable('node')], variableOr('page_parameters', [])) as $slug)
 			if (!in_array($slug, $exclude)) $r[] = humanize($slug);
 	}
 
-	$r = implode(' <- ', $r);
+	$r = implode(' &mdash;&gt; ', $r);
 	if ($return) return $r;
 	echo $r;
 }
