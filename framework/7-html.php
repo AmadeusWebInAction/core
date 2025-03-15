@@ -102,6 +102,7 @@ function replaceHtml($html) {
 			'%url%' => variable('page-url'),
 			'%assets%' => variable('assets-url') . 'assets/',
 			'%node%' => variable('node'),
+			'%core-url%' => scriptSafeUrl(variable('app')),
 			'%amadeus-url%' => scriptSafeUrl(variable('main')),
 			'%world-url%' => scriptSafeUrl(variable('world')),
 			//'%network-url%' => variableOr('network-url', '#network-url-not-setup--'),

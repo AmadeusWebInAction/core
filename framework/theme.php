@@ -44,10 +44,10 @@ function run_theme_part($what) {
 			echo _renderRaw($bits[1]);
 		}
 	} else if ($what == 'footer') {
-		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
-		$suffix = !variable('footer-message') ? '' : ' &mdash; ' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
+		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
+		$suffix = !variable('footer-message') ? '' : renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
 		$fwVars = [
-			'footer-logo' => $logo . '<u>' . variable('name') . '</u>' . $suffix . variable('nl'),
+			'footer-logo' => $logo . '<h4 style="margin: 8px 0 8px 0;">' . variable('name') . '</h4>' . $suffix . variable('nl'),
 			'site-widgets' => siteWidgets(),
 			'copyright' => _copyright(true),
 			'credits' => _credits('', true),
@@ -62,7 +62,9 @@ function run_theme_part($what) {
 		$bits = explode($atBody ? '</body>' : '##footer-includes##', $footer);
 
 		echo _renderRaw($bits[0]);
+		print_stats(); //returns if not needed
 		styles_and_scripts();
+
 		if ($atBody) echo '</body>';
 		echo _renderRaw($bits[1]);
 	}

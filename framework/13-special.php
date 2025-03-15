@@ -74,7 +74,7 @@ function pageMenu($file) {
 	$folder = dirname($file) . '/';
 	if (!disk_file_exists($tsv = $folder . '_pages.tsv')) return;
 
-	contentBox('pages', 'container');
+	contentBox('pages', 'container after-content');
 	h2('Pages Of: ' . humanize(variable('node')));
 	runFeature('tables');
 	add_table('pages-table', $tsv, 'name, about, tags',

@@ -22,7 +22,7 @@ if (disk_file_exists($home = $folder . 'home.md')) {
 	renderFile($home);
 	contentBox('end');
 
-	contentBox('nodes');
+	contentBox('nodes', 'after-content');
 	h2('Sites Of: ' . humanize($section));
 	runFeature('tables');
 	add_table('sections-table', $folder . '_nodes.tsv', 'name, about, tags',

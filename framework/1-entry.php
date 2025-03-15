@@ -29,6 +29,7 @@ function runModule($name) {
 }
 
 function runFeature($name) {
+	addStyle('amadeus-web-features', 'app-static--common-assets');
 	disk_include_once(AMADEUSFEATURES . $name . '.php');
 }
 
@@ -63,7 +64,7 @@ function before_bootstrap() {
 
 	variable('local', $local = startsWith($_SERVER['HTTP_HOST'], 'localhost'));
 
-	variable('app', $local && !$isMobile ? replaceVariables('http://localhost%port%/amadeusweb/core/', 'port') : '//v7.amadeusweb.com/');
+	variable('app', $local && !$isMobile ? replaceVariables('http://localhost%port%/awe/core/', 'port') : '//v7.amadeusweb.com/');
 
 	if (DEFINED('AMADEUSURL')) variable('app', AMADEUSURL);
 
@@ -155,7 +156,6 @@ function render() {
 	$rendered = renderAnyFile($fwe . '.', ['extensions' => 'core', 'return-on-first' => true]);
 
 	if (isset($_GET['debug']) || isset($_GET['stats'])) {
-		includeFeature('tables');
 		variable('stats', true);
 	}
 
@@ -187,8 +187,7 @@ function render() {
 
 	if (!$embed) {
 		if (function_exists('after_file')) after_file();
-		renderThemeFile('footer', $theme);
-		print_stats();
+		renderThemeFile('footer', $theme); //theme.php is now responsible for calling stats before styles+scipts as the table feature requires its usage and it will be before </body>
 	}
 
 	if (function_exists('after_render')) after_render();
@@ -220,7 +219,7 @@ function _credits($pre = '', $return = false) {
 	if (variable('dont_show_amadeus_credits')) return '';
 
 	$url = variable('main') . '?utm_content=site-credits&utm_referrer=' . variable('safeName');
-	$result = $pre . sprintf('Powered by <a href="%s" target="_blank" class="amadeus-credits" style="display: inline-block;">' .
+	$result = $pre . sprintf('Built With <a href="%s" target="_blank" class="amadeus-credits" style="display: inline-block;">' .
 		variable('nl') . '			<img src="%s" height="50" alt="%s" style="vertical-align: middle;" /></a>',
 		$url, variable('app-static') . 'amadeusweb/amadeusweb-logo@2x.png', 'Amadeus Web');
 

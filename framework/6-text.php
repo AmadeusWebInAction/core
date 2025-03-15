@@ -13,7 +13,8 @@ variable('3nl', $nl . $nl . $nl);
 DEFINE('BRTAG', $br);
 variable('br', $br);
 variable('2br', $br . $br);
-variable('brnl', $br . $nl);
+DEFINE('BRNL', $br . $nl);
+variable('brnl', BRNL);
 
 variable('markdownStart', $md = '<!--markdown-->');
 variable('markdownStartTag', $md . $nl); //NOTE: to detect content which doesnt start with a heading

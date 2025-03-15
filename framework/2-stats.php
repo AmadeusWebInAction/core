@@ -63,6 +63,7 @@ function file_stats($file, $call) {
 
 function print_stats() {
 	if (!variable('stats')) return;
+	runFeature('tables'); //if not already loaded
 
 	global $stat_all_size;
 	$files = array_map('file_stats', $files = get_included_files(), array_keys($files));
@@ -71,9 +72,10 @@ function print_stats() {
 	global $disk_calls;
 	global $disk_calls_by_type;
 
-	echo '<div id="statistics">' . variable('2nl');
+	echo '<div id="statistics" class="after-content" style="margin-top: 20px;">' . variable('2nl');
 
 	sectionId('statistics-summary', 'container');
+	contentBox('summary', 'after-content');
 	echo featureHeading('statistics-version-3.5');
 
 	$data = [
@@ -93,19 +95,24 @@ function print_stats() {
 	foreach ($disk_calls_by_type as $type => $item)
 		$data[$type] = 'time: ' . time_r($item['time'], 'micro') . ' / count: ' . $item['count'];
 
-	tableHeadingsOnLeft('statistics-summary', $data);
+	_tableHeadingsOnLeft('statistics-summary', $data);
+	contentBox('end');
 	section('end');
 
 	sectionId('statistics-php-files', 'container');
+	contentBox('executables', 'after-content');
 	echo featureHeading('statistics-executable-files');
-	add_table('stats-php-files', $files, 'Call, Folder, Name, Size',
+	add_table('stats-php-files', $files, 'call, folder, name, size',
 		'<tr><td>%call%</td><td>%folder%</td><td>%name%</td><td>%size%</td></tr>' . variable('nl'));
+	contentBox('end');
 	section('end');
 
 	sectionId('statistics-disk-calls', 'container');
+	contentBox('disk-calls', 'after-content');
 	echo featureHeading('statistics-disk-calls');
-	add_table('statistics-disk-calls', $disk_calls, 'Call, Function, Parameter, Time, Exact',
+	add_table('statistics-disk-calls', $disk_calls, 'call, function, parameter, time, exact',
 		'<tr><td>%call%</td><td>%function%</td><td>%parameter%</td><td>%time%</td><td>%exact%</td></tr>' . variable('nl'));
+	contentBox('end');
 	section('end');
 	
 	echo '</div><!--end of #statistics-->' . variable('2nl');
