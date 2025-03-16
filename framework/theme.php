@@ -47,7 +47,7 @@ function run_theme_part($what) {
 		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
 		$suffix = !variable('footer-message') ? '' : renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
 		$fwVars = [
-			'footer-logo' => $logo . '<h4 style="margin: 8px 0 8px 0;">' . variable('name') . '</h4>' . $suffix . variable('nl'),
+			'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . '</h4>' . $suffix . variable('nl'),
 			'site-widgets' => siteWidgets(),
 			'copyright' => _copyright(true),
 			'credits' => _credits('', true),
@@ -107,7 +107,7 @@ function setMenuSettings($after = false) {
 }
 
 function siteWidgets() {
-	$start = '<div class="col-md-4 row">' . variable('nl');
+	$start = '<div class="col-md-4 mt-sm-4">' . variable('nl');
 	if (variable('node-alias')) return '';
 
 	//TODO: Showcase + Misc
@@ -115,26 +115,26 @@ function siteWidgets() {
 
 	if (count($sections = variableOr('sections', []))) {
 		$op[] = $start;
-		$op[] = '<u>Sections</u>';
+		$op[] = '<h4>Sections</h4>';
 		foreach ($sections as $slug)
-			$op[] = makeRelativeLink(humanize($slug), $slug);
+			$op[] = makeRelativeLink(humanize($slug), $slug) . BRNL;
 		$op[] = '</div>'; $op[] = '';
 	}
 
 	$sites;
-	if ($sites = variable('network-sites')) {
+	if ($sites = variableOr('network-sites', main::defaultNetwork())) {
 		$op[] = $start;
-		$op[] = '<u>Network</u>';
+		$op[] = '<h4>Network</h4>';
 		foreach ($sites as $site)
-		$op[] =  getLink($site['name'], $site['url']);
+			$op[] =  getLink($site['name'], $site['url'], ' class = "icon site-' . $site['icon'] . '"') . BRNL;
 		$op[] = '</div>'; $op[] = '';
 	}
 
 	if ($social = variableOr('social', main::defaultSocial())) {
 		$op[] = $start;
-		$op[] = '<u>Social</u>';
+		$op[] = '<h4>Social</h4>';
 		foreach($social as $item) {
-			$op[] = '<a target="_blank" href="' . $item['link'] . '" class="mt-2">';
+			$op[] = '<a target="_blank" href="' . $item['url'] . '" class="mt-2">';
 			$op[] = '	<i class="social-icon text-light si-mini rounded-circle fa-brands fa-' . $item['type'] . ' bg-' . $item['type'] . '"></i> ' . $item['name'] . '</a>';
 			$op[] = '';
 		}

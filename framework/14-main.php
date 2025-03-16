@@ -14,10 +14,20 @@ class main {
 
 	static function defaultSocial() {
 		return [
-			[ 'type' => 'linkedin', 'link' => 'https://www.linkedin.com/company/amadeusweb/', 'name' => 'Amadeus Web' ],
-			[ 'type' => 'linkedin', 'link' => 'https://www.linkedin.com/imran-ali-namaze/', 'name' => 'Founder Imran' ],
-			[ 'type' => 'youtube', 'link' => 'https://www.youtube.com/@amadeuswebbuilder', 'name' => 'AMW Core' ],
-			[ 'type' => 'github', 'link' => 'https://github.com/AmadeusWebInAction/', 'name' => 'AMW Network Code' ],
+			[ 'type' => 'linkedin', 'url' => 'https://www.linkedin.com/company/amadeusweb/', 'name' => 'Amadeus Web' ],
+			[ 'type' => 'linkedin', 'url' => 'https://www.linkedin.com/in/imran-ali-namazi/', 'name' => 'Founder Imran' ],
+			[ 'type' => 'youtube', 'url' => 'https://www.youtube.com/@amadeuswebbuilder', 'name' => 'AMW Core' ],
+			[ 'type' => 'github', 'url' => 'https://github.com/AmadeusWebInAction/', 'name' => 'AMW Network Code' ],
+		];
+	}
+
+	static function defaultNetwork() {
+		return [
+			[ 'url' => variable('world') . 'daivism/', 'name' => 'Daivism Mission', 'icon' => 'daivism' ],
+			[ 'url' => variable('world'), 'name' => 'AMW World', 'icon' => 'world' ],
+			[ 'url' => variable('main'), 'name' => 'AMW Main', 'icon' => 'web' ],
+			[ 'url' => variable('app'), 'name' => 'AMW Core v7', 'icon' => 'core' ],
+			//TODO: WO + Listings + Imran
 		];
 	}
 
