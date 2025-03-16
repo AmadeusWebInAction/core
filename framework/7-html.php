@@ -127,6 +127,7 @@ function replaceHtml($html) {
 			//'%network-url%' => variableOr('network-url', '#network-url-not-setup--'),
 			'%phone%' => variableOr('phone', ''),
 			'%email%' => variableOr('email', ''),
+			'%whatsapp-number%' => variableOr('whatsapp', '##no-number-specified'),
 			'%whatsapp%' => 'https://wa.me/'. variableOr('whatsapp', '') . '?text=',
 			'%siteName%' => $sn = variable('name'),
 			'%section%' => variable('section'), //let archives break!

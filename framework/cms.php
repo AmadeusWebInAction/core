@@ -1,6 +1,7 @@
 <?php
 function before_render() {
 	addStyle('amadeusweb7', 'app-static--common-assets');
+	addStyle('amadeus-web-features', 'app-static--common-assets');
 	//TODO: high! read_seo_info();
 
 	foreach (variable('sections') as $slug) {
@@ -71,6 +72,14 @@ function did_render_page() {
 		autoRender($file);
 		return true;
 	}
+}
+
+function site_humanize($txt, $field = 'title', $how = false) {
+	$pages = variableOr('siteHumanizeReplaces', []);
+	if (array_key_exists($key = strtolower($txt), $pages))
+		return $pages[$key];
+
+	return $txt;
 }
 
 bootstrap([]);

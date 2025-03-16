@@ -29,7 +29,6 @@ function runModule($name) {
 }
 
 function runFeature($name) {
-	addStyle('amadeus-web-features', 'app-static--common-assets');
 	disk_include_once(AMADEUSFEATURES . $name . '.php');
 }
 
