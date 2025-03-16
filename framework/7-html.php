@@ -131,9 +131,11 @@ function replaceHtml($html) {
 			'%whatsapp%' => 'https://wa.me/'. variableOr('whatsapp', '') . '?text=',
 			'%siteName%' => $sn = variable('name'),
 			'%section%' => variable('section'), //let archives break!
+			'%section_r%' => humanize(variable('section')),
+			'%site-engage-btn%' => engageButton('site', 'Engage With Us', 'inline'),
 			'%node-url%' => variable('section') ? variable('page-url') . variable('node') . '/' : '##not-in-a-node',
 			'%page-location%' => $loc = title('params-only'),
-			'%enquiry%' => '*enquiry*+(for)+' . $sn . '+(at)+' . $loc,
+			'%enquiry%' => 'enquiry+(for)+' . $sn . '+(at)+' . $loc,
 			'<marquee>' => variable('_marqueeStart'),
 		]);
 	}
@@ -179,6 +181,14 @@ function featureHeading($id, $return = 'full', $text = false) {
 	$class .= in_array($what, ['statistics', 'site', 'links', 'assistant-toc']) ? ' ' . variable('toggle-list') : '';
 	return '	<h2 id="amadeus-' . $id . '" class="amadeus-icon' . $class . '">'
 		 . ($return == 'h2-start' ? '' : $text . '</h2>' . variable('nl'));
+}
+
+variable('_engageButtonFormat', '<a href="javascript: void(0);" class="btn btn-primary btn-%class% toggle-engage" data-engage-target="engage-%id%">%name%</a>');
+
+function engageButton($id, $name, $class, $scroll = false) {
+	if ($scroll) $class .= ' engage-scroll';
+	$class .= ' btn-fill';
+	return replaceItems(variable('_engageButtonFormat'), ['id' => $id, 'name' => $name, 'class' => $class], '%') . variable('nl');
 }
 
 ///Other Amadeus Stuff

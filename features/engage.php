@@ -2,14 +2,6 @@
 addStyle('engage', 'app-static--common-assets');
 addScript('engage', 'app-static--common-assets');
 
-variable('_engageButtonFormat', '<a href="javascript: void(0);" class="btn btn-primary btn-%class% toggle-engage" data-engage-target="engage-%id%">%name%</a>');
-
-function engageButton($id, $name, $class, $scroll = false) {
-	if ($scroll) $class .= ' engage-scroll';
-	$class .= ' btn-fill';
-	return replaceItems(variable('_engageButtonFormat'), ['id' => $id, 'name' => $name, 'class' => $class], '%') . variable('nl');
-}
-
 //TODO: Make a toggle-more when the md contains <!--more-->
 function _renderEngage($name, $raw, $open = false, $echo = true) {
 	$id = variableOr('all_page_parameters', variable('node'));

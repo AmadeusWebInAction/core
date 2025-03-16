@@ -83,9 +83,9 @@ function pageMenu($file) {
 	if (!disk_file_exists($tsv = $folder . '_pages.tsv')) return;
 
 	contentBox('pages', 'container after-content');
-	h2('Pages Of: ' . humanize(variable('node')));
+	h2('Site: ' . humanize(variable('node')));
 	runFeature('tables');
-	add_table('pages-table', $tsv, 'name, about, tags',
+	add_table('pages-table', $tsv, 'page-name, about, tags',
 		'<tr><td><a href="%node-url%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
 	contentBox('end');
 }
