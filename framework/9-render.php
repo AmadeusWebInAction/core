@@ -212,6 +212,7 @@ function _renderImplementation($fileOrRaw, $settings) {
 		$inProgress = '<!--render-processing-->';
 		if (is_engage($raw) && !contains($raw, $inProgress)) {
 			runFeature('engage');
+			$settings['use-content-box'] = false;
 			$output = _renderEngage(getPageName(), $raw . $inProgress, true, false);
 		} else {
 			$output = $md || $endsWithMd ? markdown($raw) : wpautop($raw);
@@ -248,7 +249,7 @@ function _renderImplementation($fileOrRaw, $settings) {
 	if (isset($settings['wrap-in-section']))
 		$output = '<section>' . variable('nl') . $output . variable('nl') . '</section>' . variable('2nl');
 
-	if (isset($settings['use-content-box']))
+	if (isset($settings['use-content-box']) && $settings['use-content-box'])
 		$output = cbWrapAndReplaceHr($output);
 
 	if (isset($settings['heading'])) $output = h2($settings['heading'] . currentLevel(), 'amadeus-icon', true) . NEWLINES2 . $output;
