@@ -27,7 +27,7 @@ if (disk_file_exists($home = $folder . 'home.md')) {
 	contentBox('nodes', 'after-content');
 	_sections($section);
 	runFeature('tables');
-	add_table('sections-table', $folder . '_nodes.tsv', 'section-name, about, tags',
+	add_table('sections-table', $folder . '_nodes.tsv', 'site-name, about, tags',
 		'<tr><td><a href="%url%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
 	contentBox('end');
 }

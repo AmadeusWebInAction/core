@@ -31,12 +31,13 @@ function _table_row_values($item, $cols, $tsv) {
 		else if (endsWith($key, '_md') || in_array($key, ['about', 'content']))
 			$r[$key] = renderSingleLineMarkdown($item[$c], ['echo' => false]);
 		else if (endsWith($key, '_urlized'))
-			$r[$key] = $item[$c] == '__node' ? '' : $item[$c] . '/';
+			$r[$key] = in_array($item[$c], ['__node', '__page']) ? '' : $item[$c] . '/';
 		else
 			$r[$key] = $item[$c];
 
 		if (endsWith($key, '_urlized'))
-			$r[str_replace('_urlized', '', $key) . '_humanized'] = humanize($item[$c] == '__node' ? variable('node') : $item[$c])
+			$r[str_replace('_urlized', '', $key) . '_humanized'] = humanize($item[$c] == '__page' ? variable('page_parameter1') : 
+				($item[$c] == '__node' ? variable('node') : $item[$c]))
 				. ($item[$c] == '__node' ? ' (Main)' : '');
 	}
 

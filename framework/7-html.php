@@ -134,6 +134,8 @@ function replaceHtml($html) {
 			'%section_r%' => humanize(variable('section')),
 			'%site-engage-btn%' => engageButton('site', 'Engage With Us', 'inline'),
 			'%node-url%' => variable('section') ? variable('page-url') . variable('node') . '/' : '##not-in-a-node',
+			'%page-url%' => variable('page_parameter1') ? variable('page-url') . variable('node') . '/' . variable('page_parameter1') . '/' : '##not-in-a-page',
+			'%sub-page-url%' => variable('page_parameter2') ? variable('page-url') . variable('node') . '/' . variable('page_parameter1') . '/'  . variable('page_parameter2') . '/' : '##not-in-a-sub-page',
 			'%page-location%' => $loc = title('params-only'),
 			'%enquiry%' => 'enquiry+(for)+' . $sn . '+(at)+' . $loc,
 			'<marquee>' => variable('_marqueeStart'),
