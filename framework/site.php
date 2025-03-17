@@ -92,8 +92,6 @@ function _visane($siteVars) {
 	$possibles = [
 		['site-home-in-menu', false, 'bool'],
 		['use-menu-files', false, 'bool'],
-		['large-menu', false, 'bool'],
-		['large-menus-for', [], 'array'],
 		['home-link-to-section', false, 'bool'],
 		['ChatraID', '--use-amadeusweb'],
 		['google-analytics', '--use-amadeusweb'],
