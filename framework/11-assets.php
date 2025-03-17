@@ -63,7 +63,7 @@ function assetMeta($location = 'site', $setValueOr = false) {
 			$mainUrl = variable($bits[0]);
 		} //else support network + site
 
-		$middlePath = isset($bits[1]) ? $bits[1] . '/' : '';
+		$middlePath = $twoBits[0] == 'app' && isset($bits[1]) ? $bits[1] . '/' : '';
 
 		$versionFile = $mainFol . $middlePath .'_version.txt';
 		$version = disk_file_exists($versionFile) ? '?' . disk_file_get_contents($versionFile) : '';

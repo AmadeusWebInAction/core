@@ -2,6 +2,7 @@
 function before_render() {
 	addStyle('amadeusweb7', 'app-static--common-assets');
 	addStyle('amadeus-web-features', 'app-static--common-assets');
+	if (variable('use-site-static')) variable('site-static', 'site-static');
 	//TODO: high! read_seo_info();
 
 	foreach (variable('sections') as $slug) {

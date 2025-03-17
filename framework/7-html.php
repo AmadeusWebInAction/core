@@ -130,6 +130,7 @@ function replaceHtml($html) {
 			'%whatsapp-number%' => variableOr('whatsapp', '##no-number-specified'),
 			'%whatsapp%' => 'https://wa.me/'. variableOr('whatsapp', '') . '?text=',
 			'%siteName%' => $sn = variable('name'),
+			'%safeName%' =>  variable('safeName'),
 			'%section%' => variable('section'), //let archives break!
 			'%section_r%' => humanize(variable('section')),
 			'%site-engage-btn%' => engageButton('site', 'Engage With Us', 'inline'),
@@ -137,7 +138,7 @@ function replaceHtml($html) {
 			'%page-url%' => variable('page_parameter1') ? variable('page-url') . variable('node') . '/' . variable('page_parameter1') . '/' : '##not-in-a-page',
 			'%sub-page-url%' => variable('page_parameter2') ? variable('page-url') . variable('node') . '/' . variable('page_parameter1') . '/'  . variable('page_parameter2') . '/' : '##not-in-a-sub-page',
 			'%page-location%' => $loc = title('params-only'),
-			'%enquiry%' => 'enquiry+(for)+' . $sn . '+(at)+' . $loc,
+			'%enquiry%' => str_replace(' ', '+', 'enquiry (for) ' . $sn . ' (at) ' . $loc),
 			'<marquee>' => variable('_marqueeStart'),
 		]);
 	}
@@ -210,6 +211,11 @@ function prepareLinks($output) {
 	$output = str_replace('href="http','target="_blank" href="http', $output); //yea, baby! no need a js solution!
 	$output = str_replace('href="mailto','target="_blank" href="mailto', $output); //if gmail in chrome is the default, it will hijack current window
 	$output = str_replace('%url%', pageUrl(), $output);
+
+	//undo wrongly added blanks
+	$output = str_replace('rel="preconnect" target="_blank" ', 'rel="preconnect" ', $output); //new nuance
+	$output = str_replace('target="_blank" href="https://fonts.googleapis.com', 'href="https://fonts.googleapis.com', $output);
+	$output = str_replace('target="_blank" target="_blank" ', 'target="_blank" ', $output);
 
 	//TODO: " class="analytics-event" data-payload="{clickFrom:'%safeName%' //leave end " as a hack to pile on attributes
 	$campaign = isset($_GET['utm_campaign']) ? '&utm_campaign=' . $_GET['utm_campaign'] : '';

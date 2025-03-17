@@ -22,6 +22,7 @@ class main {
 	}
 
 	static function defaultNetwork() {
+		if (variable('not-a-network')) return [];
 		return [
 			[ 'url' => variable('world') . 'daivism/', 'name' => 'Daivism Mission', 'icon' => 'daivism' ],
 			[ 'url' => variable('world'), 'name' => 'AMW World', 'icon' => 'world' ],

@@ -16,6 +16,7 @@ function run_theme_part($what) {
 	$vars = [
 		'theme' => getThemeBaseUrl(), //TODO: /version can be maintained on the individual file?
 		'optional-slider' => '',
+		'search-url' => variable('page-url') . 'search/',
 	];
 
 	if ($what == 'header') {
@@ -28,7 +29,9 @@ function run_theme_part($what) {
 		$vars['body-classes'] = body_classes(true);
 
 		//TODO: if network exists, else if node is sub site else yada-yada-yada
-		$imgUrl = assetUrl(variable('safeName') . '/' . variable('safeName') . '-logo@2x.png', 'app-static');
+		$where = variableOr('site-static', 'app-static');
+		$subFolderOfAppIfNotSiteStatic = variable('use-site-static') ? '' : variable('safeName') . '/';
+		$imgUrl = assetUrl($subFolderOfAppIfNotSiteStatic . variable('safeName') . '-logo@2x.png', $where);
 		$vars['logo'] = concatSlugs(['<a href="', pageUrl(), '"><img src="', $imgUrl, '" class="img-fluid img-max-',
 		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
 
@@ -44,7 +47,9 @@ function run_theme_part($what) {
 			echo _renderRaw($bits[1]);
 		}
 	} else if ($what == 'footer') {
-		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', variable('app-static'), variable('safeName') . '/', variable('safeName') . '-logo@2x.png" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
+		$where = variableOr('site-static', 'app-static');
+		$subFolderOfAppIfNotSiteStatic = variable('use-site-static') ? '' : variable('safeName') . '/';
+		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', assetUrl('', $where), $subFolderOfAppIfNotSiteStatic, variable('safeName') . '-logo@2x.png" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
 		$suffix = !variable('footer-message') ? '' : renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
 		$fwVars = [
 			'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),
@@ -138,6 +143,7 @@ function siteWidgets() {
 			$op[] = '	<i class="social-icon text-light si-mini rounded-circle fa-brands fa-' . $item['type'] . ' bg-' . $item['type'] . '"></i> ' . $item['name'] . '</a>';
 			$op[] = '';
 		}
+		$op[] = '</div>'; $op[] = '';
 	}
 
 	return implode(variable('nl'), $op);

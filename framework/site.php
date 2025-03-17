@@ -148,11 +148,10 @@ variables($op = [
 	//version will be done with txt file if needed (see 11-assets.php)
 	'folder' => 'content/',
 	//sections also done above in parseSectionsAndGroups
-	'image-in-logo' => disk_file_exists(SITEPATH . '/' . $safeName . '-logo.png') ? '-logo.png' : false,
+
 	'siteHumanizeReplaces' => siteHumanize(),
 
 	'home-link-to-section' => true, //directory will show these
-	'sections-have-files' => true,
 
 	'scaffold' => isset($siteVars['scaffold']) ? explode(', ', $siteVars['scaffold']) : [],
 
