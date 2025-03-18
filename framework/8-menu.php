@@ -51,6 +51,68 @@ function get_page_menu_variables() {
 	return compact('menuOf', 'menuIn', 'menuAt', 'menu1', 'menu2');
 }
 
+function pageMenu($file) {
+	if (!(variable('section'))) return;
+	$folder = concatSlugs([SITEPATH, variable('section'), variable('node')]) . '/';
+
+	$subPage1 = variable('page_parameter1');
+	$subPage2 = variable('page_parameter2');
+	$subPage3 = variable('page_parameter3');
+
+	$levels = []; $levelAbove = false;
+
+	if ($subPage2)
+		$levels[] = [ 'base' => 'sub-page-url', 'tsv' => $folder . $subPage1 . '/' . $subPage2 . '/_subpages.tsv' ];
+	if ($subPage1)
+		$levels[] = [ 'base' => 'page-url', 'tsv' => $folder . $subPage1 . '/_subpages.tsv' ];
+	$levels[] = [ 'base' => 'node-url', 'tsv' => $folder . '_pages.tsv' ];
+
+	//parameterError('levels', $levels, false);
+	$levelFound = false;
+	foreach ($levels as $item) {
+		if (disk_file_exists($item['tsv'])) {
+			$levelFound = $item;
+			break;
+		}
+		$levelAbove = $item;
+	}
+
+	if ($levelFound && $levelAbove) {
+		$folAbove = dirname($levelAbove['tsv']) . '/';
+		if (disk_file_exists($folAbove . '/home.md')) { //has files but no tsv
+			$levelFound = false;
+			$folder = $folAbove;
+		}
+	}
+
+	if (!$levelFound) {
+		//TODO: read meta and build table - do that if home.md has meta, expect for all
+		contentBox('pages-menu', 'block-links container after-content');
+
+
+		$params = str_replace(SITEPATH, '', $folder);
+		$parentSlug = variable('node') . '/'; //also known as site
+		if ($subPage1) $parentSlug .= $subPage1 . '/';
+		if ($subPage2) $parentSlug .= $subPage2 . '/';
+
+		h2(humanize(variable('page_parameter' . ($subPage3 ? '2' : '1'))). currentLevel(true));
+		menu($params, ['parent-slug' => $parentSlug, 'home-link-to-section' => true, 'ul-class' => 'block-links']);
+		contentBox('end');
+		return;
+	}
+
+	$tsv = $levelFound['tsv'];
+	$bits = explode('/', variable('all_page_parameters'));
+	$tail = end($bits);
+	contentBox('pages', 'container after-content');
+	h2(humanize($tail) . currentLevel(true));
+	runFeature('tables');
+
+	add_table('pages-table', $tsv, ($subPage1 ? 'sub-' : '') . 'page-name, about, tags',
+		'<tr><td><a href="%' . $levelFound['base'] . '%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
+	contentBox('end');
+}
+
 DEFINE('ABSOLUTEPATHPREFIX', 'ABSOLUTE=');
 
 function menu($folderRelative = false, $settings = []) {

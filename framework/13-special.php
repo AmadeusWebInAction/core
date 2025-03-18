@@ -77,40 +77,6 @@ function autoRender($file) {
 	pageMenu($file);
 }
 
-function pageMenu($file) {
-	if (!(variable('section'))) return;
-	$folder = dirname($file) . '/';
-	$subPage = variable('page_parameter1');
-	$subSubPage = variable('page_parameter2');
-	if (!disk_file_exists($tsv = $folder . ($subPage ? '_subpages.tsv' : '_pages.tsv'))) {
-		$params = str_replace(SITEPATH, '', $folder);
-		contentBox('pages-menu', 'block-links container after-content'); //TODO: read meta and build table - do that if home.md has meta, expect for all
-		$parentSlug = variable('all_page_parameters');
-		//expects upto _subpages upto here
-		if (variable('page_parameter3')) {
-			$bits = explode('/', $parentSlug);
-			array_pop($bits);
-			$parentSlug = implode('/', $bits);
-		}
-		h2('Sub Site: ' . humanize(variable('page_parameter' . ($subSubPage ? '2' : '1'))));
-		menu($params, ['parent-slug' => $parentSlug . '/', 'home-link-to-section' => true, 'ul-class' => 'block-links']);
-		contentBox('end');
-		return;
-	}
-
-	contentBox('pages', 'container after-content');
-	h2($subPage ? 'Sub Site: ' . humanize($subPage) : 'Site: ' . humanize(variable('node')));
-	runFeature('tables');
-
-	$baseUrl = 'node-url';
-	if ($subSubPage) $baseUrl = 'sub-page-url';
-	else if ($subPage) $baseUrl = 'page-url';
-
-	add_table('pages-table', $tsv, ($subPage ? 'sub-' : '') . 'page-name, about, tags',
-		'<tr><td><a href="%' . $baseUrl . '%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
-	contentBox('end');
-}
-
 function renderedSpecial() {
 	if (variable('site-lock')) { doSiteLock(); return true; }
 	$node = variable('node');

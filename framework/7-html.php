@@ -6,8 +6,10 @@ function currentUrl() {
 }
 
 function currentLevel($wrap = true) {
+	if (hasVariable('page_parameter3'))
+		$level = 'Sub Sub Page';
 	if (hasVariable('page_parameter2'))
-		$level = 'Sub-Page';
+		$level = 'Sub Page';
 	else if (hasVariable('page_parameter1'))
 		$level = 'Page';
 	else
