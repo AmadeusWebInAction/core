@@ -32,6 +32,14 @@ class main {
 		];
 	}
 
+	static function defaultSearches() {
+		return [
+			'amadeusweb' => ['code' => 'c0a96edc60a44407a"', 'name' => 'AmadeusWeb Network', 'description' => 'All AmadeusWeb sites (world, web, imran and core)'],
+			'yieldmore' => ['code' => '29e47bd630f4c73c0"', 'name' => 'YieldMore upto 2024&nbsp;&nbsp;&nbsp;&nbsp;', 'description' => 'All YieldMore sites'],
+			'mothersriaurobindo' => ['code' => '84d24b3918cbd5f1a', 'name' => 'Mother Sri Aurobindo&nbsp;&nbsp;', 'description' => 'Resource Sites of the Aurobindonian World'],
+		];
+	}
+
 	static function runAndReturn() {
 		doToBuffering(1);
 		main::analytics();

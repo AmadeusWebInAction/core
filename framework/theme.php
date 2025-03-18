@@ -15,7 +15,9 @@ function run_theme_part($what) {
 
 	$vars = [
 		'theme' => getThemeBaseUrl(), //TODO: /version can be maintained on the individual file?
-		'optional-slider' => '',
+		'optional-slider' => '', //this could be a page title too
+		'optional-right-button' => '',
+		'header-align' => '', //an addon class needed if video page title has an image and wants content on right
 		'search-url' => variable('page-url') . 'search/',
 	];
 

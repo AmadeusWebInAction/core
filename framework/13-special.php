@@ -114,9 +114,12 @@ function pageMenu($file) {
 function renderedSpecial() {
 	if (variable('site-lock')) { doSiteLock(); return true; }
 	$node = variable('node');
+	if ($node == 'search') { runFeature('search'); return true; }
 	if ($node == 'gallery') { includeFeature('gallery'); return true; }
 	if (_renderedLink($node)) return true;
 	if (_renderedScaffold($node)) return true;
+
+	return false;
 
 	$special = variable('special-folder');
 	if (!$special) return false;

@@ -64,6 +64,8 @@ function afterSectionSet() {
 }
 
 function did_render_page() {
+	if (renderedSpecial()) return true;
+
 	if (variable('directory_of')) {
 		runFeature('directory');
 		return true;

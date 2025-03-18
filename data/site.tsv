@@ -4,7 +4,7 @@ byline	A Different sort of Platfom
 safeName	amadeusweb
 footer-message	
 siteMenuName	Amadeus Web
-scaffold	sitemap
+scaffold	search, sitemap
 sections	docs
 local-url	http://localhost/awe/core/
 live-url	https://v7.amadeusweb.com/

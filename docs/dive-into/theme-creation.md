@@ -17,7 +17,7 @@ We use [canvastemplate](https://canvastemplate.com/) extensively and, to code a 
 
 ---
 
-## Making the template Amadeus Aware
+## Making the template AmadeusWeb Aware
 
 Once the canvas original is ready, we will do the following.
 
@@ -25,25 +25,26 @@ Once the canvas original is ready, we will do the following.
 
 ---
 
-## HEADER PART
+## Header
 
-* In the head tag,
-	* replace author / description with `##seo##`
-	* theme assets need to load from the theme-url, so add a `##theme##` prefix.
-	* document title should become `##head-includes##`
-* In the body
-	* body shold have a class attibute, and if there is any existing class, a space before `##body-classes##`
-	* header logo's link with inner image should be replaced with `##logo##`
-	* after the `<nav class="primary-menu">` there should be an optional ##menu## (it was made optional for go - block-content), replacing the entire `<ul>`.
-	* a ##search-url## is foreseen but not yet achieved.
-	* if the theme had a slider, replace it with ##optional-slider##. It is the job of enrichThemeVars to decide based on the page whether to set it or not. if not set, it retains the original '' (empty space) and a 'no-slider' class will be addded to the body (header background color is set in this case).
-	* class="content" should be added to the main section/div (usually #content)
-	* ##content## where the actual content should be rendered (between the theme parts header + footer) - the parts are **split** by the content placeholder. Sometimes this is inside a `.content-wrap` div
-	
-	
+### In the head tag:
+
+* replace author / description with `##seo##`
+* theme assets need to load from the theme-url, so add a `##theme##` prefix.
+* document title should become `##head-includes##`
+
+## In the body:
+* body should have a class attibute, and if there is any existing class, a space before `##body-classes##`
+* header logo's link with inner image should be replaced with `##logo##`
+* after the `<nav class="primary-menu">` there should be an optional `##menu##` (it was made optional for go - block-content), replacing the entire `<ul>`.
+* a `##search-url##` is foreseen but not yet achieved.
+* if the theme has a slider/page-title, replace it with `##optional-slider##`. It is the job of enrichThemeVars to decide based on the page whether to set it or not. if not set, it retains the original '' (empty space) and a 'no-slider' class will be addded to the body (header background color is set in this case).
+* class="content" should be added to the main section/div (usually #content)
+* `##content##` where the actual content should be rendered (between the theme parts header + footer) - the parts are **split** by the content placeholder. Sometimes this is inside a `.content-wrap` div
+
 ---	
 
-## FOOTER PART
+## Footer
 
 * for now, footer-widgets is mandatory (since we didnt want to duplicate the definition in each sub-theme), so ##footer-widgets## in it, and a **footer-widgets.html
 * remember the `##theme##` for remaining assets
