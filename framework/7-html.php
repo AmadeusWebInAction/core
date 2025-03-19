@@ -126,7 +126,7 @@ function replaceHtml($html) {
 			'%core-url%' => scriptSafeUrl(variable('app')),
 			'%amadeus-url%' => scriptSafeUrl(variable('main')),
 			'%world-url%' => scriptSafeUrl(variable('world')),
-			//'%network-url%' => variableOr('network-url', '#network-url-not-setup--'),
+			'%network-url%' => variableOr('network-static', '##no-network-url') . SITENAME . '/',
 			'%phone%' => variableOr('phone', ''),
 			'%email%' => variableOr('email', ''),
 			'%whatsapp-number%' => variableOr('whatsapp', '##no-number-specified'),

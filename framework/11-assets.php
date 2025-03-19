@@ -56,14 +56,18 @@ function assetMeta($location = 'site', $setValueOr = false) {
 		$bits = explode('--', $location);
 		$twoBits = explode('-', $bits[0], 2);
 
-		$mainFol = SITEPATH . '/';
-		$mainUrl = fileUrl('assets/');
+		$mainFol = variableOr('site-static-folder', SITEPATH . '/');
+		$mainUrl = variableOr('site-static', fileUrl('assets/'));
 		if ($twoBits[0] == 'app') {
 			$mainFol = AMADEUSROOT . $twoBits[1] . '/';
 			$mainUrl = variable($bits[0]);
-		} //else support network + site
+		} else if ($twoBits[0] == 'network' && isset($twoBits[1])) {
+			$mainFol = variable('network-static-folder') .  $twoBits[1] . '/';
+			$mainUrl = variable('network-static');
+		}
 
-		$middlePath = $twoBits[0] == 'app' && isset($bits[1]) ? $bits[1] . '/' : '';
+		$middlePath = (in_array($twoBits[0], ['network', 'app'])
+			&& isset($bits[1])) ? $bits[1] . '/' : '';
 
 		$versionFile = $mainFol . $middlePath .'_version.txt';
 		$version = disk_file_exists($versionFile) ? '?' . disk_file_get_contents($versionFile) : '';
@@ -84,7 +88,7 @@ function assetMeta($location = 'site', $setValueOr = false) {
 
 function siteOrNetworkOrAppStatic($relative) {
 	$where = variableOr('site-static', 'app-static');
-	$subFol = variable('use-site-static') ? '' : variable('safeName') . '/'; //subFolderOfAppIfNotSiteStatic
+	$subFol = hasVariable('site-static') ? '' : variable('safeName') . '/';
 	return assetUrl($subFol . $relative, $where);
 }
 

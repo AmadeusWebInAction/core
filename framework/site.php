@@ -80,7 +80,7 @@ function _visane($siteVars) {
 		['address', 'Chennai, India'],
 
 		['description', false],
-		['network', false], //string will be returned by default if set
+		['network', variable('network')], //can be defined in site.tsv / loader
 	];
 
 	if (!hasVariable('theme')) {
@@ -142,86 +142,41 @@ __testSiteVars($op);
 
 //TODO: add_foot_hook(AMADEUSTHEMEFOLDER . 'media-kit.php');
 
-if ($network) setupNetworkLinks($network);
+if ($network) setupNetwork();
 
-function setupNetworkLinks($network) {
-	disk_include_once(siteRealPath('/../network.php')); //TODO: make a conditional check and remove from site.tsv
-	$data = siteRealPath('/../sites.tsv');
-	//if (!disk_file_exists($data)) return; //NOTE: Design By Contract - let it throw
-
-	$sitesSheet = getSheet($data, false);
+function setupNetwork() {
+	disk_include_once(siteRealPath('/../network.php'));
+	$siteNames = textToList(disk_file_get_contents(siteRealPath('/../sites.txt')));
 
 	$op = [];
-	$newTab = false ? 'target="_blank" ' : '';
+	$newTab = true ? 'target="_blank" ' : '';
 	$sites = [];
 
-	$imgIndex = isset($sitesSheet->columns['img']) ? $sitesSheet->columns['img'] : '';
-	$themeIndex = isset($sitesSheet->columns['theme']) ? $sitesSheet->columns['theme'] : false;
-	$groupIndex = isset($sitesSheet->columns['group']) ? $sitesSheet->columns['group'] : false;
-
-	function __setupNetworkVars() {
-		$networkSheetFile = siteRealPath('/../network.tsv');
-		$networkSheet = getSheet($networkSheetFile, 'key');
-		$networkVal = $networkSheet->columns['value'];
-
-		$networkItem = $networkSheet->group;
-		if (isset($networkItem[$networkKey = 'network-' . variable(SITEURLKEY)]))
-			variable('network-url', $networkUrl = $networkItem[$networkKey][0][$networkVal]);
-		
-		//NOTE: expects url to be set above, version not needed as we will implement network-static
-		if (isset($networkItem['network-version'])) assetMeta('network', $networkMeta = [
-			'version' => $networkItem['network-version'][0][$networkVal],
-			'baseurl' => $networkUrl . 'assets/',
-		]);
-
-		$networkVars = [
-			'url' => $networkUrl,
-			//'meta' => $networkMeta,
-			'name' => $networkItem['network-name'][0][$networkVal],
-			'safeName' => $networkItem['network-safeName'][0][$networkVal],
-			'byline' => $networkItem['network-byline'][0][$networkVal],
-			'message' => $networkItem['network-message'][0][$networkVal],
-		];
-
-		variable('network', $networkVars);
-		variable('is-network-site', variable('safeName') == $networkVars['safeName']);
-	
-		if (disk_file_exists(siteRealPath('/../assets/network.css'))) //TODO: !!!
-			addStyle('network', 'network');
-	}
-
-	__setupNetworkVars();
-
-	foreach ($sitesSheet->rows as $row) {
-		$site = $row[$sitesSheet->columns['slug']];
-
+	foreach ($siteNames as $site) {
 		$sheetFile = siteRealPath('/../' . $site . '/data/site.tsv');
 		if (!sheetExists($sheetFile)) { continue; }
 
 		$sheet = getSheet($sheetFile, 'key');
 		$val = $sheet->columns['value'];
 
-		$img = $imgIndex ? $row[$imgIndex] : '';
-		$theme = $themeIndex === false ? false : $row[$themeIndex];
-		$group = $groupIndex === false ? false : $row[$sitesSheet->columns['group']];
-
 		$item = $sheet->group;
 
 		if (contains($url = $item[variable(SITEURLKEY)][0][$val], 'localhost'))
 			$url = replaceItems($url, ['localhost' => 'localhost' . variable('port')]);
 
-		$op[] = sprintf('<a href="%s" %stitle="%s &mdash; %s">%s</a>',
-			$url, $newTab, $name = $item['name'][0][$val], $byline = $item['byline'][0][$val], $item['name'][0][$val], variable('nl'));
+		$op[] = sprintf('<a href="%s" %stitle="%s &mdash; %s">%s</a>', $url, $newTab,
+			$name = $item['name'][0][$val],
+			$byline = $item['byline'][0][$val],
+				$item['name'][0][$val], variable('nl'));
 
+		$vars = parseSectionsAndGroups(['sections' => $item['sections'][0][$val]], true, true);
 		$sites[$site] = [
 			'name' => $name, 'byline' => $byline,
 			'safeName' => $item['safeName'][0][$val],
-			'vars' => parseSectionsAndGroups(['sections' => $item['sections'][0][$val]], true, true),
-			'img' => $img, 'url' => $url,
+			'sections' => $vars['sections'],
+			'url' => $url,
 			'link' => end($op),
-			'item' => $item, //dont want to recreate the tsv path
-			'valueIndex' => $val,
-			'group' => $group,
+			'icon' => $site,
 		];
 	}
 	

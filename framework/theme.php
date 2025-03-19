@@ -48,17 +48,19 @@ function run_theme_part($what) {
 			echo _renderRaw($bits[1]);
 		}
 	} else if ($what == 'footer') {
-		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
-		$suffix = !variable('footer-message') ? '' : renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
-		$fwVars = [
-			'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),
-			'site-widgets' => siteWidgets(),
-			'copyright' => _copyright(true),
-			'credits' => _credits('', true),
-			//TODO: 'social-icons' now removed -> use footer-widgets in all templates!
-		];
+		if (!variable('footer-widgets-in-enrich')) {
+			$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
+			$suffix = !variable('footer-message') ? '' : renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
+			$fwVars = [
+				'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),
+				'site-widgets' => siteWidgets(),
+				'copyright' => _copyright(true),
+				'credits' => _credits('', true),
+				//TODO: 'social-icons' now removed -> use footer-widgets in all templates!
+			];
 
-		$vars['footer-widgets'] = _substituteThemeVars($content, 'footer-widgets', $fwVars);
+			$vars['footer-widgets'] = _substituteThemeVars($content, 'footer-widgets', $fwVars);
+		}
 
 		$footer = _substituteThemeVars($content, 'footer', $vars);
 
@@ -125,8 +127,7 @@ function siteWidgets() {
 		$op[] = '</div>'; $op[] = '';
 	}
 
-	$sites;
-	if ($sites = variableOr('network-sites', main::defaultNetwork())) {
+	if (count($sites = variableOr('network-sites', main::defaultNetwork()))) {
 		$op[] = $start;
 		$op[] = '<h4>Network</h4>';
 		foreach ($sites as $site)
