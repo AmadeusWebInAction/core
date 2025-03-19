@@ -77,10 +77,24 @@ function autoRender($file) {
 	pageMenu($file);
 }
 
+function hasSpecial() {
+	$node = variable('node');
+	if (_isLinks($node) || $node == 'search') return _setAndReturn(['sub-theme' => 'blank']);
+	if (isset($_GET['share'])) return _setAndReturn(['sub-theme' => 'go']);
+
+	return false;
+}
+
+function _setAndReturn($vars) {
+	variables($vars);
+	return true;
+}
+
 function renderedSpecial() {
 	if (variable('site-lock')) { doSiteLock(); return true; }
 	$node = variable('node');
 	if ($node == 'search') { runFeature('search'); return true; }
+	//share done at top of entry's render()
 	if ($node == 'gallery') { includeFeature('gallery'); return true; }
 	if (_renderedLink($node)) return true;
 	if (_renderedScaffold($node)) return true;
@@ -303,53 +317,9 @@ function _renderedDossiers($data) {
 	add_table($page, false, $data, 'auto', disk_file_get_contents($html));
 }
 
-//TODO: Refactor and move away? or make it a kind of special section
-function did_wiki_topic_humanize($txt, $field, $sheetName = 'wiki') {
-	$sheetName = trim($sheetName);
-	$txt = str_replace(' ', '-', strtolower($txt));
-	$sheet = getSheet($sheetName, 'slug'); //NOTE: Its cached automatically by the framework
-
-	if (isset($sheet->group[$txt]))
-		return $sheet->group[$txt][0][$sheet->columns['no']] . ' &mdash; ' . humanize($txt, 'no-site');
-	else
-		return false;
-}
-
-function wiki_pages_after_file($sheetName = 'wiki', $wikiSlug = 'wiki') {
-	$sheetName = trim($sheetName);
-	$sheet = getSheet($sheetName, 'slug');
-	$page = variable('page_parameter1');
-	if (!$page || !isset($sheet->group[$page])) return;
-
-	$row = $sheet->group[$page][0];
-	$no = $row[$sheet->columns['no']];
-
-	$sheet = getSheet($sheetName, 'parent');
-	$items = $sheet->group[$no];
-
-	foreach ($items as $item) {
-		$content = $item[$sheet->columns['has_content']];
-		$itemNo = $item[$sheet->columns['no']];
-		$itemSlug = $item[$sheet->columns['slug']];
-
-		$html = renderMarkdown($content == 'N'
-			? SITEPATH . '/' . $wikiSlug . '/' . variable('node') . '/_pages/' . $itemSlug . '.md'
-			: $item[$sheet->columns['content']], ['echo' => false, 'strip-paragraph-tag'=> true]);
-
-		$html = str_replace('|',variable('brnl'), $html);
-
-		section('end');
-		section();
-
-		$heading = str_pad('#', substr_count($itemNo, '.') + 1);
-		echo renderMarkdown($heading . ' ' . $itemNo . ' &mdash; ' . humanize($itemSlug, 'no-site'));
-		echo $html;
-	}
-}
-
 function _isLinks($node) {
 	if ($node == 'go')
-	includeFeature('links'); //will just do a redirect
+		runFeature('links'); //will just do a redirect
 
 	return $node == 'links';
 }
@@ -357,7 +327,7 @@ function _isLinks($node) {
 function _renderedLink($node) {
 	if ($node != 'links') return false;
 
-	includeFeature('links'); //will list them
+	runFeature('links'); //will list them
 	return true;
 }
 

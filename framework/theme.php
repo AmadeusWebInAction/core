@@ -19,6 +19,7 @@ function run_theme_part($what) {
 		'optional-right-button' => '',
 		'header-align' => '', //an addon class needed if video page title has an image and wants content on right
 		'search-url' => variable('page-url') . 'search/',
+		'app-static' => assetMeta('app-static')['location'],
 	];
 
 	$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png');
@@ -33,7 +34,7 @@ function run_theme_part($what) {
 		$vars['body-classes'] = body_classes(true);
 
 		$vars['logo'] = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" class="img-fluid img-max-',
-		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
+			variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
 
 		$header = _substituteThemeVars($content, 'header', $vars);
 

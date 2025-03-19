@@ -246,9 +246,11 @@ function makeRelativeLink($text, $relUrl) {
 	return '<a href="' . pageUrl($relUrl) . '">' . $text . '</a>';
 }
 
+DEFINE('EXTERNALLINK', 'external');
+
 function makeLink($text, $link, $relative = true, $noLink = false) {
 	if ($noLink) return $text; //Used when a variable needs to control this, else it will be a ternary condition, complicating things
-	if ($relative == 'external') $link .= '" target="_blank'; //hacky - will never 
+	if ($relative == EXTERNALLINK) $link .= '" target="_blank'; //hacky - will never 
 	else if ($relative) $link = pageUrl($link);
 	return prepareLinks('<a href="' . $link . '">' . $text . '</a>');
 }
@@ -280,7 +282,8 @@ function getThemeIcon($id, $size = 'normal')  {
 function body_classes($return = false) {
 	$chatra = hasVariable('ChatraID') ? ' has-chatra' : '';
 	$sub = variable('sub-theme') ? ' sub-theme-' . variable('sub-theme') : '';
-	$op = 'theme-' . variable('theme') . $sub . ' site-' . variable('safeName') . $chatra;
+	$page = ' node-' . (isset($_GET['share']) ? 'share' : str_replace('/', '_', variable('all_page_parameters')));
+	$op = 'theme-' . variable('theme') . $page . $sub . ' site-' . variable('safeName') . $chatra;
 	if ($return) return $op;
 	echo $op;
 }

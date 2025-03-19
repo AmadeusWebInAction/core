@@ -140,7 +140,6 @@ function renderThemeFile($file, $themeName = false) {
 function render() {
 	/*
 	add_foot_hook(featurePath('asset-manager.php')); //NOTE: can this be here?
-	if (isset($_GET['share'])) includeFeature('share');
 	*/
 
 	if (function_exists('before_render')) before_render();
@@ -155,8 +154,13 @@ function render() {
 	}
 
 	$folder = variable('path') . '/' . (variable('folder') ? variable('folder') : '');
-	$fwe =  $folder . variable('node');
-	$rendered = renderAnyFile($fwe . '.', ['extensions' => 'core', 'return-on-first' => true]);
+	if (isset($_GET['share'])) {
+		runFeature('share');
+		$rendered = true;
+	} else {
+		$fwe =  $folder . variable('node');
+		$rendered = renderAnyFile($fwe . '.', ['extensions' => 'core', 'return-on-first' => true]);
+	}
 
 	if (isset($_GET['debug']) || isset($_GET['stats'])) {
 		variable('stats', true);
@@ -172,8 +176,6 @@ function render() {
 
 			if (isset($_GET['debug'])) {
 				echo 'NOTE: Turning on stats so you can additionally see what files are included! This appears below the footer' . variable('brnl') . variable('brnl');
-
-				parameterError('FUNCTION EXISTS: did_render_page', function_exists('did_render_page') ? 'YES' : 'NO');
 
 				$verbose = $_GET['debug'] == 'verbose';
 				if ($verbose) {
