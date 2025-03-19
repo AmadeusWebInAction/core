@@ -77,6 +77,12 @@ function autoRender($file) {
 	pageMenu($file);
 }
 
+function hasSpecial() {
+	$node = variable('node');
+	if ($node == 'search') { variable('sub-theme', 'blank'); return true; }
+	return false;
+}
+
 function renderedSpecial() {
 	if (variable('site-lock')) { doSiteLock(); return true; }
 	$node = variable('node');

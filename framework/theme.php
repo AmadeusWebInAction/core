@@ -19,6 +19,7 @@ function run_theme_part($what) {
 		'optional-right-button' => '',
 		'header-align' => '', //an addon class needed if video page title has an image and wants content on right
 		'search-url' => variable('page-url') . 'search/',
+		'app-static' => assetMeta('app-static')['location'],
 	];
 
 	$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png');

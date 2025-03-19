@@ -5,6 +5,8 @@ function before_render() {
 	if (variable('use-site-static')) variable('site-static', 'site-static');
 	//TODO: high! read_seo_info();
 
+	if (hasSpecial()) return;
+
 	foreach (variable('sections') as $slug) {
 		if ($slug == $node = variable('node')) {
 			variable('directory_of', $node);
@@ -60,6 +62,7 @@ function ifOneOfFilesExists($section, $fwes, $nodeFolderItem = false, $nodeFolde
 }
 
 function afterSectionSet() {
+	//TODO: include _folder.php on $file if it exists
 	if (function_exists('site_before_render')) site_before_render();
 }
 
