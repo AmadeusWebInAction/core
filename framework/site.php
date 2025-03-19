@@ -67,7 +67,8 @@ parseSectionsAndGroups($siteVars);
 
 //valueIfSetAndNotEmpty
 function _visane($siteVars) {
-	$possibles = [
+	//defaults are given, hence guaranteed and site is the only way
+	$guarantees = [
 		['site-home-in-menu', false, 'bool'],
 		['use-menu-files', false, 'bool'],
 		['home-link-to-section', false, 'bool'],
@@ -84,12 +85,12 @@ function _visane($siteVars) {
 	];
 
 	if (!hasVariable('theme')) {
-		$possibles[] = ['theme', 'canvas'];
-		$possibles[] = ['sub-theme', variableOr('sub-theme', 'business')];
+		$guarantees[] = ['theme', 'canvas'];
+		$guarantees[] = ['sub-theme', variableOr('sub-theme', 'business')];
 	}
 
 	$op = [];
-	foreach ($possibles as $cfg)
+	foreach ($guarantees as $cfg)
 		$op[$cfg[0]] = valueIfSetAndNotEmpty($siteVars, $cfg[0], $cfg[1], isset($cfg[2]) ? $cfg[2] : 'no-change');
 
 	__testSiteVars($op);
@@ -169,11 +170,15 @@ function setupNetwork() {
 			$byline = $item['byline'][0][$val],
 				$item['name'][0][$val], variable('nl'));
 
-		$vars = parseSectionsAndGroups(['sections' => $item['sections'][0][$val]], true, true);
+		$sections = isset($item['sections']) ? $item['sections'][0][$val] : [];
+		if (is_string($sections) && $sections != '')
+			$sections = parseSectionsAndGroups(['sections' =>
+				$item['sections'][0][$val]], true, true)['sections'];
+
 		$sites[$site] = [
 			'name' => $name, 'byline' => $byline,
 			'safeName' => $item['safeName'][0][$val],
-			'sections' => $vars['sections'],
+			'sections' => $sections,
 			'url' => $url,
 			'link' => end($op),
 			'icon' => $site,

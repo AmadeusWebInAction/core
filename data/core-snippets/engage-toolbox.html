@@ -1,0 +1,25 @@
+<div class="action-wrapper content-box p-4 after-content text-center">
+
+	<div class="btn-group m-auto mt-2 mb-3" role="group" aria-label="Engaging with Us">
+		<a style="width: 54px; margin-right: 10px;" target="_blank" class="send-via-whatsapp disabled text-light si-mini rounded-circle fa-2x fa-brands bg-whatsapp fa-whatsapp"></a>
+		<a style="width: 54px; margin-right: 10px;" target="_blank" class="send-via-email disabled text-light si-mini rounded-circle fa-2x fa-classic bg-info fa-envelope"></a>
+
+		<div class="btn-group" role="group">
+			<button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+				What Is This?
+			</button>
+			<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+				<a class="dropdown-item" href="#">Dropdown link</a>
+				<a class="dropdown-item" href="#">Dropdown link</a>
+			</div>
+		</div>
+	</div>
+
+	<input type="text" name="full-name" class="form-control sender-name w-100 text-center"
+		onfocus="this.phStore = this.placeholder; this.placeholder = '';"
+		onblur="this.placeholder = this.phStore;" placeholder="[Your Name]" />
+	<button class="prepare-message btn btn-secondary d-inline-block mt-3 mb-3">Prepare message to Send Us</button>
+	<textarea class="message-content d-block d-none text-left w-100 m-3"></textarea>
+	<a target="_blank" class="send-via-whatsapp bg-whatsapp btn d-inline-block d-none mt-2">Send Message on WhatsApp</a>
+	<a target="_blank" class="send-via-email bg-info btn d-inline-block d-none mt-2">Send Email (opens mail client)</a>
+</div>

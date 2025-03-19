@@ -7,7 +7,7 @@ class main {
 
 	static function initialize() {
 		variables([
-			//TODO: once reinstated! 'assistantEmail' => 'assistant@amadeusweb.world',
+			'assistantEmail' => 'assistant@amadeusweb.world',
 			'systemEmail' => 'team@amadeusweb.com',
 		]);
 	}

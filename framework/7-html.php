@@ -126,11 +126,11 @@ function replaceHtml($html) {
 			'%core-url%' => scriptSafeUrl(variable('app')),
 			'%amadeus-url%' => scriptSafeUrl(variable('main')),
 			'%world-url%' => scriptSafeUrl(variable('world')),
-			'%network-url%' => variableOr('network-static', '##no-network-url') . SITENAME . '/',
+			'%network-url%' => variableOr('network-static', '##no-network-url') . basename(SITEPATH) . '/',
 			'%phone%' => variableOr('phone', ''),
 			'%email%' => variableOr('email', ''),
-			'%whatsapp-number%' => variableOr('whatsapp', '##no-number-specified'),
-			'%whatsapp%' => 'https://wa.me/'. variableOr('whatsapp', '') . '?text=',
+			'%whatsapp-number%' => $wa = variableOr('whatsapp', '##no-number-specified'),
+			'%whatsapp%' => $wame = 'https://wa.me/'. $wa . '?text=',
 			'%siteName%' => $sn = variable('name'),
 			'%safeName%' =>  variable('safeName'),
 			'%section%' => variable('section'), //let archives break!
@@ -143,6 +143,7 @@ function replaceHtml($html) {
 			'%enquiry%' => str_replace(' ', '+', 'enquiry (for) ' . $sn . ' (at) ' . $loc),
 			'<marquee>' => variable('_marqueeStart'),
 		]);
+		variable('whatsapp-txt-start', $wame);
 	}
 
 	return replaceItems($html, $replaces);

@@ -4,11 +4,16 @@ addScript('engage', 'app-static--common-assets');
 
 //TODO: Make a toggle-more when the md contains <!--more-->
 function _renderEngage($name, $raw, $open = false, $echo = true) {
+	//deprecating the name - heading of form should do
 	$id = variableOr('all_page_parameters', variable('node'));
 	if (!$open) echo engageButton($id, $name, $class);
 
-	$result = '	<div id="engage-' . $id . '" class="engage content-box" ' . ($open ? '' : 'style="display: none" ') .
-		'data-to="' . ($email = variable('email')) . '" data-cc="' . variableOr('assistantEmail', variable('systemEmail')) . '" data-name="' . $name . '">' . variable('nl');
+	$result = '	<div id="engage-' . $id . '" class="engage content-box" ' .
+		($open ? '' : 'style="display: none" ') .
+		'data-to="' . ($email = variable('email')) . '" data-cc="' .
+		variableOr('assistantEmail', variable('systemEmail')) .
+		'" data-whatsapp="' . variable('whatsapp-txt-start') . '"' .
+		'" data-site-name="' . variable('name') . '">' . variable('nl');
 
 	$replaces = [];
 	if (disk_file_exists($note = (AMADEUSCORE . 'data/engage-note.md'))) {
@@ -20,6 +25,8 @@ function _renderEngage($name, $raw, $open = false, $echo = true) {
 
 	$result .= renderMarkdown($raw, ['replaces' => $replaces, 'echo' => false]);
 
+	$result .= getSnippet('engage-toolbox', AMADEUSCORE . 'data/core-snippets/');
+	
 	$result .= '</div>' . variable('nl');
 	if (!$echo) return $result;
 	echo $result;
