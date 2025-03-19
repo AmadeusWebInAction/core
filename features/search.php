@@ -17,6 +17,10 @@ foreach ($engines as $slug => $item) {
 
 ?>
 
+<style type="text/css">
+.gsc-results-wrapper-overlay { z-index: 100002; margin-top: 100px; }
+</style>
+
 <script async src="https://cse.google.com/cse.js?cx=<?php echo $engine['code']; ?>"></script>
 <div class="gcse-search"></div>
 

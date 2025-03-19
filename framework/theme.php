@@ -21,6 +21,8 @@ function run_theme_part($what) {
 		'search-url' => variable('page-url') . 'search/',
 	];
 
+	$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png');
+
 	if ($what == 'header') {
 		$icon = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192" />',
 			['url' => fileUrl(), 'safeName' => variable('safeName'),
@@ -30,11 +32,7 @@ function run_theme_part($what) {
 		$vars['seo'] = seo_tags(true);
 		$vars['body-classes'] = body_classes(true);
 
-		//TODO: if network exists, else if node is sub site else yada-yada-yada
-		$where = variableOr('site-static', 'app-static');
-		$subFolderOfAppIfNotSiteStatic = variable('use-site-static') ? '' : variable('safeName') . '/';
-		$imgUrl = assetUrl($subFolderOfAppIfNotSiteStatic . variable('safeName') . '-logo@2x.png', $where);
-		$vars['logo'] = concatSlugs(['<a href="', pageUrl(), '"><img src="', $imgUrl, '" class="img-fluid img-max-',
+		$vars['logo'] = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" class="img-fluid img-max-',
 		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
 
 		$header = _substituteThemeVars($content, 'header', $vars);
@@ -49,9 +47,7 @@ function run_theme_part($what) {
 			echo _renderRaw($bits[1]);
 		}
 	} else if ($what == 'footer') {
-		$where = variableOr('site-static', 'app-static');
-		$subFolderOfAppIfNotSiteStatic = variable('use-site-static') ? '' : variable('safeName') . '/';
-		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', assetUrl('', $where), $subFolderOfAppIfNotSiteStatic, variable('safeName') . '-logo@2x.png" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
+		$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
 		$suffix = !variable('footer-message') ? '' : renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
 		$fwVars = [
 			'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),

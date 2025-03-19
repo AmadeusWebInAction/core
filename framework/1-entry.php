@@ -52,6 +52,9 @@ runFrameworkFile('13-special');
 //v6.5
 runFrameworkFile('14-main');
 
+//v7.1
+runFrameworkFile('15-routing');
+
 function before_bootstrap() {
 	$port = $_SERVER['SERVER_PORT'];
 
@@ -62,6 +65,7 @@ function before_bootstrap() {
 	variable('is_mobile_server', $isMobile);
 
 	variable('local', $local = startsWith($_SERVER['HTTP_HOST'], 'localhost'));
+	variable('live', contains(SITEPATH, 'live'));
 
 	variable('app', $local && !$isMobile ? replaceVariables('http://localhost%port%/awe/core/', 'port') : '//v7.amadeusweb.com/');
 

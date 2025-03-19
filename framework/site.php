@@ -1,27 +1,5 @@
 <?php
-$usePreview = variableOr('use-preview', false);
-$local = variable('local'); //this is now in before_bootstrap
-if ($usePreview) variable('preview', $preview = contains($_SERVER['HTTP_HOST'], 'preview'));
-
-//tests preview urls locally
-//$local = false; $preview = true;
-
-if ($usePreview) {
-	variable('live', $liveFolder = contains(__DIR__, 'live'));
-
-	if ($liveFolder)
-		variable('site-url-key', ($local ? 'live-on-local' : 'live') . '-url');
-	else
-		variable('site-url-key', ($preview ? 'preview' : 'local') . '-url');
-
-	//until green
-	if (variable('live-is-empty') && $liveFolder && !$local) {
-		echo '<!--silence-->';
-		exit;
-	}
-} else {
-	variable('site-url-key', ($local ? 'local' : 'live') . '-url');
-}
+getSiteUrlKey(); //get only needed for testing which should come soon
 
 function __testSiteVars($array) {
 	return; //comment to test
@@ -40,7 +18,7 @@ foreach ($sheet->rows as $row) {
 
 variable('site-vars', $siteVars);
 
-if (contains($url = $siteVars[variable('site-url-key')], 'localhost')) {
+if (contains($url = $siteVars[variable(SITEURLKEY)], 'localhost')) {
 	$url = replaceItems($url, ['localhost' => 'localhost' . variable('port')]);
 	__testSiteVars(['url-for-localhost' => $url]);
 }
@@ -187,7 +165,7 @@ function setupNetworkLinks($network) {
 		$networkVal = $networkSheet->columns['value'];
 
 		$networkItem = $networkSheet->group;
-		if (isset($networkItem[$networkKey = 'network-' . variable('site-url-key')]))
+		if (isset($networkItem[$networkKey = 'network-' . variable(SITEURLKEY)]))
 			variable('network-url', $networkUrl = $networkItem[$networkKey][0][$networkVal]);
 		
 		//NOTE: expects url to be set above, version not needed as we will implement network-static
@@ -229,7 +207,7 @@ function setupNetworkLinks($network) {
 
 		$item = $sheet->group;
 
-		if (contains($url = $item[variable('site-url-key')][0][$val], 'localhost'))
+		if (contains($url = $item[variable(SITEURLKEY)][0][$val], 'localhost'))
 			$url = replaceItems($url, ['localhost' => 'localhost' . variable('port')]);
 
 		$op[] = sprintf('<a href="%s" %stitle="%s &mdash; %s">%s</a>',

@@ -82,6 +82,12 @@ function assetMeta($location = 'site', $setValueOr = false) {
 	return $result;
 }
 
+function siteOrNetworkOrAppStatic($relative) {
+	$where = variableOr('site-static', 'app-static');
+	$subFol = variable('use-site-static') ? '' : variable('safeName') . '/'; //subFolderOfAppIfNotSiteStatic
+	return assetUrl($subFol . $relative, $where);
+}
+
 //TODO: support for network-static and site-static
 function assetUrl($file, $location) {
 	if (startsWith($file, 'http') || startsWith($file, '//'))
