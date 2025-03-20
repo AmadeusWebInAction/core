@@ -121,7 +121,7 @@ function replaceHtml($html) {
 		variable($key, $replaces = [
 			//Also, we should incorporate dev tools like w3c & broken link checkers
 			'%url%' => variable('page-url'),
-			'%assets%' => variable('assets-url') . 'assets/',
+			'%assets%' => variableOr('assets-override', variable('assets-url') . 'assets/'),
 			'%node%' => variable('node'),
 			'%core-url%' => scriptSafeUrl(variable('app')),
 			'%amadeus-url%' => scriptSafeUrl(variable('main')),

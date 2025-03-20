@@ -7,12 +7,20 @@ function before_render() {
 
 	if (hasSpecial()) return;
 
+	$hasFiles = variable('sections-have-files');
+	$node = variable('node');
 	foreach (variable('sections') as $slug) {
-		if ($slug == $node = variable('node')) {
+		if (!$hasFiles && $slug == $node) {
 			variable('directory_of', $node);
 			variable('section', $slug);
 			afterSectionSet();
 			return;
+		}
+
+		if ($hasFiles && $slug == $node) {
+			$level0 = [$slug == $node ? variable('path') . '/' . $slug . '/home.' :
+				variable('path') . '/' . $slug . '/' . $node . '.'];
+			if (ifOneOfFilesExists($slug, $level0)) return;
 		}
 
 		$page1 = variable('page_parameter1') ? variable('page_parameter1') : 'home';

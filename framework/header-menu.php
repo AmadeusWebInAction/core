@@ -72,6 +72,7 @@ function renderHeaderMenu($slug, $node = '') {
 		'a-class' => $anchorClass,
 		'ul-class' => $ulClass . ($node ? ' of-node node-' . $node : ''),
 		'list-only-folders' => $node == '',
+		'list-only-files' => variable('sections-have-files'),
 		'home-link-to-section' => true,
 		'parent-slug-for-home-link' => $parentSlug . '/',
 		'parent-slug' => $node ? $node . '/' : '',

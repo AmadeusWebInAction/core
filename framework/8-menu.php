@@ -52,7 +52,7 @@ function get_page_menu_variables() {
 }
 
 function pageMenu($file) {
-	if (!(variable('section'))) return;
+	if (!(variable('section')) || variable('no-page-menu')) return;
 	$folder = concatSlugs([SITEPATH, variable('section'), variable('node')]) . '/';
 
 	$subPage1 = variable('page_parameter1');
@@ -171,7 +171,7 @@ function menu($folderRelative = false, $settings = []) {
 	$wrapInDiv = ($wrapInDivVO = valueIfSetAndNotEmpty($settings, 'wrap-text-in-a-div')) && $menuLevel != 1;
 	$onlySlugForSectionMenu = valueIfSet($settings, 'humanize');
 
-	//If neigher specified, returns mixed.
+	//If neither specified, returns mixed.
 	$onlyFiles = valueIfSet($settings, 'list-only-files');
 	$onlyFolders = valueIfSet($settings, 'list-only-folders');
 
@@ -209,8 +209,10 @@ function menu($folderRelative = false, $settings = []) {
 
 		//skip these checks when there is a whitelist
 		if (!$filesGiven && !in_array($file, $append)) {
-			if ($onlyFolders && !is_dir($folder . $file)) continue;
-			if ($onlyFiles && is_dir($folder . $file)) continue;
+			if ($onlyFolders != $onlyFiles) {
+				if ($onlyFolders && !is_dir($folder . $file)) continue;
+				if ($onlyFiles && is_dir($folder . $file)) continue;
+			}
 
 			$info = pathinfo($file);
 			$bits = [$info['filename']]; //TODO: move to files.php

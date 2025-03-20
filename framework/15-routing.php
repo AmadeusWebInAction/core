@@ -27,6 +27,7 @@ function getSiteUrlKey() {
 		runFeature('under-construction');
 	}
 
+	variable('preview', $preview);
 	variable(SITEURLKEY, $result);
 	return $result;
 }
