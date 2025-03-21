@@ -68,7 +68,10 @@ function cbWrapAndReplaceHr($raw) {
 function _getCBClassIfWanted($additionalClass) {
 	$no = variable('no-content-boxes');
 	if ($no && $additionalClass == '') return '';
-	return ($additionalClass ? $additionalClass . ' ' : '') . 'content-box';
+	$classes = [];
+	if ($additionalClass) $classes[] = $additionalClass;
+	if (!$no) $classes[] = 'content-box';
+	return implode(' ', $classes);
 }
 
 function contentBox($id, $class = '', $return = false) {
@@ -150,6 +153,7 @@ function replaceHtml($html) {
 			'%sub-page-url%' => variable('page_parameter2') ? variable('page-url') . variable('node') . '/' . variable('page_parameter1') . '/'  . variable('page_parameter2') . '/' : '##not-in-a-sub-page',
 			'%page-location%' => $loc = title('params-only'),
 			'%enquiry%' => str_replace(' ', '+', 'enquiry (for) ' . $sn . ' (at) ' . $loc),
+			'%optional-content-box-class%' => _getCBClassIfWanted(''),
 			'<marquee>' => variable('_marqueeStart'),
 		]);
 		variable('whatsapp-txt-start', $wame);
