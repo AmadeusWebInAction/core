@@ -1,3 +1,6 @@
 #name_urlized	about	tags
 introduction	Whats new in v7 and whether it is suited for your needs.	#tech
 concepts	For those wanting to know more / understand the internals	#ideas #glossary
+dive-into	The nitty gritties, the overview etc	#setup
+getting-started	How to setup etc	#development-environment
+
