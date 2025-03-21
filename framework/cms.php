@@ -5,7 +5,7 @@ function before_render() {
 	if (variable('use-site-static')) variable('site-static', 'site-static');
 	//TODO: high! read_seo_info();
 
-	if (hasSpecial()) return;
+	if (hasSpecial()) { afterSectionSet(); return; }
 
 	$hasFiles = variable('sections-have-files');
 	$node = variable('node');
@@ -52,6 +52,9 @@ function before_render() {
 			}
 		}
 	}
+
+	//lets make it a point to call before render here, assuming either its a "content" page or will throw an error
+	afterSectionSet();
 }
 
 function ifOneOfFilesExists($section, $fwes, $nodeFolderItem = false, $nodeFolderLevel = 1) {

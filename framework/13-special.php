@@ -53,7 +53,7 @@ function autoRender($file) {
 	}
 
 	if (endsWith($file, '.tsv')) {
-		if (!$embed) sectionId('special-table', 'container content-box');
+		if (!$embed) sectionId('special-table', _getCBClassIfWanted('container'));
 
 		runFeature('tables');
 
@@ -71,7 +71,7 @@ function autoRender($file) {
 		return;
 	}
 
-	sectionId('file', 'container content-box');
+	sectionId('file', _getCBClassIfWanted('container'));
 	renderAny($file);
 	section('end');
 	pageMenu($file);

@@ -8,7 +8,7 @@ function _renderEngage($name, $raw, $open = false, $echo = true) {
 	$id = variableOr('all_page_parameters', variable('node'));
 	if (!$open) echo engageButton($id, $name, $class);
 
-	$result = '	<div id="engage-' . $id . '" class="engage content-box" ' .
+	$result = '	<div id="engage-' . $id . '" class="' . _getCBClassIfWanted('engage') . '" ' .
 		($open ? '' : 'style="display: none" ') .
 		'data-to="' . ($email = variable('email')) . '" data-cc="' .
 		variableOr('assistantEmail', variable('systemEmail')) .

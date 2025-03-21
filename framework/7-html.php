@@ -59,9 +59,16 @@ function iframe($url, $wrapContainer = true) {
 }
 
 function cbWrapAndReplaceHr($raw) {
+	if (variable('no-content-boxes')) return $raw;
+
 	$closeAndOpen = ($end = contentBox('end', '', true)) . ($start = contentBox('', '', true));
-	
 	return $start . str_replace('<hr>', $closeAndOpen, $raw) . $end;
+}
+
+function _getCBClassIfWanted($additionalClass) {
+	$no = variable('no-content-boxes');
+	if ($no && $additionalClass == '') return '';
+	return ($additionalClass ? $additionalClass . ' ' : '') . 'content-box';
 }
 
 function contentBox($id, $class = '', $return = false) {
@@ -74,8 +81,10 @@ function contentBox($id, $class = '', $return = false) {
 
 	$attrs = '';
 	if ($id) $attrs .= ' id="' . $id . '"';
-	if ($class) $class = ' ' . $class;
-	$attrs .= ' class="content-box' . $class . '"';
+
+	$all = _getCBClassIfWanted($class);
+	if ($all) $attrs .= ' class="' . $all . '"';
+
 	$result = variable('nl') . '<div' . $attrs . '>' . variable('nl');
 	if ($return) return $result;
 	echo $result;
