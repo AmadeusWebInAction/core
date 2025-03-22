@@ -6,4 +6,5 @@ start /b TortoiseGitProc.exe /command:repostatus /path:static
 start /b TortoiseGitProc.exe /command:repostatus /path:themes
 start /b TortoiseGitProc.exe /command:repostatus /path:web
 start /b TortoiseGitProc.exe /command:repostatus /path:world
+start /b TortoiseGitProc.exe /command:repostatus /path:world/movements/daivism
 pause
