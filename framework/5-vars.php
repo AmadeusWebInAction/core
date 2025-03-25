@@ -25,18 +25,20 @@ function variableOr($name, $or, $hasVar = null)
 {
 	if (!hasVariable($name) && $hasVar !== null) return $hasVar;
 	$val = variable($name);
-	return $val ? $val : $or;
+	return hasVariable($name) ? $val : $or;
 }
 
 function clearVariable($name) {
 	if (!hasVariable($name)) return;
 	global $cscore;
+	if (!isset($cscore)) $cscore = array();
 	unset($cscore[$name]);
 }
 
 function hasVariable($key)
 {
 	global $cscore;
+	if (!isset($cscore)) $cscore = array();
 	return isset($cscore[$key]);
 }
 

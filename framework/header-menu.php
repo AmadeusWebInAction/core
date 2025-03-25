@@ -9,14 +9,16 @@ if (isset($diagonalSpacer)) echo $diagonalSpacer; //for anbagam!
 $mainMenu = variable('siteMenuName') . $topLevelAngle;
 if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
 
-$homeText = 'Home';
-if ($wrapTextInADiv) $homeText = '<div>' . $homeText . '</div>';
-echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="' . pageUrl() . '">' . $homeText . '</a></li>' . variable('nl');
+if (variable('site-home-in-menu')) {
+	$homeText = 'Home';
+	if ($wrapTextInADiv) $homeText = '<div>' . $homeText . '</div>';
+		echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="' . pageUrl() . '">' . $homeText . '</a></li>' . variable('nl');
+}
 
 echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();">' . $mainMenu . '</a>' . variable('nl');
 $append = variable('scaffold') ? array_merge(['----'], variable('scaffold')) : false;
 menu('/' . variable('folder'), [
-	'home-link-to-section' => variable('home-link-to-section'),
+	'link-to-home' => variable('link-to-site-home'),
 	'files-to-append' => $append,
 	'a-class' => $anchorClass,
 	'ul-class' => $ulClass,
@@ -73,7 +75,7 @@ function renderHeaderMenu($slug, $node = '') {
 		'ul-class' => $ulClass . ($node ? ' of-node node-' . $node : ''),
 		'list-only-folders' => $node == '',
 		'list-only-files' => variable('sections-have-files'),
-		'home-link-to-section' => true,
+		'link-to-home' => variable('link-to-section-home'),
 		'parent-slug-for-home-link' => $parentSlug . '/',
 		'parent-slug' => $node ? $node . '/' : '',
 	]);

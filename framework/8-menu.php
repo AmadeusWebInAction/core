@@ -96,7 +96,7 @@ function pageMenu($file) {
 		if ($subPage2) $parentSlug .= $subPage2 . '/';
 
 		h2(humanize(variable('page_parameter' . ($subPage3 ? '2' : '1'))). currentLevel(true));
-		menu($params, ['parent-slug' => $parentSlug, 'home-link-to-section' => true, 'ul-class' => 'block-links']);
+		menu($params, ['parent-slug' => $parentSlug, 'link-to-home' => true, 'ul-class' => 'block-links']);
 		contentBox('end');
 		return;
 	}
@@ -184,7 +184,7 @@ function menu($folderRelative = false, $settings = []) {
 	$section = explode('/', $folderRelative)[1];
 	$last = false;
 
-	if (isset($settings['home-link-to-section']) && $settings['home-link-to-section']) {
+	if (isset($settings['link-to-home']) && $settings['link-to-home']) {
 		$homeBase = $base;
 		if ($homeBase == '' && isset($settings['parent-slug-for-home-link'])) $homeBase = $settings['parent-slug-for-home-link'];
 

@@ -81,7 +81,7 @@ function getShuffledItems($items, $count = 1) {
 function getConfigValues($file) {
 	if (!disk_file_exists($file)) return false;
 
-	$lines = txt_to_list(file_get_contents($file));
+	$lines = textToList(file_get_contents($file));
 	$config = [];
 
 	foreach ($lines as $kv) {
