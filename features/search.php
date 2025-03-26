@@ -30,10 +30,12 @@ echo makeLink('edit google search engine', 'https://programmablesearchengine.goo
 .gsc-input-box input, .gsc-search-button-v2 svg { line-height: 50px; height: 50px!important; font-size: 40px; }
 .gsc-input-box { padding-top: 10px; }
 .gsc-input-box input { color: var(--footer-widgets-link, #666); text-align: center; }
+.gsc-control-wrapper-cse { background-color: #fff; padding: 20px; border-radius: 15px; }
 </style>
 
 <script async src="https://cse.google.com/cse.js?cx=<?php echo $engine['code']; ?>"></script>
-<div class="gcse-search"></div>
+<div class="gcse-searchbox"></div>
+<div class="gcse-searchresults"></div>
 
 <?php
 if (!$canvas) contentBox('end');

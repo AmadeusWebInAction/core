@@ -148,11 +148,27 @@ function menu($folderRelative = false, $settings = []) {
 	$givenFiles = valueIfSetAndNotEmpty($settings, 'files');
 	$inHeader = valueIfSetAndNotEmpty($settings, 'in-header');
 
+	$namesOfFiles = false;
 	if ($givenFiles) {
 		$files = $givenFiles;
 		$filesGiven = true;
 	} else {
-		$files = _skipExcludedFiles(disk_scandir($folder));
+		if (disk_file_exists($itemsTsv = $folder . '_menu-items.tsv')) {
+			$itemsSheet = getSheet($itemsTsv, 'slug');
+			$files = [];
+
+			$hasSNo = isset($itemsSheet->columns['sno']);
+			if ($hasSNo) { $namesOfFiles = []; $snoIndex = $itemsSheet->columns['sno']; }
+			//later we can make it sno and text as optional
+
+			foreach ($itemsSheet->group as $thisFile => $thisItem) {
+				$files[] = $thisFile;
+				if ($hasSNo)
+					$namesOfFiles[$thisFile] = $thisItem[0][$snoIndex] . '. ' . humanize($thisFile);
+			}
+		} else {
+			$files = _skipExcludedFiles(disk_scandir($folder));
+		}
 
 		$config = getConfigValues($folder . '_menu-config-values.txt'); //for some reason, . in the filename doesnt work - does for .template.html though
 		if($config) {
@@ -266,7 +282,7 @@ function menu($folderRelative = false, $settings = []) {
 		else { if (cannot_access($file, 'page')) continue; }
 		*/
 
-		$text = humanize($file, $onlySlugForSectionMenu);
+		$text = $namesOfFiles && isset($namesOfFiles[$file]) ? $namesOfFiles[$file] : humanize($file, $onlySlugForSectionMenu);
 
 		//TODO: HIGH: LOOK FOR USAGE:
 

@@ -37,6 +37,7 @@ function _runEngageFromSheet($pageName, $sheetName) {
 	$sheet = getSheet($sheetName);
 	$contentIndex = $sheet->columns['content'];
 	$introIndex = $sheet->columns['section-intro'];
+	$varsIndex = valueIfSet($sheet->columns, 'item_vars');
 	$introduction = valueIfSet($sheet->values, 'introduction', 'Welcome to <b>' . $pageName . '</b> page of <	b>' . variable('name') . '</b>.');
 
 	//TODO: use faq by category like canvas' FAQ?
@@ -45,7 +46,9 @@ function _runEngageFromSheet($pageName, $sheetName) {
 
 	$firstSection = true;
 
-	$raw[] = '%engage-note-above%';
+	$customEngageNotes = variable('custom-engage-notes');
+	if (!$customEngageNotes)
+		$raw[] = '%engage-note-above%';
 
 	foreach ($sheet->group as $name => $rows) {
 		$raw[] = '## ' . $name;
@@ -60,6 +63,18 @@ function _runEngageFromSheet($pageName, $sheetName) {
 			}
 	
 			$line = $row[$contentIndex];
+
+			if ($varsIndex) {
+				$vars = $row[$varsIndex];
+				if ($vars) {
+					$vbits = explode(', ', $vars);
+					if (in_array('open', $vbits))
+						$line .= '<!--open-->';
+					if (in_array('large', $vbits))
+						$line .= '<!--large-->';
+				}
+			}
+
 			$raw[] = '* '  . $line;
 			//$content[] = ;
 		}
@@ -68,8 +83,9 @@ function _runEngageFromSheet($pageName, $sheetName) {
 	}
 
 	$raw[] = '';
-	$raw[] = '%engage-note%';
-	
+	if (!$customEngageNotes)
+		$raw[] = '%engage-note%';
+
 	//$raw = print_r($items, 1); //$raw = renderPills($items); //todo: LATER!
 	sectionId('engage-' . urlize($pageName));
 	_renderEngage($pageName, implode(variable('nl'), $raw), true);
