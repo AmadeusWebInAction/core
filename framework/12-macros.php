@@ -5,11 +5,17 @@ function runAllMacros($html) {
 	if (contains($html, '-snippet%'))
 		$html = replaceSnippets($html);
 
+	if (contains($html, '-codesnippet%'))
+		$html = replaceCodeSnippets($html);
+
 	if (contains($html, '#upi') || contains($html, '%upi'))
 		$html = replaceUPIs($html);
 
+	/*
+	TODO: reinstate after engage-v3 / beta?
 	if (contains($html, '%engage-btn'))
 		$html = replaceEngageButtons($html);
+	*/
 
 	if (contains($html, '[youtube]'))
 		$html = processYouTubeShortcode($html);
@@ -43,6 +49,24 @@ function replaceSnippets($html, $files = false, $fol = false) {
 		]);
 
 		$html = str_replace($key, $op, $html);
+	}
+
+	return $html;
+}
+
+function replaceCodeSnippets($html) {
+	$fol = SITEPATH . '/data/code-snippets/';
+	$files = disk_scandir($fol);
+
+	foreach ($files as $file) {
+		if ($file[0] == '.' || getExtension($file) != 'php') continue;
+
+		$fwoe = replaceItems($file, ['.php' => '']);
+		$key = '%' . $fwoe .'-codesnippet%';
+
+		if (!contains($html, $key)) continue;
+
+		$html = str_replace($key, include $fol . $file, $html);
 	}
 
 	return $html;
@@ -88,9 +112,13 @@ function replaceUPIs($html) {
 
 function textBoxWithCopyOnClick($lineBefore, $value, $lineAfter = 'Text Copied!', $label = false) {
 	$bits = [];
-	$bits[] = '<div class="flash flash-green">' . ($label ? '<label>' : '') . $lineBefore . '<br />';
-
-	$bits[] = '<textarea onfocus="this.select(); document.execCommand(\'copy\'); this.parentNode.parentNode.classList.add(\'flash-yellow\'); this.parentNode.nextElementSibling.style.display = \'block\'; " style="text-align: center; width: 90%;" rows="4" readonly>' . $value . '</textarea>';
+	$icon = $lineBefore;
+	$group = 'fa-brands bg-' . $icon;
+	if ($lineBefore == 'tracker without source') { $group = 'fa-classic bg-info'; $icon = 'file-lines'; }
+	if ($lineBefore == 'email') { $group = 'fa-classic bg-success'; $icon = 'envelope'; }
+	$bits[] = '<div>' . ($label ? '<label><i style="width: 64px;" class="text-light si-mini rounded-circle fa-2x ' . $group . ' fa-' . $icon . '"></i> ' : '') . $lineBefore . '<br />';
+	//https://css-tricks.com/auto-growing-inputs-textareas/
+	$bits[] = '<textarea onfocus="this.select(); document.execCommand(\'copy\'); this.parentNode.parentNode.classList.add(\'text-copied\'); this.parentNode.nextElementSibling.style.display = \'block\';" rows="3" readonly>' . $value . '</textarea>';
 
 	if ($label) $bits[] = '</label>';
 	$bits[] = '<span style="display: none;">' . $lineAfter . '</span></div>';
