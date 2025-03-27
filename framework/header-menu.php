@@ -69,10 +69,18 @@ function renderHeaderMenu($slug, $node = '') {
 	
 	echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
 
+	$files = false; $tiss = false;
+	if (variable('is-standalone-section') && $slug == variable('section')) {
+		
+		$tiss = true;
+		$files = disk_include(variable('menu-file'));
+	}
+
 	if ($node) $slug .= '/' . $node;
 	menu('/' . $slug . '/', [
 		'a-class' => $anchorClass,
 		'ul-class' => $ulClass . ($node ? ' of-node node-' . $node : ''),
+		'files' => $files, 'this-is-standalone-section' => $tiss,
 		'list-only-folders' => $node == '',
 		'list-only-files' => variable('sections-have-files'),
 		'link-to-home' => variable('link-to-section-home'),

@@ -146,10 +146,15 @@ function menu($folderRelative = false, $settings = []) {
 	$filesGiven = false;
 	$couldHaveSlashes = isset($settings['could-have-slashes']) && $settings['could-have-slashes'];
 	$givenFiles = valueIfSetAndNotEmpty($settings, 'files');
+	$standalone = valueIfSetAndNotEmpty($settings, 'this-is-standalone-section');
 	$inHeader = valueIfSetAndNotEmpty($settings, 'in-header');
 
 	$namesOfFiles = false;
-	if ($givenFiles) {
+	if ($standalone) {
+		$namesOfFiles = $givenFiles;
+		$files = array_keys($givenFiles);
+		$filesGiven = true;
+	} else if ($givenFiles) {
 		$files = $givenFiles;
 		$filesGiven = true;
 	} else {
