@@ -4,7 +4,7 @@ function scriptTag($url) {
 }
 
 function cssTag($url) {
-	echo PHP_EOL . '	<link href="' . $url . '" rel="stylesheet" type="text/css" /> ';
+	echo PHP_EOL . '	<link href="' . $url . '" rel="stylesheet" type="text/css"> ';
 }
 
 function getPageName($tailOnly = true) {

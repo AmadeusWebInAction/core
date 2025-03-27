@@ -43,7 +43,7 @@ runFrameworkFile('9-render');
 runFrameworkFile('10-seo-v2');
 runFrameworkFile('11-assets');
 
-//Fresh
+//fresh
 runFrameworkFile('12-macros');
 
 //v6.2 - renamed helper to special
@@ -198,7 +198,7 @@ function render() {
 	if (function_exists('after_render')) after_render();
 }
 
-function copyright_and_credits($separator = '<br />', $return = false) {
+function copyright_and_credits($separator = '<br>', $return = false) {
 	$copy = _copyright(true);
 	$cred = _credits('', true);
 	$result = $copy . $separator . $cred;
@@ -225,7 +225,7 @@ function _credits($pre = '', $return = false) {
 
 	$url = variable('main') . '?utm_content=site-credits&utm_referrer=' . variable('safeName');
 	$result = $pre . sprintf('Built With <a href="%s" target="_blank" class="amadeus-credits" style="display: inline-block;">' .
-		variable('nl') . '			<img src="%s" height="50" alt="%s" style="vertical-align: middle;" /></a>',
+		variable('nl') . '			<img src="%s" height="50" alt="%s" style="vertical-align: middle;"></a>',
 		$url, variable('app-static') . 'amadeusweb/amadeusweb-credits.png', 'Amadeus Web Core');
 
 	if ($return) return $result; else echo $result;

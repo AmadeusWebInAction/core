@@ -35,7 +35,7 @@ foreach ($sheet->rows as $item) {
 	$text = $item[$cols['text']];
 
 	if ($text == '----') {
-		echo '	<li><hr /></li>';
+		echo '	<li><hr></li>';
 		continue;
 	}
 

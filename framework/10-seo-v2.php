@@ -18,8 +18,8 @@ function seo_info() {
 }
 
 function seo_tags($return = false) {
-	$fmt = '	<meta name="%s" content="%s" />';
-	$ogFmt = '	<meta property="%s" content="%s" />';
+	$fmt = '	<meta name="%s" content="%s">';
+	$ogFmt = '	<meta property="%s" content="%s">';
 
 	variable('generator', 'Amadeus Web Builder / CMS at amadeusweb.com');
 	$op = [];

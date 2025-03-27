@@ -254,12 +254,12 @@ function menu($folderRelative = false, $settings = []) {
 
 		$indented = '';
 		if (startsWith($file, '~')) {
-			if (variable('thisSection') && !$indented) { $result .= '<hr />'; variable('hadMenuSection', true); }
+			if (variable('thisSection') && !$indented) { $result .= '<hr>'; variable('hadMenuSection', true); }
 			$result .= variable('nl') . '	<' . $itemTag . ' class="menu-section">' . substr($file, 1) . '</' . $itemTag . '>';
 			$indented = 'indented';
 			continue;
 		} else if ($file == '----') {
-			$result .= variable('nl') . '	<' . $itemTag . ' class="menu-break"><hr /></' . $itemTag . '>' . PHP_EOL;
+			$result .= variable('nl') . '	<' . $itemTag . ' class="menu-break"><hr></' . $itemTag . '>' . PHP_EOL;
 			continue;
 		}
 
@@ -299,7 +299,7 @@ function menu($folderRelative = false, $settings = []) {
 			$result .= variable('nl') . '	<' . $itemTag . cssClass($class_li) . '>' . $innerHtml . '</' . $itemTag . '>' . variable('nl');
 		} else {
 			if ($inHeader) {
-				$result .= '<hr />' . variable('2nl') . '<h2 class="' . variable('toggle-list') . '">' . humanize($file) .'</h2>' . variable('nl');
+				$result .= '<hr>' . variable('2nl') . '<h2 class="' . variable('toggle-list') . '">' . humanize($file) .'</h2>' . variable('nl');
 				$result .= menu($folderRelative . $file . '/', [
 					'parent-slug' => variable('node') . '/',
 					'menu-level' => $menuLevel + 1,
@@ -317,7 +317,7 @@ function menu($folderRelative = false, $settings = []) {
 		}
 
 		if (in_array($file, $breaks))
-			$result .= variable('nl') . '	<' . $itemTag . ' class="menu-break"><hr /></' . $itemTag . '>' . variable('nl');
+			$result .= variable('nl') . '	<' . $itemTag . ' class="menu-break"><hr></' . $itemTag . '>' . variable('nl');
 	}
 
 	if ($backToHome) {

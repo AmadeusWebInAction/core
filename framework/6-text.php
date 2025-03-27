@@ -1,7 +1,7 @@
 <?php
 
 $safeNL = "\r"; //platform safe
-$nl = "\r\n"; $br = '<br />';
+$nl = "\r\n"; $br = '<br>';
 
 variable('safeNL', $safeNL);
 DEFINE('NEWLINE', $nl);

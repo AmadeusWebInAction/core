@@ -100,7 +100,7 @@ function parseCompositeWork($raw, $param1IsPage) {
 			$bits[1] . ($noCount ? '' : ' &mdash; (' . $index . ' / TOTAL)') . '</span></h2>' . variable('nl');
 		
 		if (disk_file_exists($assetsFol . $slug . '.jpg'))
-			$thisResult .= '<img src="' . $assetsUrl . $slug . '.jpg' . '" class="img-piece img-max-200" />' . variable('nl');
+			$thisResult .= '<img src="' . $assetsUrl . $slug . '.jpg' . '" class="img-piece img-max-200">' . variable('nl');
 
 		$thisResult .= renderOnlyMarkdownOrRaw($bits[$contentIndex], $wantsItemMD, ['echo' => false, 'strip-paragraph-tag' => true]) . variable('nl') . '</section>' . variable('2nl');
 
@@ -120,11 +120,11 @@ function parseCompositeWork($raw, $param1IsPage) {
 
 	$result = str_replace('TOTAL', $index, $result);
 	$result = str_replace('<p>- - -</p>', '<div class="break-page' .
-		($printOnly ? ' printing' : '') . '"><i>Continued&hellip;</i><hr /></div>'
-		. ($printOnly ? '</section><section>&hellip;Continuing<hr />' : ''), $result);
+		($printOnly ? ' printing' : '') . '"><i>Continued&hellip;</i><hr></div>'
+		. ($printOnly ? '</section><section>&hellip;Continuing<hr>' : ''), $result);
 
 	if ($withMore) $result = str_replace(
-		'<!--more--><br />', '<a href="javascript: void(0);" class="read-piece">Read More</a>' . variable('nl') .
+		'<!--more--><br>', '<a href="javascript: void(0);" class="read-piece">Read More</a>' . variable('nl') .
 		'<div class="piece-content">', $result) . '</div>';
 
 	if ($param1IsPage) echo '<h2>' . humanize(variable('node')) . '</h2>' . variable('2nl');
@@ -137,7 +137,7 @@ function parseCompositeWork($raw, $param1IsPage) {
 		foreach ($categories as $item => $count) {
 			$slug = urlize($item);
 			$img = !disk_file_exists($assetsFol . '/categories/' . $slug . '.jpg') ? '' :
-				variable('nl') . '<br /><img src="' . $assetsUrl . 'categories/' . $slug . '.jpg' . '" class="img-category img-max-200" alt="' . $item . '" />' . variable('nl');
+				variable('nl') . '<br><img src="' . $assetsUrl . 'categories/' . $slug . '.jpg' . '" class="img-category img-max-200" alt="' . $item . '">' . variable('nl');
 			$links[$slug] = makeLink(humanize($item) . ' (' . $count . ')' . $img, $categoryBase . $slug . $urlSuffix, false, $noLinking);
 		}
 
@@ -171,7 +171,7 @@ function parseCompositeWork($raw, $param1IsPage) {
 		['node' => humanize(variable('node')), 'name' => variable('name')], '%') . variable('2nl');
 
 	$printFooter = $noFooter ? '' : replaceItems('<div id="print-footer">' . variable('nl')
-		.'<img src="%imgUrl%" style="height: 40px;" alt="footer logo" /> <span>&copy; %year% &mdash; by <u>%name%</u></span></div>',
+		.'<img src="%imgUrl%" style="height: 40px;" alt="footer logo"> <span>&copy; %year% &mdash; by <u>%name%</u></span></div>',
 		['year' => date('Y'), 'node' => humanize(variable('node')), 'name' => variable('name'),
 			'imgUrl' => fileUrl() . variable('safeName') . '-logo.png'], '%') . variable('2nl');
 

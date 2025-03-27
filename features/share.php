@@ -19,15 +19,15 @@ if (isset($_GET['share'])) {
 
 	$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png');
 	$home = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" class="img-fluid img-max-',
-		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
+		variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '"></a><br>'], '');
 	echo $home . BRNL;
 
 	h2('Hotlinks for Analytics Tracking');
-	echo 'Click any label / textbox to copy it\'s link<br />and <b>share on that platform</b> (email / whatsapp / linkedin etc):';
-	echo textBoxWithCopyOnClick('tracker without source', $for, 'copied plain link (no tracker)', true) . '<hr />';
+	echo 'Click any label / textbox to copy it\'s link<br>and <b>share on that platform</b> (email / whatsapp / linkedin etc):';
+	echo textBoxWithCopyOnClick('tracker without source', $for, 'copied plain link (no tracker)', true) . '<hr>';
 
 	$sources = ['whatsapp', 'instagram', 'facebook', 'email', 'linkedin'];
-	foreach ($sources as $source) echo textBoxWithCopyOnClick($source, str_replace('%source%', $source, $url), 'copied ' . $source . ' link!', true) . '<hr />';
+	foreach ($sources as $source) echo textBoxWithCopyOnClick($source, str_replace('%source%', $source, $url), 'copied ' . $source . ' link!', true) . '<hr>';
 
 	_credits();
 	contentBox('end');
@@ -37,8 +37,8 @@ if (isset($_GET['share'])) {
 	<form action="<?php echo variable('url') ?>" target="_blank">
 		<input type="hidden" name="share" value="1" />
 		<input type="hidden" name="url" value="<?php echo $_SERVER['SERVER_NAME'] . explode('?', $_SERVER['REQUEST_URI'], 2)[0]; ?>" />
-		<input style="width: 100%; margin-bottom: 10px;" type="text" name="campaign" placeholder="campaign (if known)" value="<?php echo isset($_GET['utm_campaign']) ? $_GET['utm_campaign'] : ''; ?>" /><br />
-		<input style="width: 100%; margin-bottom: 10px;" type="text" name="by" placeholder="your name" value="<?php echo isset($_GET['utm_content']) ? str_replace('referred-by-', '', $_GET['utm_content']) : ''; ?>" /><br />
+		<input style="width: 100%; margin-bottom: 10px;" type="text" name="campaign" placeholder="campaign (if known)" value="<?php echo isset($_GET['utm_campaign']) ? $_GET['utm_campaign'] : ''; ?>" /><br>
+		<input style="width: 100%; margin-bottom: 10px;" type="text" name="by" placeholder="your name" value="<?php echo isset($_GET['utm_content']) ? str_replace('referred-by-', '', $_GET['utm_content']) : ''; ?>" /><br>
 		<input style="width: 100%;" type="submit" value="Share This Page" />
 	</form>
 </section>

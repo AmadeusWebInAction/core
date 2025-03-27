@@ -48,6 +48,9 @@ function replaceSnippets($html, $files = false, $fol = false) {
 			'raw' => $ext == 'html',
 		]);
 
+		if ($ext == 'html')
+			$op = replaceHtml($op);
+
 		$html = str_replace($key, $op, $html);
 	}
 
@@ -116,7 +119,7 @@ function textBoxWithCopyOnClick($lineBefore, $value, $lineAfter = 'Text Copied!'
 	$group = 'fa-brands bg-' . $icon;
 	if ($lineBefore == 'tracker without source') { $group = 'fa-classic bg-info'; $icon = 'file-lines'; }
 	if ($lineBefore == 'email') { $group = 'fa-classic bg-success'; $icon = 'envelope'; }
-	$bits[] = '<div>' . ($label ? '<label><i style="width: 64px;" class="text-light si-mini rounded-circle fa-2x ' . $group . ' fa-' . $icon . '"></i> ' : '') . $lineBefore . '<br />';
+	$bits[] = '<div>' . ($label ? '<label><i style="width: 64px;" class="text-light si-mini rounded-circle fa-2x ' . $group . ' fa-' . $icon . '"></i> ' : '') . $lineBefore . '<br>';
 	//https://css-tricks.com/auto-growing-inputs-textareas/
 	$bits[] = '<textarea onfocus="this.select(); document.execCommand(\'copy\'); this.parentNode.parentNode.classList.add(\'text-copied\'); this.parentNode.nextElementSibling.style.display = \'block\';" rows="3" readonly>' . $value . '</textarea>';
 

@@ -25,7 +25,7 @@ function run_theme_part($what) {
 	$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png');
 
 	if ($what == 'header') {
-		$icon = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192" />',
+		$icon = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192">',
 			['url' => fileUrl(), 'safeName' => variable('safeName'),
 				'version' => assetMeta('site', 'version')], '%'); //TODO: simplify this version stuff?
 
@@ -34,7 +34,7 @@ function run_theme_part($what) {
 		$vars['body-classes'] = body_classes(true);
 
 		$vars['logo'] = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" class="img-fluid img-max-',
-			variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '" /></a><br />'], '');
+			variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '"></a><br>'], '');
 
 		$header = _substituteThemeVars($content, 'header', $vars);
 
@@ -49,7 +49,7 @@ function run_theme_part($what) {
 		}
 	} else if ($what == 'footer') {
 		if (!variable('footer-widgets-in-enrich')) {
-			$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '" /></a><br />'], '');
+			$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '"></a><br>'], '');
 			$suffix = !variable('footer-message') ? '' : renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
 			$fwVars = [
 				'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),
@@ -113,7 +113,7 @@ function setMenuSettings($after = false) {
 }
 
 function siteWidgets() {
-	$start = '<div class="col-md-4 mt-sm-4">' . variable('nl');
+	$start = '<div class="col-md-4 mt-sm-4 pt-xs-3"><hr class="d-sm-none">' . variable('nl');
 	if (variable('node-alias')) return '';
 
 	//TODO: Showcase + Misc

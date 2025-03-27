@@ -204,10 +204,22 @@ function getSheet($name, $groupBy = 'section') {
 	$file = _sheetPath($name);
 	extract(tsvToSheet(disk_file_get_contents($file)));
 
-	$r = new stdClass();
+	$r = new class {
+		public $columns;
+		public $rows;
+		public $values;
+		public $group;
+
+		public function getValue($item, $columnName, $default = '') {
+			$result = $item[$this->columns[$columnName]];
+			return $result ? $result : $default;
+		}
+	};
+
 	$r->columns = $columns;
 	$r->rows = $rows;
 	$r->values = $values;
+	$r->group = null;
 
 	if($groupBy !== false)
 		$r->group = arrayGroupBy($rows, $columns[$groupBy]);

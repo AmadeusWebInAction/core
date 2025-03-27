@@ -142,7 +142,7 @@ function _renderedBlurbs($blurb, $name = false) {
 	$url = currentUrl();
 	$embedUrl = $url . '?embed=1';
 	echo '<section class="blurb-container" style="text-align: center;">BLURBS: '
-		. makeLink($name, $embedUrl, false) . ' (opens in new tab)<hr />' . variable('nl');
+		. makeLink($name, $embedUrl, false) . ' (opens in new tab)<hr>' . variable('nl');
 	echo '<iframe style="height: 80vh; width: 100%; border-radius: 30px;" src="' . $embedUrl . '"></iframe>' . variable('nl');
 	echo '</section>' . variable('2nl');
 }

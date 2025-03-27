@@ -125,6 +125,10 @@ function replaceSpecialChars($html) {
 	return replaceItems($html, $replaces);
 }
 
+function getHtmlVariable($key) {
+	return subVariable('htmlSitewideReplaces', '%' . $key . '%');
+}
+
 function replaceHtml($html) {
 	//TODO: MEDIUM: Warning if called before bootstrap!
 	$key = 'htmlSitewideReplaces';
@@ -213,7 +217,7 @@ function engageButton($id, $name, $class, $scroll = false) {
 ///Other Amadeus Stuff
 function makePLImages($prefix, $echo = true) {
 	$prefix = fileUrl($prefix);
-	$format = '<img src="%s-%s.jpg" class="img-fluid show-in-%s" />' . variable('nl');
+	$format = '<img src="%s-%s.jpg" class="img-fluid show-in-%s">' . variable('nl');
 	$result =
 		sprintf($format, $prefix, 'portrait', 'portrait') .
 		sprintf($format, $prefix, 'landscape', 'landscape');
@@ -338,8 +342,8 @@ DEFINE('DONTTRACE', false);
 
 function parameterError($msg, $param, $trace = true, $die = false) {
 	if (startsWith($msg, '$')) $msg = 'PARAMETER ERROR: ' . $msg;
-	echo variable('_errorStart') . $msg . '<hr /><pre>' . print_r($param, 1);
-	if ($trace) { echo '</pre><br />STACK TRACE:<hr/><pre>'; debug_print_backtrace(); }
+	echo variable('_errorStart') . $msg . '<hr><pre>' . print_r($param, 1);
+	if ($trace) { echo '</pre><br>STACK TRACE:<hr><pre>'; debug_print_backtrace(); }
 	echo '</pre></div>';
 	if ($die) die();
 }
