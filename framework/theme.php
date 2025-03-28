@@ -50,7 +50,7 @@ function run_theme_part($what) {
 	} else if ($what == 'footer') {
 		if (!variable('footer-widgets-in-enrich')) {
 			$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '"></a><br>'], '');
-			$suffix = !variable('footer-message') ? '' : renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . variable('nl');
+			$suffix = !variable('footer-message') ? '' : '<span class="footer-message">' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . '</span>' . variable('nl');
 			$fwVars = [
 				'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),
 				'site-widgets' => siteWidgets(),

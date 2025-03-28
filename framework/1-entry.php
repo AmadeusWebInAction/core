@@ -16,6 +16,7 @@ DEFINE('AMADEUSCORE', dirname(__DIR__) . DIRECTORY_SEPARATOR);
 DEFINE('AMADEUSFEATURES', AMADEUSCORE . 'features/');
 DEFINE('AMADEUSMODULES', AMADEUSCORE . 'modules/');
 DEFINE('AMADEUSTHEMESFOLDER', AMADEUSROOT . 'themes/');
+DEFINE('AMADEUSEXTENSIONS', AMADEUSCORE . 'extensions/');
 
 include_once AMADEUSFRAMEWORK . '2-stats.php'; //start time, needed to log disk load in files.php
 include_once AMADEUSFRAMEWORK . '3-files.php'; //disk_calls, needed first to measure include times
@@ -30,6 +31,10 @@ function runModule($name) {
 
 function runFeature($name) {
 	disk_include_once(AMADEUSFEATURES . $name . '.php');
+}
+
+function runExtension($name) {
+	disk_include_once(AMADEUSEXTENSIONS . $name . '/loader.php');
 }
 
 runFrameworkFile('4-array');

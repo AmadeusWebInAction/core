@@ -9,19 +9,13 @@ function before_render() {
 	if (hasSpecial()) { afterSectionSet(); return; }
 
 	$hasFiles = variable('sections-have-files');
-	$standalones = variableOr('standalone-sections', []);
 	$node = variable('node');
 	foreach (variable('sections') as $slug) {
-		if (in_array($slug, $standalones)) {
-			variables([
-				'section' => $slug,
-				'file' => variable('path') . '/' . $slug . '/home.php',
-				'menu-file' => variable('path') . '/' . $slug . '/menu.php',
-				'is-standalone-section' => true,
-				'no-page-menu' => true,
-			]);
-			afterSectionSet();
-			return;
+		if (function_exists('before_render_section')){
+			if (before_render_section($slug)) {
+				afterSectionSet();
+				return;
+			}
 		}
 
 		if (!$hasFiles && $slug == $node) {

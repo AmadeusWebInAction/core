@@ -70,10 +70,10 @@ function renderHeaderMenu($slug, $node = '') {
 	echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
 
 	$files = false; $tiss = false;
-	if (variable('is-standalone-section') && $slug == variable('section')) {
-		
+	$standalones = variableOr('standalone-sections', []);
+	if (in_array($slug, $standalones)) {
 		$tiss = true;
-		$files = disk_include(variable('menu-file'));
+		$files = disk_include(variable('path') . '/' . $slug . '/menu.php');
 	}
 
 	if ($node) $slug .= '/' . $node;
