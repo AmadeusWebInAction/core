@@ -12,6 +12,7 @@ contentBox('end');
 
 contentBox('section-menu', 'container after-content mt-6');
 h2('<u>' . humanize(variable('section')) . '</u> Menu');
+$limit = -1;
 $items = include(__DIR__ . '/menu.php'); //using include as easier than sending context.
 menu('/', [
 	'this-is-standalone-section' => true,

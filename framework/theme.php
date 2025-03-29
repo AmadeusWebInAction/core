@@ -127,7 +127,8 @@ function siteWidgets() {
 		$op[] = '</div>'; $op[] = '';
 	}
 
-	if (count($sites = variableOr('network-sites', main::defaultNetwork()))) {
+	$wantsNetwork = !variable('no-network-in-footer');
+	if ($wantsNetwork && count($sites = variableOr('network-sites', main::defaultNetwork()))) {
 		$op[] = $start;
 		$op[] = '<h4>Network</h4>';
 		foreach ($sites as $site)

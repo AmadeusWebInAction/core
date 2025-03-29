@@ -7,8 +7,7 @@ function runResource($what, $context) {
 }
 
 function isResourceNode($section, $context) {
-	return false; //todo
 	$file = __DIR__ . '/menu.php';
-	return disk_include($file, $context);
-	return false;
+	$items = disk_include($file, $context);
+	return isset($items[variable('node')]);
 }

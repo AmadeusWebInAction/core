@@ -38,7 +38,7 @@ function _table_row_values($item, $cols, $tsv) {
 		if (endsWith($key, '_urlized'))
 			$r[str_replace('_urlized', '', $key) . '_humanized'] = humanize($item[$c] == '__page' ? variable('page_parameter1') : 
 				($item[$c] == '__node' ? variable('node') : $item[$c]))
-				. ($item[$c] == '__node' ? ' (Main)' : '');
+				. ($item[$c] == '__node' ? ' (Site)' : ($item[$c] == '__page' ? ' (Page)'  :''));
 	}
 
 	return $r;

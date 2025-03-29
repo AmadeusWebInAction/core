@@ -53,11 +53,14 @@ function get_page_menu_variables() {
 
 function pageMenu($file) {
 	if (!(variable('section')) || variable('no-page-menu')) return;
-	$folder = concatSlugs([SITEPATH, variable('section'), variable('node')]) . '/';
+	$folder = concatSlugs([SITEPATH, variable('section'), $node = variable('node')]) . '/';
 
 	$subPage1 = variable('page_parameter1');
 	$subPage2 = variable('page_parameter2');
 	$subPage3 = variable('page_parameter3');
+	$tailSlug = $subPage3 ? $subPage3 : ($subPage2 ? $subPage2 : ($subPage1 ? $subPage1 : $node));
+	$columnSlug = urlize($subPage3 ? 'Sub Sub Page' : ($subPage2 ? 'Sub Page' : ($subPage1 ? 'Page' : 'Site')));
+	$tailLevel = currentLevel(true);
 
 	$levels = []; $levelAbove = false;
 
@@ -95,17 +98,15 @@ function pageMenu($file) {
 		if ($subPage1) $parentSlug .= $subPage1 . '/';
 		if ($subPage2) $parentSlug .= $subPage2 . '/';
 
-		h2(humanize(variable('page_parameter' . ($subPage3 ? '2' : '1'))). currentLevel(true));
+		h2(humanize($tailSlug) . $tailLevel);
 		menu($params, ['parent-slug' => $parentSlug, 'link-to-home' => true, 'ul-class' => 'block-links']);
 		contentBox('end');
 		return;
 	}
 
 	$tsv = $levelFound['tsv'];
-	$bits = explode('/', variable('all_page_parameters'));
-	$tail = end($bits);
 	contentBox('pages', 'container after-content');
-	h2(humanize($tail) . currentLevel(true));
+	h2(humanize($tailSlug) . currentLevel(true));
 	runFeature('tables');
 
 	add_table('pages-table', $tsv, ($subPage1 ? 'sub-' : '') . 'page-name, about, tags',
