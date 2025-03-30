@@ -89,9 +89,10 @@ function assetMeta($location = 'site', $setValueOr = false) {
 	return $result;
 }
 
-function siteOrNetworkOrAppStatic($relative) {
-	$where = hasVariable('node-static') ? 'node-static' : variableOr('site-static', 'app-static');
-	$subFol = hasVariable('node-static') || hasVariable('site-static') ? '' : variable('safeName') . '/';
+function siteOrNetworkOrAppStatic($relative, $assertSite = false) {
+	$nodeStatic = hasVariable('node-static') && $assertSite == false;
+	$where = $nodeStatic ? 'node-static' : variableOr('site-static', 'app-static');
+	$subFol = $nodeStatic || hasVariable('site-static') ? '' : variable('safeName') . '/';
 
 	return assetUrl($subFol . $relative, $where);
 }

@@ -300,7 +300,8 @@ function getThemeIcon($id, $size = 'normal')  {
 function body_classes($return = false) {
 	$chatra = hasVariable('ChatraID') ? ' has-chatra' : '';
 	$sub = variable('sub-theme') ? ' sub-theme-' . variable('sub-theme') : '';
-	$page = ' node-' . (isset($_GET['share']) ? 'share' : str_replace('/', '_', variable('all_page_parameters')));
+	$page = ' node-' . variable('node');
+	$page .= ' page-' . (isset($_GET['share']) ? 'share' : str_replace('/', '_', variable('all_page_parameters')));
 	$op = 'theme-' . variable('theme') . $page . $sub . ' site-' . variable('safeName') . $chatra;
 	if ($return) return $op;
 	echo $op;

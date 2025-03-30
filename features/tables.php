@@ -119,13 +119,11 @@ function add_table($id, $dataFile, $columnList, $template) {
 
 function _tableHeadingsOnLeft($id, $data) {
 	$css = 'amadeus-plain-table headings-on-left table table-striped table-bordered table-reponsive';
-	$style = 'width: 100%';
 	if (is_array($id)) {
 		if (isset($id['class'])) $css .= ' ' . $id['class'];
-		if (isset($id['style'])) $style = $id['style'];
 		$id = $id['id'];
 	}
-	echo variable('nl') . '<table id="amadeus-table-' . $id . '" class="' . $css . '" cellspacing="0" style="' . $style . '">' . variable('nl');
+	echo variable('nl') . '<table id="amadeus-table-' . $id . '" class="' . $css . '" cellspacing="0">' . variable('nl');
 
 	$header = '	<thead><tr class="header"><th>%th%</th><th class="left">%td%</th></tr></thead><tbody>' . variable('nl');
 	$row = '	<tr><th>%th%</th><td>%td%</td></tr>' . variable('nl');

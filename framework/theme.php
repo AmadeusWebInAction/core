@@ -22,8 +22,6 @@ function run_theme_part($what) {
 		'app-static' => assetMeta('app-static')['location'],
 	];
 
-	$logo2x = siteOrNetworkOrAppStatic(variableOr('nodeSafeName', variable('safeName')) . '-logo@2x.png');
-
 	if ($what == 'header') {
 		$icon = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192">',
 			['url' => variableOr('node-static', fileUrl()), 'safeName' => variableOr('nodeSafeName', variable('safeName')),
@@ -34,7 +32,9 @@ function run_theme_part($what) {
 		$vars['body-classes'] = body_classes(true);
 
 		//TODO: icon link to node home, should have 2nd menu & back to home
-		$vars['logo'] = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" class="img-fluid img-max-',
+		$baseUrl = hasVariable('nodeSafeName') ? pageUrl(variable('node')) : pageUrl();
+		$logo2x = siteOrNetworkOrAppStatic(variableOr('nodeSafeName', variable('safeName')) . '-logo@2x.png');
+		$vars['logo'] = concatSlugs(['<a href="', $baseUrl, '"><img src="', $logo2x, '" class="img-fluid img-max-',
 			variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '"></a><br>'], '');
 
 		$header = _substituteThemeVars($content, 'header', $vars);
@@ -50,10 +50,12 @@ function run_theme_part($what) {
 		}
 	} else if ($what == 'footer') {
 		if (!variable('footer-widgets-in-enrich')) {
+			$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png', true);
 			$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '"></a><br>'], '');
 			$suffix = !variable('footer-message') ? '' : '<span class="footer-message">' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . '</span>' . variable('nl');
+			$nodeName = hasVariable('nodeSiteName') ? '<span class="h5" style="margin-left: 15px;">&#10148; ' . variable('nodeSiteName') . '</span>' . NEWLINE : '';
 			$fwVars = [
-				'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),
+				'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . $nodeName . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),
 				'site-widgets' => siteWidgets(),
 				'copyright' => _copyright(true),
 				'credits' => _credits('', true),
