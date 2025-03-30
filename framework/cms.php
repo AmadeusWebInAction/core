@@ -11,6 +11,13 @@ function before_render() {
 	$hasFiles = variable('sections-have-files');
 	$node = variable('node');
 	foreach (variable('sections') as $slug) {
+		if (disk_file_exists($incFile = variable('path') . '/' . $slug . '/' . $node . '/_include.php')) {
+			variable('section', $slug);
+			disk_include_once($incFile);
+			afterSectionSet();
+			return;
+		}
+
 		if (function_exists('before_render_section')){
 			if (before_render_section($slug)) {
 				afterSectionSet();

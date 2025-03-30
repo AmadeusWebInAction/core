@@ -73,7 +73,7 @@ function renderHeaderMenu($slug, $node = '') {
 	$standalones = variableOr('standalone-sections', []);
 	if (in_array($slug, $standalones)) {
 		$tiss = true;
-		$files = disk_include(variable('path') . '/' . $slug . '/menu.php');
+		$files = disk_include(variable('path') . '/' . $slug . '/menu.php', ['callingFrom' => 'header-menu', 'limit' => 5]);
 	}
 
 	if ($node) $slug .= '/' . $node;

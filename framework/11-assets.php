@@ -64,6 +64,9 @@ function assetMeta($location = 'site', $setValueOr = false) {
 		} else if ($twoBits[0] == 'network' && isset($twoBits[1])) {
 			$mainFol = variable('network-static-folder') .  $twoBits[1] . '/';
 			$mainUrl = variable('network-static');
+		} else if ($twoBits[0] == 'node') {
+			$mainFol = variable('node-static-folder') .  $twoBits[1] . '/';
+			$mainUrl = variable('node-static');
 		}
 
 		$middlePath = (in_array($twoBits[0], ['network', 'app'])
@@ -87,8 +90,9 @@ function assetMeta($location = 'site', $setValueOr = false) {
 }
 
 function siteOrNetworkOrAppStatic($relative) {
-	$where = variableOr('site-static', 'app-static');
-	$subFol = hasVariable('site-static') ? '' : variable('safeName') . '/';
+	$where = hasVariable('node-static') ? 'node-static' : variableOr('site-static', 'app-static');
+	$subFol = hasVariable('node-static') || hasVariable('site-static') ? '' : variable('safeName') . '/';
+
 	return assetUrl($subFol . $relative, $where);
 }
 

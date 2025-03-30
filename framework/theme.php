@@ -22,17 +22,18 @@ function run_theme_part($what) {
 		'app-static' => assetMeta('app-static')['location'],
 	];
 
-	$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png');
+	$logo2x = siteOrNetworkOrAppStatic(variableOr('nodeSafeName', variable('safeName')) . '-logo@2x.png');
 
 	if ($what == 'header') {
 		$icon = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192">',
-			['url' => fileUrl(), 'safeName' => variable('safeName'),
+			['url' => variableOr('node-static', fileUrl()), 'safeName' => variableOr('nodeSafeName', variable('safeName')),
 				'version' => assetMeta('site', 'version')], '%'); //TODO: simplify this version stuff?
 
 		$vars['head-includes'] = '<title>' . title(true) . '</title>' . NEWLINE . '	' . $icon . NEWLINE . main::runAndReturn();
 		$vars['seo'] = seo_tags(true);
 		$vars['body-classes'] = body_classes(true);
 
+		//TODO: icon link to node home, should have 2nd menu & back to home
 		$vars['logo'] = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" class="img-fluid img-max-',
 			variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '"></a><br>'], '');
 

@@ -24,7 +24,8 @@ class main {
 	static function defaultNetwork() {
 		if (variable('not-a-network')) return [];
 		return [
-			[ 'url' => variable('world') . 'daivism/', 'name' => 'Daivism Mission', 'icon' => 'daivism' ],
+			[ 'url' => variable('world') . 'wellspring/', 'name' => 'A Wellspring', 'icon' => 'wellspring' ],
+			[ 'url' => variable('world') . 'imran/', 'name' => 'Imran\'s World', 'icon' => 'imran' ],
 			[ 'url' => variable('world'), 'name' => 'AMW World', 'icon' => 'world' ],
 			[ 'url' => variable('main'), 'name' => 'AMW Main', 'icon' => 'web' ],
 			[ 'url' => variable('app'), 'name' => 'AMW Core v7', 'icon' => 'core' ],

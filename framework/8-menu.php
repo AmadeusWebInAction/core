@@ -313,7 +313,7 @@ function menu($folderRelative = false, $settings = []) {
 				]) . variable('2nl');
 			} else {
 				$thisClass = array_merge($class_li);
-				if ($file == variable('node') || $file == variable('page_parameter1'))
+				if ($file == variable('node') || in_array($file, variableOr('page_parameters', [])))
 					$thisClass = array_merge($thisClass, $class_active);
 
 				if ($indented) $thisClass[] = $indented;
