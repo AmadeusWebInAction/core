@@ -13,14 +13,19 @@ function _handleSlashes($file, $handle, $useMDash) {
 	return $useMDash ? join(' &mdash; ', $bits) : array_pop($bits);
 }
 
+function _skipNodeFiles($files) {
+	return _skipExcludedFiles($files, variable('exclude-folders'), '', true);
+}
+
 function _skipExcludedFiles($files, $excludeNames = 'home', $excludeExtensions = 'jpg, png', $stripExtension = false) {
 	$op = [];
 
-	$excludeNames = explode(', ', $excludeNames);
+	if (!is_array($excludeNames))
+		$excludeNames = explode(', ', $excludeNames);
 	$checkNames = count($excludeNames) > 0;
 
 	$excludeExtensions = explode(', ', $excludeExtensions);
-	$checkExtensions = count($excludeExtensions) > 0;
+	$checkExtensions = count($excludeExtensions) > 0 && $excludeExtensions[0] != '';
 
 	foreach($files as $item) {
 		if ($item[0] == '.' OR $item[0] == '_')
@@ -51,6 +56,7 @@ function get_page_menu_variables() {
 	return compact('menuOf', 'menuIn', 'menuAt', 'menu1', 'menu2');
 }
 
+//this is in .container at bottom
 function pageMenu($file) {
 	if (!(variable('section')) || variable('no-page-menu')) return;
 	$folder = concatSlugs([SITEPATH, variable('section'), $node = variable('node')]) . '/';

@@ -1,7 +1,7 @@
 <?php
 
 $safeNL = "\r"; //platform safe
-$nl = "\r\n"; $br = '<br>';
+$nl = "\r\n";
 
 variable('safeNL', $safeNL);
 DEFINE('NEWLINE', $nl);
@@ -10,11 +10,11 @@ DEFINE('NEWLINES2', $nl . $nl);
 variable('2nl', NEWLINES2);
 variable('3nl', $nl . $nl . $nl);
 
+$br = '<br>';
 DEFINE('BRTAG', $br);
-variable('br', $br);
-variable('2br', $br . $br);
 DEFINE('BRNL', $br . $nl);
-variable('brnl', BRNL);
+$hr = '<hr>';
+DEFINE('HRTAG', $hr);
 
 variable('markdownStart', $md = '<!--markdown-->');
 variable('markdownStartTag', $md . $nl); //NOTE: to detect content which doesnt start with a heading

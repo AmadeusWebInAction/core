@@ -1,21 +1,49 @@
 <?php
-extract(variable('menu-settings'));
+function header2ndMenu() {
+	extract(variable('menu-settings'));
+	if (!$isPageMenu) return;
+	_headerStart(true);
 
-if (!isset($groupOuterUlClass)) $groupOuterUlClass = $outerUlClass;
-if (!$noOuterUl) echo variable('nl') . '<ul class="' . $groupOuterUlClass . '">';
-
-if (isset($diagonalSpacer)) echo $diagonalSpacer; //for anbagam!
-
-$mainMenu = variable('siteMenuName') . $topLevelAngle;
-if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
-
-if (variable('site-home-in-menu')) {
-	$homeText = 'Home';
-	if ($wrapTextInADiv) $homeText = '<div>' . $homeText . '</div>';
-		echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="' . pageUrl() . '">' . $homeText . '</a></li>' . variable('nl');
+	$files = _skipNodeFiles(disk_scandir(NODEPATH));
+	foreach ($files as $page) {
+		//if (cannot_access($slug)) continue;
+		$page_r = humanize($page);
+		$page_r = $wrapTextInADiv ? '<div>' . $page_r . '</div>' : $page_r;
+		echo '<li class="' . $itemClass . '"><a href="' . pageUrl(variable('node') . '/' . $page) . '" class="' . $anchorClass . '">' . $page_r . '</a>';
+		if (disk_is_dir(NODEPATH . '/' . $page)) {
+			menu('/' . variable('section') . '/' . variable('node') . '/' . $page . '/', [
+				'link-to-home' => variable('link-to-site-home'),
+				'li-class' => $itemClass,
+				'a-class' => $anchorClass,
+				'ul-class' => $ulClass,
+				'parent-slug' => variable('node') . '/' . $page . '/',
+			]);
+		}
+		echo '</li>' . NEWLINES2;
+	}
+	echo '</ul> <!-- #end page-menu -->' .variable('2nl');
 }
 
-echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();">' . $mainMenu . '</a>' . variable('nl');
+function _headerStart($skipMainMenu = false) {
+	extract(variable('menu-settings'));
+
+	if (!isset($groupOuterUlClass)) $groupOuterUlClass = $outerUlClass;
+	if (!$noOuterUl) echo NEWLINE . '<ul class="' . $groupOuterUlClass . '">';
+	
+	if (isset($diagonalSpacer)) echo $diagonalSpacer; //for anbagam!
+	
+	if($skipMainMenu) return;
+
+	$mainMenu = variable($isPageMenu ? 'nodeSiteName' : 'siteMenuName') . $topLevelAngle;
+	if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
+	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();">' . $mainMenu . '</a>' . NEWLINE;
+}
+
+function headerMenuFrom() {
+	extract(variable('menu-settings'));
+	_headerStart();
+
+
 $append = variable('scaffold') ? array_merge(['----'], variable('scaffold')) : false;
 menu('/' . variable('folder'), [
 	'link-to-home' => variable('link-to-site-home'),
@@ -23,7 +51,7 @@ menu('/' . variable('folder'), [
 	'a-class' => $anchorClass,
 	'ul-class' => $ulClass,
 ]);
-echo '</li>' . variable('nl');
+echo '</li>' . NEWLINE;
 
 if ($groups = variable('section-groups')) {
 	renderIfCurrentMenu();
@@ -38,8 +66,8 @@ if ($groups = variable('section-groups')) {
 		$name = humanize($group);
 		if ($wrapTextInADiv) $name = '<div>' . $name . $topLevelAngle . '</div>';
 
-		if ($isGroup) echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>' . variable('nl');
-		if ($isGroup) echo '	<ul class="' . $ulClass . '">' . variable('nl');
+		if ($isGroup) echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>' . NEWLINE;
+		if ($isGroup) echo '	<ul class="' . $ulClass . '">' . NEWLINE;
 
 		foreach ($items as $slug) {
 			//if (cannot_access($slug)) continue;
@@ -47,7 +75,7 @@ if ($groups = variable('section-groups')) {
 		}
 
 		if ($isGroup) echo '	</ul>' . variable('2nl');
-		if ($isGroup) echo '</li>' . variable('nl');
+		if ($isGroup) echo '</li>' . NEWLINE;
 	}
 } else {
 	renderIfCurrentMenu();
@@ -56,6 +84,8 @@ if ($groups = variable('section-groups')) {
 		renderHeaderMenu($slug);
 	}
 }
+
+} //end of new headerMenuFrom
 
 function renderHeaderMenu($slug, $node = '') {
 	$parentSlug = $node ? $node : $slug;
@@ -87,7 +117,7 @@ function renderHeaderMenu($slug, $node = '') {
 		'parent-slug-for-home-link' => $parentSlug . '/',
 		'parent-slug' => $node ? $node . '/' : '',
 	]);
-	echo '</li>' . variable('nl');
+	echo '</li>' . NEWLINE;
 }
 
 function renderIfCurrentMenu() {
@@ -95,14 +125,14 @@ function renderIfCurrentMenu() {
 	if (count($items) == 0) return;
 
 	extract(variable('menu-settings'));
-	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();"><div>((Current Menu))</div></a>' . variable('nl');
-	echo '		<ul' . cssClass([$ulClass]) . '>' . variable('nl');
+	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();"><div>((Current Menu))</div></a>' . NEWLINE;
+	echo '		<ul' . cssClass([$ulClass]) . '>' . NEWLINE;
 
 	foreach ($items as $params) {
 		renderHeaderMenu($params[0], $params[1]);
 	}
 
-	echo '		</ul>' . variable('nl');
+	echo '		</ul>' . NEWLINE;
 	echo '	</li>' . variable('2nl');
 }
 
@@ -132,4 +162,6 @@ function getCurrentMenus() {
 
 if (function_exists('after_menu')) after_menu();
 if (function_exists('network_after_menu')) network_after_menu();
-if (!$noOuterUl) echo '</ul> <!-- #end site -->' .variable('2nl');
+
+
+if (!subVariable('menu-settings', 'noOuterUl')) echo '</ul> <!-- #end site -->' .variable('2nl');

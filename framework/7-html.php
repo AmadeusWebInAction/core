@@ -62,7 +62,8 @@ function cbWrapAndReplaceHr($raw) {
 	if (variable('no-content-boxes')) return $raw;
 
 	$closeAndOpen = ($end = contentBox('end', '', true)) . ($start = contentBox('', '', true));
-	return $start . str_replace('<hr>', $closeAndOpen, $raw) . $end;
+	//TODO: asap! if (substr_count($raw, HRTAG) > 3) runFeature('page-menu');
+	return $start . str_replace(HRTAG, $closeAndOpen, $raw) . $end;
 }
 
 function _getCBClassIfWanted($additionalClass) {
@@ -134,28 +135,39 @@ function replaceHtml($html) {
 	$key = 'htmlSitewideReplaces';
 	$replaces = variable($key);
 	if (!$replaces) {
+		$section = variable('section');
+		$node = variable('node');
+		$safeUrl = variable('page-url');
 		variable($key, $replaces = [
 			//Also, we should incorporate dev tools like w3c & broken link checkers
 			'%url%' => variable('page-url'),
 			'%assets%' => variableOr('assets-override', variable('assets-url') . 'assets/'),
 			'%node%' => variable('node'),
+
 			'%core-url%' => scriptSafeUrl(variable('app')),
 			'%amadeus-url%' => scriptSafeUrl(variable('main')),
 			'%world-url%' => scriptSafeUrl(variable('world')),
 			'%network-url%' => variableOr('network-static', '##no-network-url') . basename(SITEPATH) . '/',
+
 			'%phone%' => variableOr('phone', ''),
 			'%email%' => variableOr('email', ''),
 			'%whatsapp-number%' => $wa = variableOr('whatsapp', '##no-number-specified'),
 			'%whatsapp%' => $wame = 'https://wa.me/'. $wa . '?text=',
+
 			'%siteName%' => $sn = variable('name'),
 			'%safeName%' =>  variable('safeName'),
-			'%section%' => variable('section'), //let archives break!
-			'%section_r%' => humanize(variable('section')),
+			'%section%' => $section, //let archives break!
+			'%section_r%' => humanize($section),
 			'%site-engage-btn%' => engageButton('site', 'Engage With Us', 'inline'),
-			'%node-url%' => variable('section') ? variable('page-url') . variable('node') . '/' : '##not-in-a-node',
-			'%page-url%' => variable('page_parameter1') ? variable('page-url') . variable('node') . '/' . variable('page_parameter1') . '/' : '##not-in-a-page',
-			'%sub-page-url%' => variable('page_parameter2') ? variable('page-url') . variable('node') . '/' . variable('page_parameter1') . '/'  . variable('page_parameter2') . '/' : '##not-in-a-sub-page',
+
+			'%node-url%' => $section ? $safeUrl . $node . '/' : '##not-in-a-node',
+			'%node-assets%' => $section && $section != $node ? variable('assets-url') . $section . '/' . $node . '/assets/' : '##not-in-a-node',
+			'%nodeSiteName%' => variableOr('nodeSiteName', '##not-in-a-node'),
+
+			'%page-url%' => variable('page_parameter1') ? $safeUrl . $node . '/' . variable('page_parameter1') . '/' : '##not-in-a-page',
+			'%sub-page-url%' => variable('page_parameter2') ? $safeUrl . $node . '/' . variable('page_parameter1') . '/'  . variable('page_parameter2') . '/' : '##not-in-a-sub-page',
 			'%page-location%' => $loc = title('params-only'),
+
 			'%enquiry%' => str_replace(' ', '+', 'enquiry (for) ' . $sn . ' (at) ' . $loc),
 			'%optional-content-box-class%' => _getCBClassIfWanted(''),
 			'<marquee>' => variable('_marqueeStart'),

@@ -23,17 +23,20 @@ function _table_row_values($item, $cols, $tsv) {
 	//parameterError('Table Debugger', [$item, $cols], false); die();
 	foreach ($cols as $key => $c) {
 		if (is_numeric($key)) $key == $c;
+		$value = $item[$c];
+		if (contains($value, $tiu = '%col-1-val%'))
+			$value = str_replace($tiu, $item[0], $value); //assumes its the first col!!
 
-		if (!$item[$c] || (startsWith($key, '__') && !(variable('allow-internal'))))
+		if (!$value || (startsWith($key, '__') && !(variable('allow-internal'))))
 			$r[$key] = '';
 		else if (endsWith($key, '_link') && $key != '_link')
 			$r[$key] = _table_link($item, $c);
 		else if (endsWith($key, '_md') || in_array($key, ['about', 'content']))
-			$r[$key] = renderSingleLineMarkdown($item[$c], ['echo' => false]);
+			$r[$key] = renderSingleLineMarkdown($value, ['echo' => false]);
 		else if (endsWith($key, '_urlized'))
-			$r[$key] = in_array($item[$c], ['__node', '__page']) ? '' : $item[$c] . '/';
+			$r[$key] = in_array($value, ['__node', '__page']) ? '' : $value . '/';
 		else
-			$r[$key] = $item[$c];
+			$r[$key] = $value; 
 
 		if (endsWith($key, '_urlized'))
 			$r[str_replace('_urlized', '', $key) . '_humanized'] = humanize($item[$c] == '__page' ? variable('page_parameter1') : 

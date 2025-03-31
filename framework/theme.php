@@ -35,7 +35,7 @@ function run_theme_part($what) {
 		$baseUrl = hasVariable('nodeSafeName') ? pageUrl(variable('node')) : pageUrl();
 		$logo2x = siteOrNetworkOrAppStatic(variableOr('nodeSafeName', variable('safeName')) . '-logo@2x.png');
 		$vars['logo'] = concatSlugs(['<a href="', $baseUrl, '"><img src="', $logo2x, '" class="img-fluid img-max-',
-			variableOr('footer-logo-max-width', '500'), '" alt="', variable('name'), '"></a><br>'], '');
+			variableOr('footer-logo-max-width', '500'), '" alt="', variableOr('nodeSiteName', variable('name')), '"></a><br>'], '');
 
 		$header = _substituteThemeVars($content, 'header', $vars);
 
@@ -45,9 +45,25 @@ function run_theme_part($what) {
 		if (isset($bits[1])) {
 			setMenuSettings();
 			runFrameworkFile('header-menu');
-			setMenuSettings(true);
+			headerMenuFrom();
 			echo _renderRaw($bits[1]);
 		}
+		if (variable('submenu-at-node')) {
+			$menuFile = getThemeFile('page-menu.html');
+			$menuContent = disk_file_get_contents($menuFile);
+
+			$menuVars = [
+				'menu-title' => variable('nodeSiteName'),
+			];
+			$menuContent = replaceItems($menuContent, $menuVars, '##');
+
+			$menuBits = explode('##page-menu##', $menuContent);
+			echo _renderRaw($menuBits[0]);
+			setMenuSettings('page-menu');
+			header2ndMenu();
+			echo _renderRaw($menuBits[1]);
+		}
+		setMenuSettings(true);
 	} else if ($what == 'footer') {
 		if (!variable('footer-widgets-in-enrich')) {
 			$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png', true);
@@ -95,23 +111,26 @@ function _renderRaw($html) {
 }
 
 function setMenuSettings($after = false) {
-	if ($after) {
+	if ($after === true) {
 		variable('menu-settings', false);
 		return;
 	}
 
+	$pm = $after == 'page-menu';
+	$prefix = $pm ? 'page-' : '';
 	//same as non-profit header
 	variable('menu-settings', [
+		'isPageMenu' => $pm,
 		'noOuterUl' => false,
-		'groupOuterUlClass' => 'menu-container',
+		'groupOuterUlClass' => $prefix . 'menu-container',
 		'outerUlClass' => 'menu-container',
-		'ulClass' => 'sub-menu-container',
-		'itemClass' => 'menu-item',
-		'subMenuClass' => 'sub-menu',
+		'ulClass' => $pm ? 'page-menu-sub-menu' : 'sub-menu-container',
+		'itemClass' => $prefix . 'menu-item',
+		'subMenuClass' => $pm ? 'page-menu-sub-menu' : 'sub-menu',
 		'itemActiveClass' => 'current',
-		'anchorClass' => 'menu-link',
+		'anchorClass' => $pm ? '' : 'menu-link',
 		'wrapTextInADiv' => true,
-		'topLevelAngle' => '<i class="icon-angle-down"></i>',
+		'topLevelAngle' => $pm ? '<i class="sub-menu-indicator fa-solid fa-caret-down"></i>' : '<i class="icon-angle-down"></i>',
 	]);
 }
 

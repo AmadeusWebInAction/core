@@ -14,8 +14,10 @@ function before_render() {
 		if (disk_file_exists($incFile = variable('path') . '/' . $slug . '/' . $node . '/_include.php')) {
 			variable('section', $slug);
 			disk_include_once($incFile);
-			afterSectionSet();
-			return;
+			if (hasVariable('is-standalone-section')) {
+				afterSectionSet();
+				return;
+			}
 		}
 
 		if (function_exists('before_render_section')){

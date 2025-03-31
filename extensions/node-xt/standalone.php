@@ -15,12 +15,6 @@ variables([
 	'no-page-menu' => !!$param1,
 ]);
 
-$nodeStaticUrl = variable('assets-url') . variable('section') . '/' . variable('node') . '/';
-variables([
-	'node-static-folder' => NODEPATH . '/assets/',
-	'node-static' => $nodeStaticUrl . 'assets/',
-]);
-
 function standaloneMenuItems($callingFrom, $limit = -1) {
 	$items = textToList(disk_file_get_contents(NODEPATH . '/' . variable('page_parameter1_safe') . '/_items.txt'));
 	$r = []; $prefix = $callingFrom != 'section-check' ? variable('node') . '/' . variable('page_parameter1_safe') . '/' : '';

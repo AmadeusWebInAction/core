@@ -10,7 +10,7 @@ variables([
 		'rich-pages' => 'tsv',
 		'tables' => 'md',
 	],
-	'exclude-folders' => ['assets', 'data', 'engage', 'home', 'images', 'thumbnails'],
+	'exclude-folders' => ['home', 'assets', 'data', 'engage', 'home', 'images', 'thumbnails'],
 ]);
 
 function autoRender($file) {
