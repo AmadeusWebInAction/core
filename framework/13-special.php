@@ -79,7 +79,8 @@ function autoRender($file) {
 
 function hasSpecial() {
 	$node = variable('node');
-	if (_isLinks($node) || $node == 'search') return _setAndReturn(['sub-theme' => 'blank']);
+	if (_isLinks($node) || $node == 'search') return true;
+
 	if (isset($_GET['share'])) return _setAndReturn(['sub-theme' => 'go']);
 
 	return false;
@@ -93,7 +94,7 @@ function _setAndReturn($vars) {
 function renderedSpecial() {
 	if (variable('site-lock')) { doSiteLock(); return true; }
 	$node = variable('node');
-	if ($node == 'search') { runFeature('search'); return true; }
+	if ($node == 'search') { echo getSnippet('search', CORESNIPPET); return true; }
 	//share done at top of entry's render()
 	if ($node == 'gallery') { includeFeature('gallery'); return true; }
 	if (_renderedLink($node)) return true;

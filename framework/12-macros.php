@@ -23,8 +23,21 @@ function runAllMacros($html) {
 	return $html;
 }
 
+DEFINE('CORESNIPPET', 'use-core');
+
+function _getSnippetPath($fol, $type = 'plain') {
+	if ($fol && $fol != CORESNIPPET) return $fol;
+	if ($type == 'plain') {
+		return $fol == CORESNIPPET ? AMADEUSCORE . '/data/core-snippets/'
+			: SITEPATH . '/data/snippets/';
+	}
+
+	return $fol == CORESNIPPET ? AMADEUSCORE . '/data/core-code-snippets/'
+		: SITEPATH . '/data/snippets/';
+}
+
 function getSnippet($name, $fol = false) {
-	if (!$fol) $fol = SITEPATH . '/data/snippets/';
+	$fol = _getSnippetPath($fol); //plain
 	$ext = disk_one_of_files_exist($fol . $name . '.', 'html, md');
 	if (!$ext) return '';
 	return replaceSnippets('%' . $name . '-snippet%', [$name . '.' . $ext], $fol);
@@ -57,15 +70,21 @@ function replaceSnippets($html, $files = false, $fol = false) {
 	return $html;
 }
 
-function replaceCodeSnippets($html) {
-	$fol = SITEPATH . '/data/code-snippets/';
-	$files = disk_scandir($fol);
+function getCodeSnippet($name, $fol = false) {
+	$core = $fol == CORESNIPPET ? '-core' : '';
+	return replaceCodeSnippets('%' . $name . $core . '-codesnippet%', [$name . '.php'], $fol);
+}
+
+function replaceCodeSnippets($html, $files = false, $fol = false) {
+	$core = $fol == CORESNIPPET ? '-core' : '';
+	$fol = _getSnippetPath($fol, 'code');
+	if (!$files) $files = disk_scandir($fol);
 
 	foreach ($files as $file) {
 		if ($file[0] == '.' || getExtension($file) != 'php') continue;
 
 		$fwoe = replaceItems($file, ['.php' => '']);
-		$key = '%' . $fwoe .'-codesnippet%';
+		$key = '%' . $fwoe . $core .'-codesnippet%';
 
 		if (!contains($html, $key)) continue;
 

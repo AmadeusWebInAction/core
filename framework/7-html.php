@@ -34,6 +34,12 @@ function fileUrl($relative = '') {
 	return variable('assets-url') . $relative;
 }
 
+function searchUrl($all = false) {
+	if (contains(variable('node'), 'search'))
+		return variable('page-url') . ($relative = $all ? variable('all_page_parameters') : variable('node')) . '/';
+	return variable('page-url') . 'search/';
+}
+
 function cssClass($items) {
 	if (!count($items)) return '';
 	return ' class="' . implode(' ', $items) . '"';

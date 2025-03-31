@@ -25,7 +25,7 @@ function _renderEngage($name, $raw, $open = false, $echo = true) {
 
 	$result .= renderMarkdown($raw, ['replaces' => $replaces, 'echo' => false]);
 
-	$result .= getSnippet('engage-toolbox', AMADEUSCORE . 'data/core-snippets/');
+	$result .= getSnippet('engage-toolbox', CORESNIPPET);
 	
 	$result .= '</div>' . variable('nl');
 	if (!$echo) return $result;

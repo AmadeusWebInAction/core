@@ -1,12 +1,6 @@
 <?php
+doToBuffering(1);
 //variable('default-search', 'yieldmore');
-$canvas = variable('theme') == 'canvas';
-if ($canvas) {
-	echo '<div class="error404" style="font-size: 12vw;">SEARCH</div>';
-} else {
-	contentBox('search', 'container');
-	h2('Search from one of these Engines', 'amadeus-icon'); 
-}
 
 //todo = whitelist & default
 $engines = variableOr('searches', main::defaultSearches());
@@ -15,11 +9,11 @@ $id = variableOr('page_parameter1', $defaultSearchId = variableOr('default-searc
 $engine = $engines[$id];
 
 foreach ($engines as $slug => $item) {
-	echo sprintf('<div class="mb-2 lh-2"><a href="%s" class="btn btn-%s">%s</a>%s</div>' . NEWLINE,
-		variable('page-url') . 'search/' . ($defaultSearchId != $slug ? $slug . '/' : ''), $slug == $id ? 'warning' : 'light', $item['name'],
-		' &mdash; ' . $item['description']);
+	echo sprintf('<div class="mb-2 lh-2 white-bg d-inline-block"><a href="%s" class="btn btn-%s">%s%s</a></div>' . NEWLINE,
+		searchUrl() . ($defaultSearchId != $slug ? $slug . '/' : ''),
+		$slug == $id ? 'warning' : 'light', $item['name'], !$item['description'] ? '' : ' &mdash; ' . $item['description']);
 }
-echo makeLink('edit google search engine', 'https://programmablesearchengine.google.com/controlpanel/overview?cx=' . $engine['code'], EXTERNALLINK);
+echo BRNL . makeLink('edit google search engine', 'https://programmablesearchengine.google.com/controlpanel/overview?cx=' . $engine['code'], EXTERNALLINK);
 ?>
 
 <style type="text/css">
@@ -36,6 +30,7 @@ echo makeLink('edit google search engine', 'https://programmablesearchengine.goo
 <script async src="https://cse.google.com/cse.js?cx=<?php echo $engine['code']; ?>"></script>
 <div class="gcse-searchbox"></div>
 <div class="gcse-searchresults"></div>
-
 <?php
-if (!$canvas) contentBox('end');
+$result = doToBuffering(2);
+doToBuffering(3);
+return $result;
