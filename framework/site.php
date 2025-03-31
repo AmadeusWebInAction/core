@@ -79,6 +79,7 @@ function _visane($siteVars) {
 		['phone', '+91-9841223313'],
 		['whatsapp', '919841223313'],
 		['address', 'Chennai, India'],
+		//['address-url', '#address'], //not here as needed for social too
 
 		['description', false],
 		['network', variable('network')], //can be defined in site.tsv / loader

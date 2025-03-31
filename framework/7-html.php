@@ -154,6 +154,9 @@ function replaceHtml($html) {
 			'%whatsapp-number%' => $wa = variableOr('whatsapp', '##no-number-specified'),
 			'%whatsapp%' => $wame = 'https://wa.me/'. $wa . '?text=',
 
+			'%address%' => variableOr('address', '[no-address]'),
+			'%address-url%' => variableOr('address-url', '#no-link'),
+
 			'%siteName%' => $sn = variable('name'),
 			'%safeName%' =>  variable('safeName'),
 			'%section%' => $section, //let archives break!

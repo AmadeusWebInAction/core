@@ -141,7 +141,8 @@ function siteWidgets() {
 	//TODO: Showcase + Misc
 	$op = [];
 
-	if (count($sections = variableOr('sections', []))) {
+	$sectionHome = variable('link-to-section-home');
+	if ($sectionHome && count($sections = variableOr('sections', []))) {
 		$op[] = $start;
 		$op[] = '<h4>Sections</h4>';
 		foreach ($sections as $slug)
@@ -163,7 +164,8 @@ function siteWidgets() {
 		$op[] = '<h4>Social</h4>';
 		foreach($social as $item) {
 			$op[] = '<a target="_blank" href="' . $item['url'] . '" class="mt-2">';
-			$op[] = '	<i class="social-icon text-light si-mini rounded-circle fa-brands fa-' . $item['type'] . ' bg-' . $item['type'] . '"></i> ' . $item['name'] . '</a>';
+			$op[] = '	<i class="social-icon text-light si-mini rounded-circle ' . (contains($item['type'], ' ')
+				? $item['type'] : 'fa-brands fa-'. $item['type'] . ' bg-' . $item['type']) . '"></i> ' . $item['name'] . '</a>';
 			$op[] = '';
 		}
 		$op[] = '</div>'; $op[] = '';
