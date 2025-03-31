@@ -3,7 +3,8 @@
 $safeNL = "\r"; //platform safe
 $nl = "\r\n";
 
-variable('safeNL', $safeNL);
+variable('safeNL', $safeNL); //TODO: deprecate
+DEFINE('SAFENEWLINE', $safeNL);
 DEFINE('NEWLINE', $nl);
 variable('nl', NEWLINE);
 DEFINE('NEWLINES2', $nl . $nl);

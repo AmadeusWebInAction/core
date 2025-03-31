@@ -1,25 +1,38 @@
-<div class="container content-box">
-					<div class="heading-block border-bottom-0 my-4 text-center">
-						<h3><?php echo $title ;?></h3>
-					</div>
+<div class="container">
+<div class="content-box">
+	<div class="heading-block border-bottom-0 my-4 text-center">
+		<h3><?php echo $title ;?></h3>
+	</div>
+</div>
+
 <?php
 $refA = getSheet(SITEPATH . '/' . $sectionA . '/_section.tsv', 'sno');
 $refB = getSheet(SITEPATH . '/' . $sectionB . '/_section.tsv', 'sno');
 $sheet = getSheet(SITEPATH . '/' . $section . '/_section.tsv', false);
-echo '<ol>' . NEWLINE;
 foreach ($sheet->rows as $item) {
+	$slug = $sheet->getValue($item, 'slug');
+	if ($singleItem && $slug != $singleItem) continue;
+
+	contentBox($section . '-' . $slug, 'container');
+
+	$sno = $sheet->getValue($item, 'sno');
+
 	$as = explode(', ', str_replace($prefixA, '', $sheet->getValue($item, $sectionA)));
 	$bs = explode(', ', str_replace($prefixB, '', $sheet->getValue($item, $sectionB)));
-	$link = makeRelativeLink($sheet->getValue($item, 'name'), $sheet->getValue($item, 'slug'));
-	echo '<li class="content-box after-content" style="margin-bottom: 20px;">' . $link . '<hr>Relates To:' . BRTAG;
+	$link = makeRelativeLink($sno . '.' . $sheet->getValue($item, 'name'), $slug);
+
+	echo '<div style="margin-bottom: 20px;"><h3>' . $link . '</h3><hr>Relates To:' . BRTAG;
+
 	linksOf($as, $refA, humanize($sectionA));
 	linksOf($bs, $refB, humanize($sectionB));
-	echo BRTAG . BRTAG . '</li>' . NEWLINES2;
+
+	echo '</div>' . NEWLINES2;
+
+	contentBox('end');
 }
-echo '</ol>' . NEWLINE;
 
 function linksOf($items, $sheet, $title) {
-	echo BRTAG . '<strong>' . $title . ':</strong>' . NEWLINE;
+	echo '<h4>' . $title . ':</h4>' . NEWLINE;
 	echo '<ol><li>' . NEWLINE;
 	$op = [];
 
@@ -38,13 +51,11 @@ function linksOf($items, $sheet, $title) {
 		
 			$link = makeRelativeLink($name, $slug);
 		}
-		$op[] = '	' . $link . NEWLINE;
+		$op[] = '	<h5>' . $link . '</h5>' . NEWLINE;
 	}
 	echo implode('</li>' . NEWLINE . '<li>', $op);
 	echo '</li></ol>' . NEWLINE;
 }
-
-echo '</ol>' . NEWLINES2;
 ?>
-				</div>
-			</div>
+
+</div><!-- .container -->

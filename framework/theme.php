@@ -100,7 +100,7 @@ function _substituteThemeVars($content, $what, $vars) {
 		$vars = enrichThemeVars($vars, $what);
 
 	if ($what == 'header') {
-		if ($vars['optional-slider'] == '')
+		//if ($vars['optional-slider'] == '')
 			$vars['body-classes'] = $vars['body-classes'] . ' no-slider';
 	}
 	return replaceItems($content[$what], $vars, '##');
@@ -141,8 +141,8 @@ function siteWidgets() {
 	//TODO: Showcase + Misc
 	$op = [];
 
-	$sectionHome = variable('link-to-section-home');
-	if ($sectionHome && count($sections = variableOr('sections', []))) {
+	$showSections = variable('link-to-section-home') && !variable('hide-sections-in-footer');
+	if ($showSections && count($sections = variableOr('sections', []))) {
 		$op[] = $start;
 		$op[] = '<h4>Sections</h4>';
 		foreach ($sections as $slug)

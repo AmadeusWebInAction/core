@@ -139,6 +139,26 @@ function textToList($data) {
 	return $r;
 }
 
+function parseMeta($raw) {
+	$bits = explode('//meta', $raw);
+	if (count($bits) == 1) return false;
+
+	$lines = explode(SAFENEWLINE, $bits[1]);
+	$r = ['rest-of-content' => substr($bits[2], strlen('-->'))];
+
+	foreach ($lines as $line) {
+		$line = trimCrLf($line);
+		if ($line == '') continue;
+
+		$kv = explode(': ', $line);
+		if (count($kv) > 1) {
+			$r[$kv[0]] = $kv[1];
+		}
+	}
+
+	return $r;
+}
+
 DEFINE('VALUESTART', '||');
 
 ///SHEET (TSV) FUNCTIONS
