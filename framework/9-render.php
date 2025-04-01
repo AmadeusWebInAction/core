@@ -118,6 +118,10 @@ function renderMarkdown($raw, $settings = []) {
 	return _renderImplementation($raw, $settings);
 }
 
+function returnLine($raw) {
+	return renderSingleLineMarkdown($raw, ['echo' => false]);
+}
+
 function renderSingleLineMarkdown($raw, $settings = []) {
 	return renderMarkdown($raw, array_merge($settings, ['strip-paragraph-tag' => true]));
 }

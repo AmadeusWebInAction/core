@@ -99,16 +99,19 @@ function renderHeaderMenu($slug, $node = '') {
 	else { $name = humanize($parentSlug); }
 
 	extract(variable('menu-settings'));
-	if ($wrapTextInADiv) $name = '<div>' . $name . $topLevelAngle . '</div>';
-	
-	echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
 
 	$files = false; $tiss = false;
 	$standalones = variableOr('standalone-sections', []);
 	if (in_array($slug, $standalones)) {
 		$tiss = true;
 		$files = disk_include(variable('path') . '/' . $slug . '/menu.php', ['callingFrom' => 'header-menu', 'limit' => 5]);
+		if ($tsmn = variable(getSectionKey($slug, MENUNAME)))
+			$name = $tsmn;
 	}
+
+	if ($wrapTextInADiv) $name = '<div>' . $name . $topLevelAngle . '</div>';
+
+	echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
 
 	if ($node) $slug .= '/' . $node;
 	menu('/' . $slug . '/', [

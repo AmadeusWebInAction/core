@@ -31,3 +31,14 @@ function getSiteUrlKey() {
 	variable(SITEURLKEY, $result);
 	return $result;
 }
+
+DEFINE('MENUNAME', 'menu_name');
+DEFINE('FILELOOKUP', 'file_lookup');
+DEFINE('MENUITEMS', 'menu_items');
+function getSectionKey($slug, $for) {
+	return 'this_' . $slug . '_' . $for;
+}
+
+function getSectionFrom($dir) {
+	return pathinfo($dir, PATHINFO_FILENAME);
+}

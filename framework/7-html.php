@@ -299,6 +299,7 @@ function makeLink($text, $link, $relative = true, $noLink = false) {
 
 function getLink($text, $href, $class = '', $target = false) {
 	$target = $target ? ' target="' . (is_bool($target) ? '_blank' : $target) . '"' : '';
+	if ($class && !contains($class, 'class="')) $class = ' class="' .  $class . '"';
 	$params = compact('text', 'href', 'class', 'target');
 	return replaceItems('<a href="%href%"%class%%target%>%text%</a>', $params, '%');
 }
@@ -364,6 +365,10 @@ function raiseParameterError($message, $first, $later = []) {
 DEFINE('DODIE', true);
 DEFINE('DOTRACE', true);
 DEFINE('DONTTRACE', false);
+
+function peDie($msg, $param, $trace = false) {
+	parameterError($msg, $param, $trace, DODIE);
+}
 
 function parameterError($msg, $param, $trace = true, $die = false) {
 	if (startsWith($msg, '$')) $msg = 'PARAMETER ERROR: ' . $msg;

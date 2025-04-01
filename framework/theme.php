@@ -3,13 +3,19 @@ function getThemeTemplate($end = '-rich-page.php') {
 	return getThemeFile(variable('sub-theme') . $end);
 }
 
+function getTemplateFrom($file) {
+	$file = getThemeFile($file . '.html');
+	$bits = explode('##content##', disk_file_get_contents($file));
+	return ['header' => $bits[0], 'footer' => $bits[1]];
+}
+
 function run_theme_part($what) {
 
 	if (!($content = variable('theme-template'))) {
 		$file = getThemeFile(variable('sub-theme') . '.html');
 		$bits = explode('##content##', disk_file_get_contents($file));
 		$content = ['header' => $bits[0], 'footer' => $bits[1]];
-		$content['footer-widgets'] = disk_file_get_contents(getThemeFile('footer-widgets.html'));
+		$content['footer-widgets'] = disk_file_get_contents(getThemeFile('footer-widgets' . variableOr('footer-variation', '') . '.html'));
 		variable('theme-template', $content);
 	}
 
@@ -68,15 +74,24 @@ function run_theme_part($what) {
 		if (!variable('footer-widgets-in-enrich')) {
 			$logo2x = siteOrNetworkOrAppStatic(variable('safeName') . '-logo@2x.png', true);
 			$logo = concatSlugs(['<a href="', pageUrl(), '"><img src="', $logo2x, '" style="border-radius: 20px;" class="img-fluid" alt="', variable('name'), '"></a><br>'], '');
-			$suffix = !variable('footer-message') ? '' : '<span class="footer-message">' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . '</span>' . variable('nl');
+
+			$message = !variable('footer-message') ? '' : '<span class="footer-message">' . renderSingleLineMarkdown(variable('footer-message'), ['echo' => false]) . '</span>' . NEWLINE;
+			$loneMessage = contains($content['footer-widgets'], '##footer-message##');
+
+			$contact = getSnippet('contact');
+			$loneContact = contains($content['footer-widgets'], '##footer-contact##');
+
 			$nodeName = hasVariable('nodeSiteName') ? '<span class="h5" style="margin-left: 15px;">&#10148; ' . variable('nodeSiteName') . '</span>' . NEWLINE : '';
 			$fwVars = [
-				'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . $nodeName . '</h4>' . $suffix . BRNL . BRNL . getSnippet('contact'),
+				'footer-logo' => $logo . '<h4 class="mt-sm-4">' . variable('name') . $nodeName . '</h4>'
+					. (!$loneMessage ? $message : '') . (!$loneContact ? BRNL . BRNL . $contact : ''),
 				'site-widgets' => siteWidgets(),
 				'copyright' => _copyright(true),
 				'credits' => _credits('', true),
-				//TODO: 'social-icons' now removed -> use footer-widgets in all templates!
 			];
+
+			if ($loneMessage) $fwVars['footer-message'] = $message;
+			if ($loneContact) $fwVars['footer-contact'] = $contact;
 
 			$vars['footer-widgets'] = _substituteThemeVars($content, 'footer-widgets', $fwVars);
 		}
@@ -86,7 +101,21 @@ function run_theme_part($what) {
 		$atBody = !contains($footer, '##footer-includes##');
 		$bits = explode($atBody ? '</body>' : '##footer-includes##', $footer);
 
-		echo _renderRaw($bits[0]);
+		if ($after = variable('after-wrapper')) {
+			if (!contains($bits[0], $sep = '<!-- #wrapper end -->'))
+				peDie('expected template to have a wrapper close comment!', $after);
+
+			$wabbits = explode($sep, $bits[0]);
+			echo _renderRaw($wabbits[0]);
+			$tpl = getTemplateFrom($after['template']);
+			echo _renderRaw($tpl['header']);
+			autoRender($after['file']);
+			echo _renderRaw($tpl['footer']);
+			echo $sep . _renderRaw($wabbits[1]);
+		} else {
+			echo _renderRaw($bits[0]);
+		}
+
 		print_stats(); //returns if not needed
 		styles_and_scripts();
 
@@ -135,14 +164,34 @@ function setMenuSettings($after = false) {
 }
 
 function siteWidgets() {
-	$start = '<div class="col-md-4 mt-sm-4 pt-xs-3"><hr class="d-sm-none">' . variable('nl');
-	if (variable('node-alias')) return '';
+	//Do Better - if (variable('node-alias')) return '';
+
+	$colsInUse = 0;
+
+	$showSections = variable('link-to-section-home') && !variable('no-sections-in-footer');
+	if ($showSections) $showSections = count($sections = variableOr('sections', []));
+	if ($showSections) $colsInUse += 1;
+
+	$showNetwork = !variable('no-network-in-footer');
+	if ($showNetwork) $showNetwork = count($sites = variableOr('network-sites', main::defaultNetwork()));
+	if ($showNetwork) $colsInUse += 1;
+
+	$showSocial = !variable('no-social-in-footer');
+	if ($showSocial) $showSocial = count($social = variableOr('social', main::defaultSocial()));
+	if ($showSocial) $colsInUse += 1;
+
+	if ($colsInUse == 0) return '';
+
+	//adjust
+	$grid = [1 => 12, 2 => 6, 3 => 4];
+	$colspan = $grid[$colsInUse];
+
+	$start = sprintf('<div class="col-md-%s mt-sm-%s pt-xs-3"><hr class="d-sm-none">', $colspan, $colspan) . NEWLINE;
 
 	//TODO: Showcase + Misc
 	$op = [];
 
-	$showSections = variable('link-to-section-home') && !variable('hide-sections-in-footer');
-	if ($showSections && count($sections = variableOr('sections', []))) {
+	if ($showSections) {
 		$op[] = $start;
 		$op[] = '<h4>Sections</h4>';
 		foreach ($sections as $slug)
@@ -150,8 +199,7 @@ function siteWidgets() {
 		$op[] = '</div>'; $op[] = '';
 	}
 
-	$wantsNetwork = !variable('no-network-in-footer');
-	if ($wantsNetwork && count($sites = variableOr('network-sites', main::defaultNetwork()))) {
+	if ($showNetwork) {
 		$op[] = $start;
 		$op[] = '<h4>Network</h4>';
 		foreach ($sites as $site)
@@ -159,7 +207,7 @@ function siteWidgets() {
 		$op[] = '</div>'; $op[] = '';
 	}
 
-	if ($social = variableOr('social', main::defaultSocial())) {
+	if ($showSocial) {
 		$op[] = $start;
 		$op[] = '<h4>Social</h4>';
 		foreach($social as $item) {
