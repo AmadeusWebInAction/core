@@ -21,6 +21,7 @@ function header2ndMenu() {
 		}
 		echo '</li>' . NEWLINES2;
 	}
+
 	echo '</ul> <!-- #end page-menu -->' .variable('2nl');
 }
 
@@ -85,6 +86,9 @@ if ($groups = variable('section-groups')) {
 	}
 }
 
+if (function_exists('after_menu')) after_menu();
+if (function_exists('network_after_menu')) network_after_menu();
+if (!$noOuterUl) echo '</ul> <!-- #end site menu -->' .variable('2nl');
 } //end of new headerMenuFrom
 
 function renderHeaderMenu($slug, $node = '') {
@@ -159,9 +163,3 @@ function getCurrentMenus() {
 
 	return $result;
 }
-
-if (function_exists('after_menu')) after_menu();
-if (function_exists('network_after_menu')) network_after_menu();
-
-
-if (!subVariable('menu-settings', 'noOuterUl')) echo '</ul> <!-- #end site -->' .variable('2nl');

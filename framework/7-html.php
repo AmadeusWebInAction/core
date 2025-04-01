@@ -249,14 +249,17 @@ function makePLImages($prefix, $echo = true) {
 /// Expects the whole link(s) html to be provided so href to target blank and mailto can be substituted.
 function prepareLinks($output) {
 	$output = str_replace(pageUrl(), '%url%', $output); //so site urls dont open in new tab. not sure when this became a problem. maybe a double call to prepareLinks as the render methods got more complex.
-	$output = str_replace('href="http','target="_blank" href="http', $output); //yea, baby! no need a js solution!
-	$output = str_replace('href="mailto','target="_blank" href="mailto', $output); //if gmail in chrome is the default, it will hijack current window
+	$output = str_replace('href="http', 'target="_blank" href="http', $output); //yea, baby! no need a js solution!
+	$output = str_replace('href="mailto', 'target="_blank" href="mailto', $output); //if gmail in chrome is the default, it will hijack current window
 	$output = str_replace('%url%', pageUrl(), $output);
 
 	//undo wrongly added blanks
 	$output = str_replace('rel="preconnect" target="_blank" ', 'rel="preconnect" ', $output); //new nuance
 	$output = str_replace('target="_blank" href="https://fonts.googleapis.com', 'href="https://fonts.googleapis.com', $output);
 	$output = str_replace('target="_blank" target="_blank" ', 'target="_blank" ', $output);
+
+	$output = str_replace('href="https://wa.me/', 'rel="nofollow" href="https://wa.me/', $output); //throws errorcode=429, too many requests while crawling
+	$output = str_replace('target="_blank" rel="nofollow" target="_blank" rel="nofollow" ', 'target="_blank" rel="nofollow" ', $output); //multiple calls :(
 
 	//TODO: " class="analytics-event" data-payload="{clickFrom:'%safeName%' //leave end " as a hack to pile on attributes
 	$campaign = isset($_GET['utm_campaign']) ? '&utm_campaign=' . $_GET['utm_campaign'] : '';
