@@ -37,7 +37,7 @@ function _headerStart($skipMainMenu = false) {
 
 	$mainMenu = variable($isPageMenu ? 'nodeSiteName' : 'siteMenuName') . $topLevelAngle;
 	if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
-	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();">' . $mainMenu . '</a>' . NEWLINE;
+	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void(0);">' . $mainMenu . '</a>' . NEWLINE;
 }
 
 function headerMenuFrom() {
@@ -109,6 +109,7 @@ function renderHeaderMenu($slug, $node = '') {
 			$name = $tsmn;
 	}
 
+	$homeNA = variable(getSectionKey($slug, MENUNAME) . '_home') == 'off';
 	if ($wrapTextInADiv) $name = '<div>' . $name . $topLevelAngle . '</div>';
 
 	echo '<li class="' . $itemClass . ' ' . $subMenuClass . '"><a class="' . $anchorClass . '">' . $name . '</a>';
@@ -120,7 +121,7 @@ function renderHeaderMenu($slug, $node = '') {
 		'files' => $files, 'this-is-standalone-section' => $tiss,
 		'list-only-folders' => $node == '',
 		'list-only-files' => variable('sections-have-files'),
-		'link-to-home' => variable('link-to-section-home'),
+		'link-to-home' => variable('link-to-section-home') && !$homeNA,
 		'parent-slug-for-home-link' => $parentSlug . '/',
 		'parent-slug' => $node ? $node . '/' : '',
 	]);
@@ -132,7 +133,7 @@ function renderIfCurrentMenu() {
 	if (count($items) == 0) return;
 
 	extract(variable('menu-settings'));
-	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void();"><div>((Current Menu))</div></a>' . NEWLINE;
+	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void(0);"><div>((Current Menu))</div></a>' . NEWLINE;
 	echo '		<ul' . cssClass([$ulClass]) . '>' . NEWLINE;
 
 	foreach ($items as $params) {

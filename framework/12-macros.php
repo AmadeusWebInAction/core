@@ -34,25 +34,30 @@ DEFINE('CORESNIPPET', 'use-core');
 function _getSnippetPath($fol, $type = 'plain') {
 	if ($fol && $fol != CORESNIPPET) return $fol;
 	if ($type == 'plain') {
-		return $fol == CORESNIPPET ? (AMADEUSCORE . '/data/core-snippets/')
+		return $fol == CORESNIPPET ? (AMADEUSCORE . 'data/core-snippets/')
 			: (SITEPATH . '/data/snippets/');
 	}
 
-	return $fol == CORESNIPPET ? (AMADEUSCORE . '/data/core-code-snippets/')
+	return $fol == CORESNIPPET ? (AMADEUSCORE . 'data/core-code-snippets/')
 		: (SITEPATH . '/data/code-snippets/');
 }
 
 function getSnippet($name, $fol = false) {
 	$core = $fol == CORESNIPPET ? '-core' : '-';
-	$fol = _getSnippetPath($fol); //plain
-	$ext = disk_one_of_files_exist($fol . $name . '.', 'html, md');
+
+	$fileFol = $fol;
+	$fileFol = _getSnippetPath($fol); //plain
+
+	$ext = disk_one_of_files_exist($fileFol . $name . '.', 'html, md');
 	if (!$ext) return '';
+	
 	return replaceSnippets('%' . $name . $core . 'snippet%', [$name . '.' . $ext], $fol);
 }
 
 function replaceSnippets($html, $files = false, $fol = false) {
 	$core = $fol == CORESNIPPET ? '-core' : '-';
-	if (!$fol) $fol = _getSnippetPath($fol); //plain	
+	if (!$fol || $fol == CORESNIPPET) $fol = _getSnippetPath($fol); //plain	
+
 	if (!$files) $files = disk_scandir($fol);
 
 	foreach ($files as $file) {

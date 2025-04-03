@@ -323,11 +323,20 @@ function getThemeIcon($id, $size = 'normal')  {
 }
 
 function body_classes($return = false) {
-	$chatra = hasVariable('ChatraID') ? ' has-chatra' : '';
-	$sub = variable('sub-theme') ? ' sub-theme-' . variable('sub-theme') : '';
-	$page = ' node-' . variable('node');
-	$page .= ' page-' . (isset($_GET['share']) ? 'share' : str_replace('/', '_', variable('all_page_parameters')));
-	$op = 'theme-' . variable('theme') . $page . $sub . ' site-' . variable('safeName') . $chatra;
+	$op = [];
+
+	$op[] = 'site-' . variable('safeName');
+	$op[] = 'theme-' . variable('theme');
+	if (hasVariable('sub-theme')) $op[] =  'sub-theme-' . variable('sub-theme');
+
+	$op[] = 'node-' . variable('node');
+	$op[] = 'page-' . (isset($_GET['share']) ? 'share' : str_replace('/', '_', variable('all_page_parameters')));
+
+	$op[] = 'mobile-click-to-expand'; //TODO: configurable!
+
+	if (hasVariable('ChatraID')) $op[] = 'has-chatra';
+
+	$op = implode(' ', $op);
 	if ($return) return $op;
 	echo $op;
 }

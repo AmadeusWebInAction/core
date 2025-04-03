@@ -5,7 +5,7 @@ safeName	amadeusweb
 footer-message	
 siteMenuName	Amadeus Web
 scaffold	search, sitemap
-sections	docs
+sections	docs, all
 local-url	http://localhost/awe/core/
 live-url	https://v7.amadeusweb.com/
 year	2019

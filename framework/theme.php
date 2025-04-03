@@ -90,8 +90,8 @@ function run_theme_part($what) {
 				'credits' => _credits('', true),
 			];
 
-			if ($loneMessage) $fwVars['footer-message'] = $message;
-			if ($loneContact) $fwVars['footer-contact'] = $contact;
+			if ($loneMessage) $fwVars['footer-message'] = '<h2 class="text-align-center p-3">' . $message . '</h2>';
+			if ($loneContact) $fwVars['footer-contact'] = '<hr>' . $contact;
 
 			$vars['footer-widgets'] = _substituteThemeVars($content, 'footer-widgets', $fwVars);
 		}
@@ -220,4 +220,11 @@ function siteWidgets() {
 	}
 
 	return implode(variable('nl'), $op);
+}
+
+function getBreadcrumbs($items) {
+	$op = [];
+	foreach ($items as $slug => $text)
+		$op[] = '<li class="breadcrumb-item">' . getLink($text, replaceHtml($slug)) . '</li>';
+	return implode(NEWLINE . '			', $op);
 }
