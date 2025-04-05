@@ -22,6 +22,16 @@ function header2ndMenu() {
 		echo '</li>' . NEWLINES2;
 	}
 
+	if ($social = variable('node-social')) {
+		//echo '<li class="' . $itemClass . ' ms-sm-3">social: </li>';
+		foreach ($social as $item) {
+			extract(specialLinkVars($item));
+
+			echo '<li class="d-inline-block my-2"><a target="_blank" href="' . $url . '" class="mt-2 text-white">'
+				. '	<i class="social-icon si-mini text-light rounded-circle ' . $class . '"></i> <span class="d-sm-none btn-light">' . $text . '</span></a></li>';
+		}
+	}
+
 	echo '</ul> <!-- #end page-menu -->' .variable('2nl');
 }
 

@@ -132,6 +132,10 @@ function getThemeFile($file) {
 	return concatSlugs([AMADEUSTHEMESFOLDER, $themeName, $file]);
 }
 
+function setSubTheme($name) {
+	variable('sub-theme', $name);
+}
+
 function renderThemeFile($file, $themeName = false) {
 	if (!$themeName) $themeName = variable('theme');
 	$variables = [

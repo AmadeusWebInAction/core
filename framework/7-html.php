@@ -268,20 +268,29 @@ function prepareLinks($output) {
 	return $output;
 }
 
-function makeSpecialLink($what, $typesList, $text = '') {
-	$types = explode(', ', $typesList);
-	$op = '';
+function specialLinkVars($item) {
+	extract($item);
+	//$url sent
+	$text = $name;
 
-	foreach ($types as $type) {
-		if ($type == 'tel')
-			$op .= '<a class="icofont-phone" href="tel:' . $what . '">' . $what . '</a> ';
-		else if ($type == 'whatsapp')
-			$op .= '(<a class="icofont-whatsapp" target="_blank" href="https://wa.me/' . replaceItems($what, ['+' => '', '-' => '', '.' => '']) . '?text=' . $text . '">whatsapp</a>) ';
-		else if ($type == 'email')
-			$op .= '<a class="icofont-email" target="_blank" href="mailto:' . $what . '?subject=' . replaceItems($text, [' ' => '+']) . '">' . $what . '</a> ';
+	if ($type == 'email') $classType = 'fa-classic bg-info fa-envelope';
+	if ($type == 'phone') $classType = 'fa-classic bg-info fa-solid fa-phone';
+
+	$class = isset($classType) ? $classType : 'fa-brands fa-'. $type . ' bg-' . $type;
+
+	if ($type == 'phone') {
+		$url = 'tel:' . $url;
 	}
 
-	return $op;
+	if ($type == 'whatsapp') {
+		$url = 'https://wa.me/' . replaceItems($url, ['+' => '', '-' => '', '.' => '']);
+	}
+
+	if ($type == 'email') {
+		$url = 'mailto:' . $url . '?subject=' . replaceItems($text, [' ' => '+']);
+	}
+
+	return compact('text', 'url', 'class');
 }
 
 function makeRelativeLink($text, $relUrl) {

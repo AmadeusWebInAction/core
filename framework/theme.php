@@ -9,6 +9,12 @@ function getTemplateFrom($file) {
 	return ['header' => $bits[0], 'footer' => $bits[1]];
 }
 
+function getThemeBlock($name) {
+	$file = getThemeFile('blocks/' . $name . '.html');
+	$bits = explode('<!--part-separator-->', disk_file_get_contents($file));
+	return ['start' => $bits[0], 'item' => $bits[1], 'end' => $bits[2]];
+}
+
 function run_theme_part($what) {
 
 	if (!($content = variable('theme-template'))) {
