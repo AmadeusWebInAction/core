@@ -91,8 +91,10 @@ function _visane($siteVars) {
 	}
 
 	$op = [];
-	foreach ($guarantees as $cfg)
+	foreach ($guarantees as $cfg) {
+		if (hasVariable($cfg[0])) continue;
 		$op[$cfg[0]] = valueIfSetAndNotEmpty($siteVars, $cfg[0], $cfg[1], isset($cfg[2]) ? $cfg[2] : 'no-change');
+	}
 
 	__testSiteVars($op);
 	variables($op);

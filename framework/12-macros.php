@@ -65,7 +65,7 @@ function replaceSnippets($html, $files = false, $fol = false) {
 
 		$fwoe = replaceItems($file, ['.md' => '', '.html' => '']);
 		$ext = disk_one_of_files_exist($fol . $fwoe . '.', 'html, md');
-		$key = '%' . $fwoe . $core .'snippet%';
+		$key = '%' . $fwoe . $core . 'snippet%';
 
 		if (!contains($html, $key)) continue;
 		$op = renderMarkdown($fol . $file, [
@@ -98,8 +98,7 @@ function replaceCodeSnippets($html, $files = false, $fol = false) {
 		if ($file[0] == '.' || getExtension($file) != 'php') continue;
 
 		$fwoe = replaceItems($file, ['.php' => '']);
-		$key = '%' . $fwoe . $core .'codesnippet%';
-
+		$key = '%' . $fwoe . $core . 'codesnippet%';
 		if (!contains($html, $key)) continue;
 
 		$html = str_replace($key, include $fol . $file, $html);

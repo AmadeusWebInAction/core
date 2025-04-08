@@ -4,18 +4,52 @@ function role_is($what) {
 	return $what == $role;
 }
 
+DEFINE('COUNTRY', 'user-country');
 DEFINE('USERROLE', 'user-role');
 DEFINE('DEMOMODE', 'demo-mode');
 
+DEFINE('REMOVEQS', '<i class="fa fa-lock-open"></i> &nbsp;&nbsp; <abbr title="remove action from url">NOQS</abbr>');
+
 session_start();
-if (_userAction('render') == 'logout') {
+if (_userAction('render') == 'logout' || variable('node') == 'logout') {
 	session_destroy();
 	variable(USERROLE, NOTLOGGEDIN);
 } else {
+	country('check');
 	user_role('check');
 	demo_mode('check');
 }
 session_commit();
+
+
+function country($action) {
+	$key = COUNTRY;
+	$value = _sessionValue($key);
+	$thisPage = pageUrl(variable('all_page_parameters')); //so it will stay on the same page...
+	if($action == 'check') {
+		if ($new = _userAction('set-' . $key))
+			_sessionValue($key, $value = $key);
+		variable($key, $value);
+	} else if ($action == 'link') {
+		$made = madeUserAction('set-' . $key);
+
+		$items = variable('all-countries');
+		foreach ($items as $slug => $name) {
+			echo getLink('<b>' . $name . '</b>',
+				pageUrl($thisPage . '?set-' . $key . '=' . $slug),
+				'btn ' . ($value == $item['key'] ? 'disabled' : 'btn-info country country-') . $slug);
+			
+			if ($value == $item['key'] && $made)
+				echo getLink(REMOVEQS, $thisPage, 'btn btn-info m-3');
+			
+			echo BRNL . BRNL;
+		}
+
+	} else if ($action == 'return') {
+		return $value;
+	}
+}
+
 
 function user_role($action) {
 	$key = USERROLE;
@@ -32,13 +66,15 @@ function user_role($action) {
 		}
 	} else if ($action == 'link') {
 		$items = variable('all-roles');
-		foreach ($items as $item) {
-			echo getLink('<b>' . $item['status'] . '</b> &mdash; (' . humanize($item['key']) . ')',
-				pageUrl('my/?set-' . $key . '=' . $item['key']),
-				'btn ' . ($value == $item['key'] ? 'disabled' : 'btn-info'));
+		foreach ($items as $roleKey => $item) {
+			if ($roleKey == NOTLOGGEDIN) continue;
 			
-			if ($value == $item['key'] && madeUserAction('set-' . $key))
-				echo getLink('<i class="fa fa-lock-open"></i> &nbsp;&nbsp; <abbr title="remove action from url">NOQS</abbr>', pageUrl('my'), 'btn btn-info m-3');
+			echo getLink('<b class="' . 'btn ' . ($value == $roleKey ? 'disabled' : 'btn-info') . '">'
+				. $item['status'] . '</b> &mdash; ' . $item['about'],
+				pageUrl('my/?set-' . $key . '=' . $roleKey));
+			
+			if ($value == $roleKey && madeUserAction('set-' . $key))
+				echo getLink(REMOVEQS, pageUrl('my'), 'btn btn-info m-3');
 			
 			echo BRNL . BRNL;
 		}
