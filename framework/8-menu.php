@@ -167,6 +167,7 @@ function menu($folderRelative = false, $settings = []) {
 	} else {
 		if (disk_file_exists($itemsTsv = $folder . '_menu-items.tsv')) {
 			$itemsSheet = getSheet($itemsTsv, 'slug');
+			$filesGiven = true;
 			$files = [];
 
 			$hasSNo = isset($itemsSheet->columns['sno']);

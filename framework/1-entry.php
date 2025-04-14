@@ -127,9 +127,9 @@ function getThemeBaseUrl() {
 	return $themeUrl;
 }
 
-function getThemeFile($file) {
+function getThemeFile($file, $folder = false) {
 	$themeName = variable('theme');
-	return concatSlugs([AMADEUSTHEMESFOLDER, $themeName, $file]);
+	return concatSlugs([$folder ? $folder : AMADEUSTHEMESFOLDER, $themeName, $file]);
 }
 
 function setSubTheme($name) {

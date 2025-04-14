@@ -133,7 +133,7 @@ function textToList($data) {
 	foreach ($lines as $lin)
 	{
 		$lin = trimCrLf($lin);
-		if ($lin == '' || $lin[0] == '|') continue;
+		if ($lin == '' || $lin[0] == '|' || $lin[0] == '#') continue;
 		$r[] = $lin;
 	}
 	return $r;
