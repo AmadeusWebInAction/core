@@ -15,6 +15,11 @@ function subVariable($parent, $key)
 	return is_array($a) && isset($a[$key]) ? $a[$key] : false;
 }
 
+function subVariableOr($name, $subName, $or)
+{
+	return hasSubVariable($name, $subName) ? subVariable($name, $subName) : $or;
+}
+
 function variables($a)
 {
 	foreach ($a as $key=>$value)

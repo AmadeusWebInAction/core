@@ -82,6 +82,7 @@ if ($groups = variable('section-groups')) {
 
 		foreach ($items as $slug) {
 			//if (cannot_access($slug)) continue;
+			if ($slug[0] == '_') continue;
 			renderHeaderMenu($slug);
 		}
 
@@ -91,6 +92,7 @@ if ($groups = variable('section-groups')) {
 } else {
 	renderIfCurrentMenu();
 	foreach (variable('sections') as $slug) {
+		if ($slug[0] == '_') continue;
 		//if (cannot_access($slug)) continue;
 		renderHeaderMenu($slug);
 	}
@@ -101,10 +103,11 @@ if (function_exists('network_after_menu')) network_after_menu();
 if (!$noOuterUl) echo '</ul> <!-- #end site menu -->' .variable('2nl');
 } //end of new headerMenuFrom
 
-function renderHeaderMenu($slug, $node = '') {
+function renderHeaderMenu($slug, $node = '', $name = false) {
 	$parentSlug = $node ? $node : $slug;
 
-	if (contains($node, '/'))  { $bits = explode('/', $node); $name = humanize(array_pop($bits)) . ' (' . humanize(array_pop($bits)) . ')'; }
+	if ($name) ; //noop
+	else if (contains($node, '/'))  { $bits = explode('/', $node); $name = humanize(array_pop($bits)) . ' (' . humanize(array_pop($bits)) . ')'; }
 	else if ($node) { $name = humanize($node) . ' (' . humanize($slug) . ')'; }
 	else { $name = humanize($parentSlug); }
 
