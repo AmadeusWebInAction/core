@@ -142,6 +142,7 @@ function renderHeaderMenu($slug, $node = '', $name = false) {
 }
 
 function renderIfCurrentMenu() {
+	if (variable('dont-show-current-menu')) return;
 	$items = getCurrentMenus();
 	if (count($items) == 0) return;
 

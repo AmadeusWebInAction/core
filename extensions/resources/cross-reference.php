@@ -33,7 +33,13 @@ foreach ($sheet->rows as $item) {
 
 function linksOf($items, $sheet, $title) {
 	echo '<h4>' . $title . ':</h4>' . NEWLINE;
+	if (count($items) == 1 && $items[0] == '') {
+		echo '<h5 class="ms-4">[no items referenced]</h5>' . BRNL . BRNL;
+		return;
+	}
+
 	echo '<ol><li>' . NEWLINE;
+
 	$op = [];
 
 	$hasName = isset($sheet->columns['name']);

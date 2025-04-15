@@ -118,6 +118,10 @@ function renderMarkdown($raw, $settings = []) {
 	return _renderImplementation($raw, $settings);
 }
 
+function returnLines($raw) {
+	return renderMarkdown($raw, ['echo' => false]);
+}
+
 function returnLine($raw) {
 	return renderSingleLineMarkdown($raw, ['echo' => false]);
 }
