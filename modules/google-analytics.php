@@ -1,6 +1,6 @@
 <?php
 if (!variable('google-analytics') || variable('local')) return;
-if (hasVariable('live') && variable('live') === false) return;
+if (variable('use-preview') && variable('live') === false) return;
 //TODO: How to support array so that promotions can have advertiser's anaytics. Or shall we give readonly access to all via advertisers@yieldmore.org?
 ?>
 <!-- Global site tag (gtag.js) - Google Analytics -->
