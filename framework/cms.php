@@ -94,6 +94,7 @@ function ifOneOfFilesExists($section, $fwes, $nodeFolderItem = false, $nodeFolde
 function afterSectionSet() {
 	//TODO: include _folder.php on $file if it exists
 	if (function_exists('site_before_render')) site_before_render();
+	read_seo();
 }
 
 function did_render_page() {

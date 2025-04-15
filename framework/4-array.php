@@ -139,12 +139,14 @@ function textToList($data) {
 	return $r;
 }
 
+DEFINE('SINGLEFILECONTENT', 'rest-of-content');
+
 function parseMeta($raw) {
 	$bits = explode('//meta', $raw);
 	if (count($bits) == 1) return false;
 
 	$lines = explode(SAFENEWLINE, $bits[1]);
-	$r = ['rest-of-content' => substr($bits[2], strlen('-->'))];
+	$r = [SINGLEFILECONTENT => substr($bits[2], strlen('-->'))];
 
 	foreach ($lines as $line) {
 		$line = trimCrLf($line);
