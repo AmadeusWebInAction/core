@@ -9,10 +9,13 @@ $topLevels = $sheet->group['1'];
 
 if (!isset($limit)) $limit = 5;
 
+$wantName = !(in_array($section, variableOr('no-name-in-header-menu', []))
+	&& isset($callingFrom) && $callingFrom == 'header-menu');
+
 foreach ($topLevels as $ix => $item) {
-	if ($ix == $limit) { $result[$section] = '&raquo; ' . (count($topLevels) - $limit) . ' More &hellip;'; break; }
+	if ($ix == $limit) { $result[$section . '/#items-list'] = '&raquo; ' . (count($topLevels) - $limit) . ' More &hellip;'; break; }
 	$name = ''; $slug = $sheet->getValue($item, 'slug');
-	if ($hasName)
+	if ($wantName && $hasName)
 		$name = $sheet->getValue($item, 'name');
 	if (!$name)
 		$name = humanize($slug);

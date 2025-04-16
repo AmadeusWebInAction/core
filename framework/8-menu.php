@@ -2,7 +2,7 @@
 variable('toggle-list', 'toggle-list-below');
 
 function _handleSlashes($file, $handle, $useMDash) {
-	if (!$handle || !contains($file, '/'))
+	if (!$handle || contains($file, '#') || !contains($file, '/'))
 		return $file;
 
 	$test = humanize($file);

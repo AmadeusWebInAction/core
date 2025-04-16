@@ -51,13 +51,14 @@ if ($section == 'general' && array_key_exists($node, $items)) {
 		$name = humanize($slug);
 		$subItems[$slug] = $sheet->getValue($item, 'sno') . '. ' . $name;
 	}
-	renderLevelMenu($level1, $subItems, $node . '/');
+	renderLevelMenu('subitems-list', $level1, $subItems, $node . '/');
 }
 
-renderLevelMenu(humanize($section), $items);
+renderLevelMenu('items-list', humanize($section), $items);
 
-function renderLevelMenu($title, $items, $parentSlug = false) {
+function renderLevelMenu($id, $title, $items, $parentSlug = false) {
 	contentBox('section-menu', 'container box-like-list after-content mt-6');
+	echo '<a href="javascript: void(0);" name="' . $id . '"></a>' . NEWLINE;
 	h2('<u>' . $title . '</u> Menu');
 	$limit = -1;
 	//$items = include(__DIR__ . '/menu.php'); //using include as easier than sending context.

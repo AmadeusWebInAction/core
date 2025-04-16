@@ -21,7 +21,8 @@ function currentLevel($wrap = true) {
 function pageUrl($relative = '') {
 	if ($relative == '') return variable('page-url');
 	$hasQuerysting = contains($relative, '?');
-	if (!endsWith($relative, '/') && !$hasQuerysting)
+	$hasHash = contains($relative, '#');
+	if (!endsWith($relative, '/') && !$hasHash && !$hasQuerysting)
 		$relative .= '/';
 	return variable('page-url') . $relative;
 }
