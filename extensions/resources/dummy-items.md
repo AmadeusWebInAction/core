@@ -1,4 +1,7 @@
-<hr />
-DEVNOTE: This page uses a sheet and the pages / subpages are managed by a code so it is always dynamic
+---
 
-%listing-codesnippet%
+Kindly note:
+
+* navigation works only upto level 2
+
+<!--%listing-code---snippet%-->

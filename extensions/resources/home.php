@@ -1,22 +1,13 @@
 <?php
-function renderNodeItem($path) {
+function renderNodeItem() {
 	$node = variable('node');
-	$data = $path . '/data/' . $node . '.tsv';
 
 	$topic = true ? replaceHtml('%page-location%') : humanize(variable('page_parameter1'));
-	if ($topic) {
-		contentBox($node . '-' . $topic, 'container');
-		h2($topic);
-		renderMarkdown(__DIR__ . '/dummy-items.md');
-		contentBox('end');
-	}
+	if (!$topic) return;
 
-	//from directory!
-	contentBox('nodes', 'container after-content');
-	h2(humanize($node));
-	runFeature('tables');
-	add_table('sections-table', $data, true ? 'resource-topic' : 'site-name, about, tags',
-		'<tr><td><a href="%url%' . $node . '/%name_urlized%">%sno% &mdash; %name_humanized%</a></td><!--td>%about%</td><td>%tags%</td--></tr>');
+	contentBox($node . '-' . $topic, 'container');
+	h2($topic);
+	renderMarkdown(__DIR__ . '/dummy-items.md');
 	contentBox('end');
 }
 
@@ -35,19 +26,46 @@ if ($nodeRoot) {
 	if (function_exists('runNodePage')) {
 		runNodePage();
 	} else {
-		contentBox($section, 'container');
-		renderMarkdown(__DIR__ . '/dummy-items.md');
-		contentBox('end');
+		renderNodeItem();
 	}
 }
 
-contentBox('section-menu', 'container box-like-list after-content mt-6');
-h2('<u>' . humanize($section) . '</u> Menu');
 $limit = -1;
 $items = include(__DIR__ . '/menu.php'); //using include as easier than sending context.
-menu('/', [
-	'this-is-standalone-section' => true,
-	'files' => $items,
-	'ul-class' => 'striped-list white-list reset-list',
-]);
-contentBox('end');
+$node = variable('node');
+//print_r($items);
+if ($section == 'general' && array_key_exists($node, $items)) {
+	$level1 = $items[$node];
+
+	$parent = explode('.', $level1);
+	array_pop($parent);
+	$parent = implode('.', $parent);
+
+	$sheetFile = $where . '/_section.tsv';
+	$bySlug = getSheet($sheetFile, 'parent');
+	$subItems = [];
+
+	foreach ($bySlug->group[$parent] as $item) {
+		$slug = $bySlug->getValue($item, 'slug');
+		//$name = $sheet->getValue($item, 'name');
+		$name = humanize($slug);
+		$subItems[$slug] = $sheet->getValue($item, 'sno') . '. ' . $name;
+	}
+	renderLevelMenu($level1, $subItems, $node . '/');
+}
+
+renderLevelMenu(humanize($section), $items);
+
+function renderLevelMenu($title, $items, $parentSlug = false) {
+	contentBox('section-menu', 'container box-like-list after-content mt-6');
+	h2('<u>' . $title . '</u> Menu');
+	$limit = -1;
+	//$items = include(__DIR__ . '/menu.php'); //using include as easier than sending context.
+	menu('/', [
+		'this-is-standalone-section' => true,
+		'files' => $items,
+		'ul-class' => 'striped-list white-list reset-list',
+		'parent-slug' => $parentSlug,
+	]);
+	contentBox('end');
+}

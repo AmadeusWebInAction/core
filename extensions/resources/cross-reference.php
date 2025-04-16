@@ -43,19 +43,32 @@ function linksOf($items, $sheet, $title) {
 	$op = [];
 
 	$hasName = isset($sheet->columns['name']);
+	$byParent = isset($sheet->columns['parent']) ? arrayGroupBy($sheet->rows, $sheet->columns['parent']) : false;
 
 	foreach ($items as $sno) {
 		$link = $sno;
 		if (isset($sheet->group[$sno])) {
 			$item = $sheet->group[$sno][0];
+			$sno = $sheet->getValue($item, 'sno') . '. ';
 
-			$name = ''; $slug = $sheet->getValue($item, 'slug');
+			$name = ''; $slugParent = ''; $slug = $sheet->getValue($item, 'slug');
+
+			$level = $sheet->getValue($item, 'level');
+			if ($byParent && $level == 3) {
+				$slugParent = '#todo-';
+			}
+			else if ($byParent && $level >= 2) {
+				$pid = $sheet->getValue($item, 'parent');
+				$parent = $sheet->group[$pid][0];
+				$slugParent .= $sheet->getValue($parent, 'slug') . '/';
+			}
+
 			if ($hasName)
-				$name = $sheet->getValue($item, 'name');
+				$name =  $sno. $sheet->getValue($item, 'name');
 			if (!$name)
-				$name = humanize($slug);
+				$name = $sno . humanize($slug);
 		
-			$link = makeRelativeLink($name, $slug);
+			$link = makeRelativeLink($name, $slugParent . $slug);
 		}
 		$op[] = '	<h5>' . $link . '</h5>' . NEWLINE;
 	}
