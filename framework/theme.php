@@ -15,6 +15,16 @@ function getThemeBlock($name, $location = false) {
 	return ['start' => $bits[0], 'item' => $bits[1], 'end' => $bits[2]];
 }
 
+function getThemeSnippet($name, $location = false) {
+	$file = getThemeFile('snippets/' . $name . '.html', $location);
+	$html = renderAny($file, ['echo' => false, 'strip-paragraph-tag' => true]);
+	$vars = [
+		'##theme##' => getThemeBaseUrl(),
+		'<br />' => '',
+	];
+	return NEWLINES2 . replaceItems($html, $vars) . NEWLINE;
+}
+
 function run_theme_part($what) {
 
 	if (!($content = variable('theme-template'))) {
@@ -124,6 +134,7 @@ function run_theme_part($what) {
 
 		print_stats(); //returns if not needed
 		styles_and_scripts();
+		if (function_exists('after_footer_assets')) after_footer_assets();
 
 		if ($atBody) echo '</body>';
 		echo _renderRaw($bits[1]);
