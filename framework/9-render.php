@@ -122,6 +122,10 @@ function returnLines($raw) {
 	return renderMarkdown($raw, ['echo' => false]);
 }
 
+function returnLinesNoParas($raw) {
+	return renderSingleLineMarkdown($raw, ['echo' => false, 'strip-paragraph-tag' => true]);
+}
+
 function returnLine($raw) {
 	return renderSingleLineMarkdown($raw, ['echo' => false]);
 }
