@@ -1,4 +1,1 @@
-**NOTE**: Do tick the applicable points that resonate with you / you would like to engage us on using the form below. Alternately, you can simple contact us via [email](mailto:%email%?subject=%enquiry%) / [whatsapp](%whatsapp%%enquiry%).
-
-----
-
+<br><br>Kindly tick the applicable items, giving details where possible in the textbox that appears.

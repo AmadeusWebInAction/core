@@ -17,10 +17,11 @@ function _renderEngage($name, $raw, $open = false, $echo = true) {
 
 	$replaces = [];
 	if (disk_file_exists($note = (AMADEUSCORE . 'data/engage-note.md'))) {
-		$replaces['engage-note'] = renderMarkdown($note, ['echo' => false]);
+		$replaces['engage-note'] = '<div id="engage-note" class="d-none"><hr>' . renderMarkdown($note, ['echo' => false]) . '</div>';
 		if (disk_file_exists($note2 = (AMADEUSCORE . 'data/engage-note-above.md')))
 			$replaces['engage-note-above'] = renderMarkdown($note2, ['echo' => false]);
 		$replaces['email'] = $email;
+		$replaces['whatsapp'] = getHtmlVariable('whatsapp') . getHtmlVariable('enquiry');
 	}
 
 	$result .= renderMarkdown($raw, ['replaces' => $replaces, 'echo' => false]);
