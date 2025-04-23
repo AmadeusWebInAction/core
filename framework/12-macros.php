@@ -26,6 +26,9 @@ function runAllMacros($html) {
 	if (contains($html, '[youtube]'))
 		$html = processYouTubeShortcode($html);
 
+	if (contains($html, '[audio]'))
+		$html = processAudioShortcode($html);
+
 	return $html;
 }
 
@@ -166,5 +169,12 @@ function processYouTubeShortcode($html) {
 	return replaceItems($html, [
 		'[youtube]' => '<div class="video-container"><iframe width="560" height="315" src="https://www.youtube.com/embed/',
 		'[/youtube]' => '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>',
+	]);
+}
+
+function processAudioShortcode($html) {
+	return replaceItems($html, [
+		'[audio]' => '<audio style="width: 100%" height="27" preload="none" controls><source src="',
+		'[/audio]' => '" type="audio/mp3"></audio>',
 	]);
 }
