@@ -203,13 +203,13 @@ function siteWidgets() {
 	$grid = [1 => 12, 2 => 6, 3 => 4];
 	$colspan = $grid[$colsInUse];
 
-	$start = sprintf('<div class="col-md-%s mt-sm-%s pt-xs-3"><hr class="d-sm-none">', $colspan, $colspan) . NEWLINE;
+	$start = sprintf('<div id="footer-[WHAT]" class="col-md-%s mt-sm-%s pt-xs-3"><hr class="d-sm-none">', $colspan, $colspan) . NEWLINE;
 
 	//TODO: Showcase + Misc
 	$op = [];
 
 	if ($showSections) {
-		$op[] = $start;
+		$op[] = str_replace('[WHAT]', 'sections', $start);
 		$op[] = '<h4>Sections</h4>';
 		foreach ($sections as $slug)
 			$op[] = makeRelativeLink(humanize($slug), $slug) . BRNL;
@@ -217,7 +217,7 @@ function siteWidgets() {
 	}
 
 	if ($showNetwork) {
-		$op[] = $start;
+		$op[] = str_replace('[WHAT]', 'network', $start);
 		$op[] = '<h4>Network</h4>';
 		foreach ($sites as $site)
 			$op[] =  getLink($site['name'], $site['url'], ' class = "icon site-' . $site['icon'] . '"') . BRNL;
@@ -225,10 +225,10 @@ function siteWidgets() {
 	}
 
 	if ($showSocial) {
-		$op[] = $start;
+		$op[] = str_replace('[WHAT]', 'social', $start);
 		$op[] = '<h4>Social</h4>';
 		foreach($social as $item) {
-			$op[] = '<a target="_blank" href="' . $item['url'] . '" class="mt-2">';
+			$op[] = '<a target="_blank" href="' . $item['url'] . '" class="social-link me-4 mt-2">';
 			$op[] = '	<i class="social-icon text-light si-mini rounded-circle ' . (contains($item['type'], ' ')
 				? $item['type'] : 'fa-brands fa-'. $item['type'] . ' bg-' . $item['type']) . '"></i> ' . $item['name'] . '</a>';
 			$op[] = '';
