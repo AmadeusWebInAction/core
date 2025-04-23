@@ -16,8 +16,8 @@ function getPageName($tailOnly = true) {
 }
 
 function title($return = false) {
-	if (variable('node-alias')) {
-		$r = humanize(variable('name')) . ' | ' . variable('byline');
+	if (variable('custom-title') || variable('node-alias')) {
+		$r = variableOr('custom-title', humanize(variable('name')) . ' | ' . variable('byline'));
 		if ($return) return $r;
 		echo $r;
 		return;

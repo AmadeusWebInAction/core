@@ -12,19 +12,27 @@ function read_seo() {
 		$keywordsFields = ['Primary Keyword', 'Related Keywords', 'Long-Tail Keywords', 'Keywords', 'keywords'];
 
 		$description = false; //if meta exists, this is mandatory (but only single)
+		$customTitle = false;
 		$keywords = []; //can be multiple
 		foreach ($meta as $key => $value) {
+			if (contains($value, '%siteName%'))
+				$value = replaceItems($value, ['siteName' => variable('name')], '%');
+
 			if (in_array($key, $descriptionFields)) {
 				$description = $value;
 			} else if (in_array($key, $keywordsFields)) {
 				$keywords[] = $value;
 			} else if ($key == SINGLEFILECONTENT) {
 				variable(SINGLEFILECONTENT, $value);
+			} else if ($key == 'Custom Title') {
+				$customTitle = $value;
 			}
 		}
 
 		if ($description) {
 			variable('description', $description);
+			variable('og:description', $description);
+			if ($customTitle) variable('custom-title', $customTitle);
 			if (count($keywords)) variable('keywords', implode(',', $keywords)); //NB: no space after comma
 			variable('seo-handled', true);
 			//TODO: do we need to consume singlefilecontent in render? I think not
