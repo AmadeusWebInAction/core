@@ -9,7 +9,8 @@ function header2ndMenu() {
 		//if (cannot_access($slug)) continue;
 		$page_r = humanize($page);
 		$page_r = $wrapTextInADiv ? '<div>' . $page_r . '</div>' : $page_r;
-		echo '<li class="' . $itemClass . '"><a href="' . pageUrl(variable('node') . '/' . $page) . '" class="' . $anchorClass . '">' . $page_r . '</a>';
+		//href="' . pageUrl(variable('node') . '/' . $page) . '" 
+		echo '<li class="' . $itemClass . '"><a class="' . $anchorClass . '">' . $page_r . '</a>';
 		if (disk_is_dir(NODEPATH . '/' . $page)) {
 			menu('/' . variable('section') . '/' . variable('node') . '/' . $page . '/', [
 				'link-to-home' => variable('link-to-site-home'),

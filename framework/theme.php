@@ -37,6 +37,7 @@ function run_theme_part($what) {
 
 	$vars = [
 		'theme' => getThemeBaseUrl(), //TODO: /version can be maintained on the individual file?
+		'optional-page-menu' => '',
 		'optional-slider' => '', //this could be a page title too
 		'optional-right-button' => '',
 		'header-align' => '', //an addon class needed if video page title has an image and wants content on right
@@ -59,6 +60,9 @@ function run_theme_part($what) {
 		$vars['logo'] = concatSlugs(['<a href="', $baseUrl, '"><img src="', $logo2x, '" class="img-fluid img-max-',
 			variableOr('footer-logo-max-width', '500'), '" alt="', variableOr('nodeSiteName', variable('name')), '"></a><br>'], '');
 
+		runFrameworkFile('header-menu');
+		$vars['optional-page-menu'] = _page_menu();
+
 		$header = _substituteThemeVars($content, 'header', $vars);
 
 		$bits = explode('##menu##', $header);
@@ -66,24 +70,8 @@ function run_theme_part($what) {
 		echo _renderRaw($bits[0]);
 		if (isset($bits[1])) {
 			setMenuSettings();
-			runFrameworkFile('header-menu');
 			headerMenuFrom();
 			echo _renderRaw($bits[1]);
-		}
-		if (variable('submenu-at-node')) {
-			$menuFile = getThemeFile('page-menu.html');
-			$menuContent = disk_file_get_contents($menuFile);
-
-			$menuVars = [
-				'menu-title' => variable('nodeSiteName'),
-			];
-			$menuContent = replaceItems($menuContent, $menuVars, '##');
-
-			$menuBits = explode('##page-menu##', $menuContent);
-			echo _renderRaw($menuBits[0]);
-			setMenuSettings('page-menu');
-			header2ndMenu();
-			echo _renderRaw($menuBits[1]);
 		}
 		setMenuSettings(true);
 	} else if ($what == 'footer') {
@@ -139,6 +127,31 @@ function run_theme_part($what) {
 		if ($atBody) echo '</body>';
 		echo _renderRaw($bits[1]);
 	}
+}
+
+function _page_menu() {
+	if (!variable('submenu-at-node')) return '<!--no-page-menu-->';
+
+	$menuFile = getThemeFile('page-menu.html');
+	$menuContent = disk_file_get_contents($menuFile);
+
+	$menuVars = [
+		'menu-title' => variable('nodeSiteName'),
+	];
+	$menuContent = replaceItems($menuContent, $menuVars, '##');
+
+	$menuBits = explode('##page-menu##', $menuContent);
+
+	doToBuffering(1);
+
+	echo _renderRaw($menuBits[0]);
+	setMenuSettings('page-menu');
+	header2ndMenu();
+	echo _renderRaw($menuBits[1]);
+
+	$result = doToBuffering(2);
+	doToBuffering(3);
+	return $result;
 }
 
 function _substituteThemeVars($content, $what, $vars) {
