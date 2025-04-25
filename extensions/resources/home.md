@@ -1,6 +1,6 @@
 ## %siteName% &raquo; %page-location%
 
-%listing-codesnippet%
+[Content Will be Shown Here]
 
 <hr />
 %fileName%

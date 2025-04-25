@@ -7,7 +7,7 @@ function renderNodeItem() {
 
 	contentBox($node . '-' . $topic, 'container');
 	h2($topic);
-	renderMarkdown(__DIR__ . '/dummy-items.md');
+	echo '<i>' . returnLine('---' . NEWLINE . variableOr('top-level-introduction', 'Intro Not Found')) . '</i>.';
 	contentBox('end');
 }
 

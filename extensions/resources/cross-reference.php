@@ -51,16 +51,20 @@ function linksOf($items, $sheet, $title) {
 			$item = $sheet->group[$sno][0];
 			$sno = $sheet->getValue($item, 'sno') . '. ';
 
-			$name = ''; $slugParent = ''; $slug = $sheet->getValue($item, 'slug');
+			$parent = false; $slugParent = '';
+			$name = ''; $slug = $sheet->getValue($item, 'slug');
 
 			$level = $sheet->getValue($item, 'level');
-			if ($byParent && $level == 3) {
-				$slugParent = '#todo-';
-			}
-			else if ($byParent && $level >= 2) {
+			if ($byParent && $level >= 2) {
 				$pid = $sheet->getValue($item, 'parent');
 				$parent = $sheet->group[$pid][0];
 				$slugParent .= $sheet->getValue($parent, 'slug') . '/';
+			}
+
+			if ($byParent && $parent && $level == 3) {
+				$gpid = $sheet->getValue($parent, 'parent');
+				$grandParent = $sheet->group[$gpid][0];
+				$slugParent = $sheet->getValue($grandParent, 'slug') . '/' . $slugParent;
 			}
 
 			if ($hasName)
