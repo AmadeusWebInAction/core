@@ -33,14 +33,16 @@ function read_seo($file = false) {
 				$customTitle = $value;
 			}
 		}
-		
+
+		$keywords = count($keywords) ? implode(', ', $keywords) : '';
+
 		if ($fileGiven) return compact('about', 'description', 'keywords');
 
 		if ($description) {
 			variable('description', $description);
 			variable('og:description', $description);
 			if ($customTitle) variable('custom-title', $customTitle);
-			if (count($keywords)) variable('keywords', implode(',', $keywords)); //NB: no space after comma
+			variable('keywords', $keywords);
 			variable('seo-handled', true);
 			//TODO: do we need to consume singlefilecontent in render? I think not
 		}

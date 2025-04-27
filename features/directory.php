@@ -39,12 +39,12 @@ if (disk_file_exists($home = $folder . 'home.md')) {
 			if (disk_file_exists($home)) {
 				$meta = read_seo($home);
 				if ($meta && $meta['about'])
-					$about = $meta['about'];
+					$about = pipeToBR($meta['about']);
 				else if ($meta && $meta['description'])
-					$about = $meta['description'];
+					$about = pipeToBR($meta['description']);
 
 				if ($meta && $meta['keywords'])
-					$tags = $meta['keywords'];
+					$tags = csvToHashtags($meta['keywords']);
 			}
 
 			$sectionItems[] = [

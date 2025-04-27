@@ -121,6 +121,22 @@ function listItem($html) {
 
 ///Internal Variables & its replacements
 
+function pipeToBR($raw) {
+	$replaces = [
+		'|' => BRNL,
+	];
+	return replaceItems($raw, $replaces);
+}
+
+function csvToHashtags($raw) {
+	$begin = '<a class="hashtag fs-4">#';
+	$end = '</a>';
+	$replaces = [
+		', ' => $end . ' ' . $begin,
+	];
+	return $begin . replaceItems($raw, $replaces) . $end;
+}
+
 function replaceSpecialChars($html) {
 	$replaces = [
 		'|' => variable('nl'),
