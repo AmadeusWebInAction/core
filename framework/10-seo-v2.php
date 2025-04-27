@@ -1,16 +1,19 @@
 <?php
-function read_seo() {
-	if (variable('seo-handled')) return;
+function read_seo($file = false) {
+	if (variable('seo-handled') && !$file) return;
 
-	$file = variable('file');
+	$fileGiven = !!$file;
+	if (!$file) $file = variable('file');
 	if ($file && endsWith($file, '.md')) {
 		$raw = disk_file_get_contents($file);
 		$meta = parseMeta($raw);
 		if (!$meta) return;
 
+		$aboutFields = ['About', 'about'];
 		$descriptionFields = ['Description', 'description'];
 		$keywordsFields = ['Primary Keyword', 'Related Keywords', 'Long-Tail Keywords', 'Keywords', 'keywords'];
 
+		$about = false;
 		$description = false; //if meta exists, this is mandatory (but only single)
 		$customTitle = false;
 		$keywords = []; //can be multiple
@@ -18,7 +21,9 @@ function read_seo() {
 			if (contains($value, '%siteName%'))
 				$value = replaceItems($value, ['siteName' => variable('name')], '%');
 
-			if (in_array($key, $descriptionFields)) {
+			if (in_array($key, $aboutFields)) {
+				$about = $value;
+			} else if (in_array($key, $descriptionFields)) {
 				$description = $value;
 			} else if (in_array($key, $keywordsFields)) {
 				$keywords[] = $value;
@@ -28,6 +33,8 @@ function read_seo() {
 				$customTitle = $value;
 			}
 		}
+		
+		if ($fileGiven) return compact('about', 'description', 'keywords');
 
 		if ($description) {
 			variable('description', $description);

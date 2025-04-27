@@ -26,8 +26,38 @@ if (disk_file_exists($home = $folder . 'home.md')) {
 
 	contentBox('nodes', 'after-content');
 	_sections($section);
+	$nodeItems = false;
+	if (!disk_file_exists($folder . '_nodes.tsv')) {
+		$nodes = _skipNodeFiles(disk_scandir($folder));
+		$sectionItems = [];
+		variable('seo-handled', false);
+		//print_r($nodes);
+		foreach ($nodes as $fol) {
+			$home = $folder . $fol . '/home.md';
+			$about = 'No About Set';
+			$tags = 'No Tags Set';
+			if (disk_file_exists($home)) {
+				$meta = read_seo($home);
+				if ($meta && $meta['about'])
+					$about = $meta['about'];
+				else if ($meta && $meta['description'])
+					$about = $meta['description'];
+
+				if ($meta && $meta['keywords'])
+					$tags = $meta['keywords'];
+			}
+
+			$sectionItems[] = [
+				'site' => '#unused',
+				'name_urlized' => $fol,
+				'about' => $about,
+				'tags' => $tags
+			];
+		}
+	}
 	runFeature('tables');
-	add_table('sections-table', $folder . '_nodes.tsv', 'site-name, about, tags',
+	add_table('sections-table', $sectionItems ? $sectionItems : ($folder . '_nodes.tsv'),
+		$sectionItems ? ['site, about, tags', 'name_urlized'] : 'site-name, about, tags',
 		'<tr><td><a href="%url%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
 	contentBox('end');
 }

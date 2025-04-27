@@ -18,11 +18,11 @@ function getTableTemplate($name) {
 
 function _table_row_values($item, $cols, $tsv) {
 	//TODO: HIGH: use $tsv for sticking with old code path.. seems buggy
-	if (!$tsv) { $r = []; foreach ($cols as $c) $r[$c] = !is_int($item) && $item[$c] ? $item[$c] : ''; return $r; }
+	if (!$tsv && $tsv != 'array') { $r = []; foreach ($cols as $c) $r[$c] = !is_int($item) && $item[$c] ? $item[$c] : ''; return $r; }
 	$r = [];
 	//parameterError('Table Debugger', [$item, $cols], false); die();
 	foreach ($cols as $key => $c) {
-		if (is_numeric($key)) $key == $c;
+		if (is_numeric($key)) $key = $c;
 		$value = $item[$c];
 		if (contains($value, $tiu = '%col-1-val%'))
 			$value = str_replace($tiu, $item[0], $value); //assumes its the first col!!
@@ -68,7 +68,12 @@ function add_table($id, $dataFile, $columnList, $template) {
 	$tsv = is_string($dataFile) && endsWith($dataFile, '.tsv');
 	$json = is_string($dataFile) && endsWith($dataFile, '.json');
 
-	if (!$tsv && !$json) {
+	if (is_array($dataFile)) {
+		$tsv = 'array';
+		$rows = $dataFile;
+		$headingNames = array_map('humanize', explode(', ', $columnList[0]));
+		$columns = explode(', ', implode(', ', $columnList));
+	} else if (!$tsv && !$json) {
 		$rows = $dataFile;
 		$columns = explode(', ', $columnList);
 		$headingNames = array_map('humanize', $columns);
