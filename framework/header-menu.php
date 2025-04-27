@@ -10,14 +10,28 @@ function header2ndMenu() {
 		$page_r = humanize($page);
 		$page_r = $wrapTextInADiv ? '<div>' . $page_r . '</div>' : $page_r;
 		//href="' . pageUrl(variable('node') . '/' . $page) . '" 
+
+		$files = []; $tiss = false;
+		$standalones = variableOr('standalone-pages', []);
+		if (in_array($page, $standalones)) {
+			variable('page_parameter1_safe', $page);
+			$tiss = true;
+			$menuFile = concatSlugs([variable('path'), variable('section'), variable('node'), $page, 'menu.php']);
+			$files = disk_include($menuFile, ['callingFrom' => 'header-page-menu', 'limit' => 5]);
+			if ($tsmn = variable(getSectionKey($page, MENUNAME)))
+				$page_r = $tsmn;
+		}
+	
 		echo '<li class="' . $itemClass . '"><a class="' . $anchorClass . '">' . $page_r . '</a>';
+
 		if (disk_is_dir(NODEPATH . '/' . $page)) {
 			menu('/' . variable('section') . '/' . variable('node') . '/' . $page . '/', [
 				'link-to-home' => variable('link-to-site-home'),
+				'files' => $files, 'this-is-standalone-section' => $tiss,
 				'li-class' => $itemClass,
 				'a-class' => $anchorClass,
 				'ul-class' => $ulClass,
-				'parent-slug' => variable('node') . '/' . $page . '/',
+				'parent-slug' => $tiss ? '' : variable('node') . '/' . $page . '/',
 			]);
 		}
 		echo '</li>' . NEWLINES2;

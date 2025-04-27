@@ -27,9 +27,9 @@ if (disk_file_exists($home = $folder . 'home.md')) {
 	contentBox('nodes', 'after-content');
 	_sections($section);
 	$nodeItems = false;
+	$sectionItems = [];
 	if (!disk_file_exists($folder . '_nodes.tsv')) {
 		$nodes = _skipNodeFiles(disk_scandir($folder));
-		$sectionItems = [];
 		variable('seo-handled', false);
 		//print_r($nodes);
 		foreach ($nodes as $fol) {

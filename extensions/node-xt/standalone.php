@@ -4,15 +4,18 @@ $aliases = variableOr('page-aliases', []);
 if (array_key_exists($param1, $aliases))
 	$param1 = $aliases[$param1];
 
-variable('page_parameter1_safe', $param1);
-
 $file = $param1 && in_array($param1, variable('standalone-pages'))
-	? $param1 . '/home.php' : (($param1 ? $param1 : 'home'). '.md');
+? $param1 . '/home.php' : (($param1 ? $param1 : 'home'). '.md');
 
 variables([
 	'file' => NODEPATH . '/' . $file,
-	'is-standalone-section' => true,
-	'no-page-menu' => !!$param1,
+]);
+
+if (!variable('regular-node-item'))
+	variables([
+		'page_parameter1_safe' => $param1,
+		'is-standalone-section' => true,
+		'no-page-menu' => !!$param1,
 ]);
 
 function standaloneMenuItems($callingFrom, $limit = -1) {
