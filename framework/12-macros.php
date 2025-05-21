@@ -29,6 +29,9 @@ function runAllMacros($html) {
 	if (contains($html, '[audio]'))
 		$html = processAudioShortcode($html);
 
+	if (contains($html, '[spacer]'))
+		$html = processSpacerShortcode($html);
+
 	return $html;
 }
 
@@ -176,5 +179,12 @@ function processAudioShortcode($html) {
 	return replaceItems($html, [
 		'[audio]' => '<audio style="width: 100%" height="27" preload="none" controls><source src="',
 		'[/audio]' => '" type="audio/mp3"></audio>',
+	]);
+}
+
+function processSpacerShortcode($html) {
+	return replaceItems($html, [
+		'[spacer]' => cbCloseAndOpen() . '<div class="divider divider-center"><h1>',
+		'[/spacer]' => NEWLINE . '</h1></div>' . cbCloseAndOpen(),
 	]);
 }

@@ -1,6 +1,22 @@
 <?php
 variable('toggle-list', 'toggle-list-below');
 
+DEFINE('NOPAGESTART', '--page-start--');
+function _menuULStart($endAndName = false) {
+	if ($endAndName && $endAndName != NOPAGESTART) { echo '</ul><!-- #end ' . $endAndName . ' menu -->' . NEWLINES2; return; }
+
+	extract(variable('menu-settings'));
+	if (!isset($groupOuterUlClass)) $groupOuterUlClass = $outerUlClass;
+	if (!$noOuterUl) echo NEWLINE . '<ul class="' . $groupOuterUlClass . '">';
+
+	if ($endAndName == NOPAGESTART) return;
+
+	$mainMenu = variable($isPageMenu ? 'nodeSiteName' : 'siteMenuName') . $topLevelAngle;
+	if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
+	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void(0);">' . $mainMenu . '</a>' . NEWLINE;
+}
+
+
 function _handleSlashes($file, $handle, $useMDash) {
 	if (!$handle || contains($file, '#') || !contains($file, '/'))
 		return $file;
@@ -44,16 +60,6 @@ function _skipExcludedFiles($files, $excludeNames = 'home', $excludeExtensions =
 	}
 
 	return $op;
-}
-
-//TODO: remove? used in adesh/help.php
-function get_page_menu_variables() {
-	$menuOf = variable('node') . '/' . variable('page_parameter1') . '/';
-	$menuIn = '/' . variable('section') . '/' . variable('node') . '/' . 'data/' . variable('page_parameter1') . '/';
-	$menuAt = SITEPATH . $menuIn;
-	$menu1 = variable('page_parameter2') ? variable('page_parameter2') : false;
-	$menu2 = variable('page_parameter3') ? variable('page_parameter3') : false;
-	return compact('menuOf', 'menuIn', 'menuAt', 'menu1', 'menu2');
 }
 
 //this is in .container at bottom
@@ -107,6 +113,7 @@ function pageMenu($file) {
 		h2(humanize($tailSlug) . $tailLevel);
 		menu($params, ['parent-slug' => $parentSlug, 'link-to-home' => true, 'ul-class' => 'block-links']);
 		contentBox('end');
+		print_seo();
 		return;
 	}
 
@@ -118,17 +125,18 @@ function pageMenu($file) {
 	add_table('pages-table', $tsv, ($subPage1 ? 'sub-' : '') . 'page-name, about, tags',
 		'<tr><td><a href="%' . $levelFound['base'] . '%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
 	contentBox('end');
+	print_seo();
 }
 
 DEFINE('ABSOLUTEPATHPREFIX', 'ABSOLUTE=');
 
 function menu($folderRelative = false, $settings = []) {
 	if (variable('under-construction')) return;
-	if (is_array(variable('site-menu-settings'))) $settings = array_merge(variable('site-menu-settings'), $settings);
+	if (variable('menu-settings')) $settings = array_merge(variable('menu-settings'), $settings);
 
 	$useSections = valueIfSetAndNotEmpty($settings, 'sections-not-list');
 	$itemTag = $useSections ? 'section' : 'li';
-	$noul = $useSections || isset($settings['no-ul']);
+	$noul = $useSections || (isset($settings['no-ul']) && $settings['no-ul']);
 
 	$class_li = arrayIfSetAndNotEmpty($settings, 'li-class');
 	$class_active = arrayIfSetAndNotEmpty($settings, 'li-active-class', 'selected');
@@ -197,7 +205,7 @@ function menu($folderRelative = false, $settings = []) {
 	$exclude = array_merge(variable('exclude-folders'), $exclude);
 	$breaks = valueIfSetAndNotEmpty($settings, 'breaks', []); //NOTE: needed for immersive education node
 	$prefix = isset($settings['prefix']) ? $settings['prefix'] . ' ' : '';
-	$wrapInDiv = ($wrapInDivVO = valueIfSetAndNotEmpty($settings, 'wrap-text-in-a-div')) && $menuLevel != 1;
+	$wrapInDiv = ($wrapInDivVO = valueIfSetAndNotEmpty($settings, 'wrapTextInADiv'));
 	$onlySlugForSectionMenu = valueIfSet($settings, 'humanize');
 
 	//If neither specified, returns mixed.

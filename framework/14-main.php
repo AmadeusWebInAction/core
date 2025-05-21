@@ -24,11 +24,12 @@ class main {
 	static function defaultNetwork() {
 		if (variable('not-a-network')) return [];
 		return [
-			[ 'url' => variable('world') . 'wellspring/', 'name' => 'A Wellspring', 'icon' => 'wellspring' ],
-			[ 'url' => variable('world') . 'imran/', 'name' => 'Imran\'s World', 'icon' => 'imran' ],
-			[ 'url' => variable('world'), 'name' => 'AMW World', 'icon' => 'world' ],
-			[ 'url' => variable('main'), 'name' => 'AMW Main', 'icon' => 'web' ],
-			[ 'url' => variable('app'), 'name' => 'AMW Core v7', 'icon' => 'core' ],
+			[ 'url' => variable('world') . 'integral-living/', 'name' => 'Integral Living for All', 'icon' => 'integral-living' ],
+			[ 'url' => variable('world') . 'imran/', 'name' => 'Imran\'s World - Poems and Ideas', 'icon' => 'imran' ],
+			[ 'url' => variable('world'), 'name' => 'AWW for Lightworkers', 'icon' => 'world' ],
+			[ 'url' => variable('global'), 'name' => 'AMW for Countries', 'icon' => 'global' ],
+			[ 'url' => variable('main'), 'name' => 'AMW Web Consulting', 'icon' => 'web' ],
+			[ 'url' => variable('app'), 'name' => 'AMW v7 Builder', 'icon' => 'core' ],
 			//TODO: WO + Listings + Imran
 		];
 	}

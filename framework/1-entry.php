@@ -78,6 +78,7 @@ function before_bootstrap() {
 
 	variable('main', $local ? replaceVariables('http://localhost%port%/awe/web/', 'port') : '//amadeusweb.com/');
 	variable('world', $local ? replaceVariables('http://localhost%port%/awe/world/', 'port') : '//amadeusweb.world/');
+	variable('global', $local ? replaceVariables('http://localhost%port%/awe/countries/', 'port') : '//amadeusweb.site/');
 
 	variable('app-themes', $local && !$isMobile ? replaceVariables('http://localhost%port%/awe/themes/', 'port') : '//themes.amadeusweb.com/');
 	variable('app-static', $local && !$isMobile ? replaceVariables('http://localhost%port%/awe/static/', 'port') : '//static.amadeusweb.com/');

@@ -8,12 +8,13 @@ function before_render() {
 
 	if (variable('use-site-static')) variable('site-static',
 		assetMeta(variable('network') ? 'network-static' : 'site-static')['location']);
-	//TODO: high! read_seo_info();
 
 	if (hasSpecial()) { afterSectionSet(); return; }
 
-	$hasFiles = variable('sections-have-files');
+	$canHaveFiles = variable('sections-have-files');
 	$node = variable('node');
+	$innerSlugs = variable('page_parameters');
+
 	foreach (variable('sections') as $slug) {
 		if (disk_file_exists($incFile = variable('path') . '/' . $slug . '/' . $node . '/_include.php')) {
 			variable('section', $slug);
@@ -31,46 +32,67 @@ function before_render() {
 			}
 		}
 
-		if (!$hasFiles && $slug == $node) {
+		if ($slug == $node && empty($innerSlugs)) {
 			variable('directory_of', $node);
 			variable('section', $slug);
 			afterSectionSet();
 			return;
 		}
 
-		if ($hasFiles && $slug == $node) {
-			$level0 = [$slug == $node ? variable('path') . '/' . $slug . '/home.' :
-				variable('path') . '/' . $slug . '/' . $node . '.'];
-			if (ifOneOfFilesExists($slug, $level0)) return;
+		if ($canHaveFiles) {
+			if ($slug == $node) {
+				$level0 = [$slug == $node ? variable('path') . '/' . $slug . '/home.' :
+					variable('path') . '/' . $slug . '/' . $node . '.'];
+				if (setFileIfExists($slug, $level0, false, false)) return;
+			}
+
+			$page1 = variable('page_parameter1') ? variable('page_parameter1') : 'home';
+			$folUptoNode = variable('path') . '/' . $slug . '/' . $node;
+
+			if (setFileIfExists($slug, $folUptoNode . '/' . $page1 . '.', false, false)) return;
+			if (setFileIfExists($slug, $folUptoNode . '.', false, false)) return;
+
+			//die('Coulnt Find File in v7.1'); //let it fall back
 		}
 
-		$page1 = variable('page_parameter1') ? variable('page_parameter1') : 'home';
-		$folUptoNode = variable('path') . '/' . $slug . '/' . $node;
-		$level1 = [$folUptoNode . '/' . $page1 . '.', $folUptoNode . '.'];
+		//NOTE: rewritten in v 7.2
+		$baseFol = variable('path') . '/' . $slug . '/' . ($slug != $node ? $node . '/' : '');
 
-		if (ifOneOfFilesExists($slug, $level1)) return;
+		if (!disk_is_dir($baseFol)) {
+			continue;
+		}
 
-		if (disk_is_dir($folInNode = $folUptoNode . '/')) {
-			$in1 = variable('page_parameter1');
-			$folInPage1 = $folInNode . $in1;
-			$in2 = variable('page_parameter2');
-			$folInPage2 = $folInPage1 .'/' . $in2 .'/';
+		if (!empty($innerSlugs)) {
+			$innerReverse = [];
+			$breadcrumbs = [];
+			$thisRelative = '';
+			$relative = '';
+			foreach ($innerSlugs as $item) {
+				$thisRelative = $relative;
+				$thisFol = $baseFol . $relative;
+				$breadcrumbs[] = $item;
+				$thisBreadcrumbs = $breadcrumbs;
+				$innerReverse[] = compact('item', 'thisFol', 'thisBreadcrumbs', 'thisRelative');
+				//for next
+				$relative .= $item . '/';
+			}
+			$innerReverse = array_reverse($innerReverse);
 
-			//do in reverse
-			if ($in2 && disk_is_dir($folInPage2)) {
-				$page3 = variableOr('page_parameter3', 'home');
-				$level3 = [$folInPage2 . '/' . $page3 . '.', $folInPage2 . '.'];
-				if (ifOneOfFilesExists($slug, $level3, $in1 . '/' . $in2, 2)) {
-					variable('node-folder-item1', $in1);
-					return;
+			$fileToTry = 'home';
+			foreach ($innerReverse as $vars) {
+				extract($vars);
+				if (disk_is_dir($thisFol)) {
+					$fileToTry = $item;
+					if (setFileIfExists($slug, $baseFol . $thisRelative . $item . '.', $thisBreadcrumbs, false)) return;
+					if (setFileIfExists($slug, $thisFol . 'home.', $thisBreadcrumbs, $item)) return;
+					break;
 				}
 			}
 
-			if ($in1 && disk_is_dir($folInPage1)) {
-				$page2 = variableOr('page_parameter2', 'home');
-				$level2 = [$folInPage1 . '/' . $page2 . '.', $folInPage1 . '.'];
-				if (ifOneOfFilesExists($slug, $level2, $in1)) return;
-			}
+			if (setFileIfExists($slug, $baseFol . 'home.', $breadcrumbs, false)) return;
+		} else {
+			if (setFileIfExists($slug, $baseFol . 'home.', false, false)) return;
+			continue;
 		}
 	}
 
@@ -78,19 +100,19 @@ function before_render() {
 	afterSectionSet();
 }
 
-function ifOneOfFilesExists($section, $fwes, $nodeFolderItem = false, $nodeFolderLevel = 1) {
-	foreach ($fwes as $fwe) {
-		$ext = disk_one_of_files_exist($fwe, 'php, md, tsv, html');
-		if (!$ext) continue;
+function setFileIfExists($section, $fwe, $breadcrumbs, $itemToAdd) {
+	if ($breadcrumbs) variable('breadcrumbs', $breadcrumbs);
 
-		variable('file', $fwe . $ext);
-		variable('section', $section);
-		if ($nodeFolderItem) variable($key = 'node-folder-item' . $nodeFolderLevel, $nodeFolderItem);
+	$ext = disk_one_of_files_exist($fwe, 'php, md, tsv, html');
+	if (!$ext) return false;
 
-		afterSectionSet();
-		return true;
-	}
-	return false;
+	variable('file', $fwe . $ext);
+	variable('section', $section);
+	if ($itemToAdd) $breadcrumbs[] = $itemToAdd;
+	if ($breadcrumbs) variable('breadcrumbs', $breadcrumbs);
+
+	afterSectionSet();
+	return true;
 }
 
 function afterSectionSet() {

@@ -36,7 +36,7 @@ function read_seo($file = false) {
 
 		$keywords = count($keywords) ? implode(', ', $keywords) : '';
 
-		if ($fileGiven) return compact('about', 'description', 'keywords');
+		if ($fileGiven) return compact('about', 'description', 'keywords', 'meta');
 
 		if ($description) {
 			variable('description', $description);
@@ -44,10 +44,36 @@ function read_seo($file = false) {
 			if ($customTitle) variable('custom-title', $customTitle);
 			variable('keywords', $keywords);
 			variable('seo-handled', true);
+			variable('meta_' . $file, $meta);
 			//TODO: do we need to consume singlefilecontent in render? I think not
 		}
 	}
 }
+
+function print_seo() {
+	if (variable('meta-rendered')) return;
+	$file = variable('file');
+	if (!$file || !endsWith($file, '.md')) return;
+
+	$meta = variable('meta_' . $file);
+	if (!$meta) return;
+
+	$show = ['About', 'Description', 'Primary Keyword', 'Date', 'Prompted By', 'Meta Author', 'Page Author', 'Related Keywords', 'Long-Tail Keywords'];
+	$info = [];
+
+	foreach ($show as $col) {
+		if (!isset($meta[$col])) return;
+		$val = $meta[$col];
+		$info[$col] = $val;
+	}
+
+	contentBox('meta', 'container');
+	h2('About This Page / SEO Information');
+	runFeature('tables');
+	_tableHeadingsOnLeft(['id' => 'piece'], $info);
+	contentBox('end');
+}
+
 
 function seo_info() {
 	$item = variable('current_page');

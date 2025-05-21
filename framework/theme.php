@@ -60,7 +60,6 @@ function run_theme_part($what) {
 		$vars['logo'] = concatSlugs(['<a href="', $baseUrl, '"><img src="', $logo2x, '" class="img-fluid img-max-',
 			variableOr('footer-logo-max-width', '500'), '" alt="', variableOr('nodeSiteName', variable('name')), '"></a><br>'], '');
 
-		runFrameworkFile('header-menu');
 		$vars['optional-page-menu'] = _page_menu();
 
 		$header = _substituteThemeVars($content, 'header', $vars);
@@ -70,7 +69,7 @@ function run_theme_part($what) {
 		echo _renderRaw($bits[0]);
 		if (isset($bits[1])) {
 			setMenuSettings();
-			headerMenuFrom();
+			runFrameworkFile('header-menu');
 			echo _renderRaw($bits[1]);
 		}
 		setMenuSettings(true);
@@ -146,7 +145,7 @@ function _page_menu() {
 
 	echo _renderRaw($menuBits[0]);
 	setMenuSettings('page-menu');
-	header2ndMenu();
+	runFrameworkFile('node-menu');
 	echo _renderRaw($menuBits[1]);
 
 	$result = doToBuffering(2);
@@ -233,7 +232,7 @@ function siteWidgets() {
 		$op[] = str_replace('[WHAT]', 'network', $start);
 		$op[] = '<h4>Network</h4>';
 		foreach ($sites as $site)
-			$op[] =  getLink($site['name'], $site['url'], ' class = "icon site-' . $site['icon'] . '"') . BRNL;
+			$op[] =  getLink($site['name'], $site['url'], 'icon site-' . $site['icon']) . BRNL;
 		$op[] = '</div>'; $op[] = '';
 	}
 

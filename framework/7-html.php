@@ -73,6 +73,10 @@ function cbWrapAndReplaceHr($raw) {
 	return $start . str_replace(HRTAG, $closeAndOpen, $raw) . $end;
 }
 
+function cbCloseAndOpen() {
+	return contentBox('end', '', true) . contentBox('', '', true);
+}
+
 function _getCBClassIfWanted($additionalClass) {
 	$no = variable('no-content-boxes');
 	if ($no && $additionalClass == '') return '';

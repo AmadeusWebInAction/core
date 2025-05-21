@@ -214,6 +214,7 @@ function _renderImplementation($fileOrRaw, $settings) {
 
 	$autop = $raw != '' && startsWith($raw, $autopStart);
 	$md = $raw != '' && ($raw[0] == '#' || startsWith($raw, $markdownStart));
+	$engageContent = false;
 
 	if ($no_processing) {
 		$output = $raw;
@@ -222,6 +223,12 @@ function _renderImplementation($fileOrRaw, $settings) {
 		$output = wpautop($raw);
 	} else {
 		$inProgress = '<!--render-processing-->';
+		if (engage_until_eof($raw)) {
+			$engageBits = explode(ENGAGESTART, $raw);
+			$raw = $engageBits[0];
+			$engageContent = $engageBits[1];
+		}
+
 		if (is_engage($raw) && !contains($raw, $inProgress)) {
 			runFeature('engage');
 			$settings['use-content-box'] = false;
@@ -266,6 +273,12 @@ function _renderImplementation($fileOrRaw, $settings) {
 
 	if (isset($settings['heading'])) $output = h2($settings['heading'] . currentLevel(), 'amadeus-icon', true) . NEWLINES2 . $output;
 
+	if ($engageContent) {
+		runFeature('engage');
+		$settings['use-content-box'] = false;
+		$output .= _renderEngage(getPageName(), $engageContent . $inProgress, true, false);
+	}
+
 	if (!$echo) return $output;
 	echo $output;
 }
@@ -278,6 +291,11 @@ function renderRichPage($sheetFile, $groupBy = 'section', $templateName = 'home'
 
 function is_engage($raw) {
 	return contains($raw, ' //engage-->');
+}
+
+DEFINE('ENGAGESTART', '<!--start-engage-->');
+function engage_until_eof($raw) {
+	return contains($raw, ENGAGESTART);
 }
 
 function is_composite_work($raw) {
