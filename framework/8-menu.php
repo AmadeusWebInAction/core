@@ -1,19 +1,20 @@
 <?php
 variable('toggle-list', 'toggle-list-below');
 
+DEFINE('MENUPADLEFT', '							');
 DEFINE('NOPAGESTART', '--page-start--');
 function _menuULStart($endAndName = false) {
-	if ($endAndName && $endAndName != NOPAGESTART) { echo '</ul><!-- #end ' . $endAndName . ' menu -->' . NEWLINES2; return; }
+	if ($endAndName && $endAndName != NOPAGESTART) { echo MENUPADLEFT . '</ul><!-- #end ' . $endAndName . ' menu -->' . NEWLINES2; return; }
 
 	extract(variable('menu-settings'));
-	if (!isset($groupOuterUlClass)) $groupOuterUlClass = $outerUlClass;
-	if (!$noOuterUl) echo NEWLINE . '<ul class="' . $groupOuterUlClass . '">';
+	if (!isset($groupOuterUlClass) && $endAndName != NODEPAGESTART) $groupOuterUlClass = $outerUlClass;
+	if (!$noOuterUl) echo NEWLINE . MENUPADLEFT . '<ul class="' . $groupOuterUlClass . '">' . NEWLINE;
 
 	if ($endAndName == NOPAGESTART) return;
 
 	$mainMenu = variable($isPageMenu ? 'nodeSiteName' : 'siteMenuName') . $topLevelAngle;
 	if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
-	echo '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void(0);">' . $mainMenu . '</a>' . NEWLINE;
+	echo MENUPADLEFT . '	<li class="' . $itemClass . '"><a class="' . $anchorClass . '" href="javascript: void(0);">' . $mainMenu . '</a>' . NEWLINE;
 }
 
 
@@ -62,7 +63,7 @@ function _skipExcludedFiles($files, $excludeNames = 'home', $excludeExtensions =
 	return $op;
 }
 
-//this is in .container at bottom
+//TODO: HIGH - Fix and reinstate - this is in .container at bottom
 function pageMenu($file) {
 	if (!(variable('section')) || variable('no-page-menu')) return;
 	$folder = concatSlugs([SITEPATH, variable('section'), $node = variable('node')]) . '/';
@@ -137,6 +138,7 @@ function menu($folderRelative = false, $settings = []) {
 	$useSections = valueIfSetAndNotEmpty($settings, 'sections-not-list');
 	$itemTag = $useSections ? 'section' : 'li';
 	$noul = $useSections || (isset($settings['no-ul']) && $settings['no-ul']);
+	$indent = MENUPADLEFT . ($indentGiven = valueIfSetAndNotEmpty($settings, 'indent', ''));
 
 	$class_li = arrayIfSetAndNotEmpty($settings, 'li-class');
 	$class_active = arrayIfSetAndNotEmpty($settings, 'li-active-class', 'selected');
@@ -150,8 +152,8 @@ function menu($folderRelative = false, $settings = []) {
 	$backToHome = valueIfSet($settings, 'back-to-home', '');
 	$menuLevel = valueIfSetAndNotEmpty($settings, 'menu-level', 1);
 
-	$result = '';
-	if (!$noul) $result .= variable('nl') . '		<ul' . cssClass($class_ul) . '>' . variable('nl');
+	$result = NEWLINE;
+	if (!$noul) $result .= $indent . '<ul' . cssClass($class_ul) . '>' . NEWLINE;
 
 	$isAbsolute = startsWith($folderRelative, ABSOLUTEPATHPREFIX);
 	$folderPrefix = $isAbsolute ? '' : variable('path');
@@ -226,12 +228,12 @@ function menu($folderRelative = false, $settings = []) {
 		if ($homeBase == '' && isset($settings['parent-slug-for-home-link'])) $homeBase = $settings['parent-slug-for-home-link'];
 
 		$mainNode = ($section == variable('node')) || startsWith($folderRelative, '/' . variable('section'));
-		$result .= replaceItems(variable('nl') . '<li%li-classes%><a href="%url%"%style%%a-classes%><%wrap-in%>%text%</%wrap-in%></a>' . variable('nl'), [
+		$result .= replaceItems($indent . '	<li%li-classes%><a href="%url%"%a-classes%><%wrap-in%>%text%</%wrap-in%></a>' . NEWLINE, [
 			'li-classes' => cssClass(array_merge($class_li, $mainNode ? ['selected'] : [], ['home-link'])),
 			'a-classes' => cssClass($class_link),
 			'wrap-in' => $wrapInDivVO ? 'div' : 'u',
 			'url' => pageUrl() . $homeBase,
-			'style' => $mainNode ? ' style="background-color: var(--amw-home-link-color);"' : '',
+			//%style% - 'style' => $mainNode ? ' style="background-color: var(--amw-home-link-color);"' : '',
 			'text' => 'Home'
 		], '%');
 	}
@@ -276,11 +278,11 @@ function menu($folderRelative = false, $settings = []) {
 		$indented = '';
 		if (startsWith($file, '~')) {
 			if (variable('thisSection') && !$indented) { $result .= '<hr>'; variable('hadMenuSection', true); }
-			$result .= variable('nl') . '	<' . $itemTag . ' class="menu-section">' . substr($file, 1) . '</' . $itemTag . '>';
+			$result .= $indent . '	<' . $itemTag . ' class="menu-section">' . substr($file, 1) . '</' . $itemTag . '>' . NEWLINE;
 			$indented = 'indented';
 			continue;
 		} else if ($file == '----') {
-			$result .= variable('nl') . '	<' . $itemTag . ' class="menu-break"><hr></' . $itemTag . '>' . PHP_EOL;
+			$result .= $indent . '	<' . $itemTag . ' class="menu-break"><hr></' . $itemTag . '>' . NEWLINE;
 			continue;
 		}
 
@@ -317,14 +319,15 @@ function menu($folderRelative = false, $settings = []) {
 		if ($blogHeading) $innerHtml = blog_heading($file, variable('node'));
 
 		if ($noLinks) {
-			$result .= variable('nl') . '	<' . $itemTag . cssClass($class_li) . '>' . $innerHtml . '</' . $itemTag . '>' . variable('nl');
+			$result .= $indent . '	<' . $itemTag . cssClass($class_li) . '>' . $innerHtml . '</' . $itemTag . '>' . NEWLINE;
 		} else {
 			if ($inHeader) {
-				$result .= '<hr>' . variable('2nl') . '<h2 class="' . variable('toggle-list') . '">' . humanize($file) .'</h2>' . variable('nl');
+				$result .= $indent . '<hr>' . variable('2nl') . '<h2 class="' . variable('toggle-list') . '">' . humanize($file) .'</h2>' . NEWLINE;
 				$result .= menu($folderRelative . $file . '/', [
 					'parent-slug' => variable('node') . '/',
 					'menu-level' => $menuLevel + 1,
 					'return' => true,
+					'indent' => $indentGiven . '	',
 				]) . variable('2nl');
 			} else {
 				$thisClass = array_merge($class_li);
@@ -332,26 +335,26 @@ function menu($folderRelative = false, $settings = []) {
 					$thisClass = array_merge($thisClass, $class_active);
 
 				if ($indented) $thisClass[] = $indented;
-				$result .= variable('nl') . '	<' . $itemTag . cssClass($thisClass) . '>'
-					. $innerHtml . '</' . $itemTag . '>' . variable('nl');
+				$result .= $indent . '	<' . $itemTag . cssClass($thisClass) . '>'
+					. $innerHtml . '</' . $itemTag . '>' . NEWLINE;
 			}
 		}
 
 		if (in_array($file, $breaks))
-			$result .= variable('nl') . '	<' . $itemTag . ' class="menu-break"><hr></' . $itemTag . '>' . variable('nl');
+			$result .= $indent . '	<' . $itemTag . ' class="menu-break"><hr></' . $itemTag . '>' . NEWLINE;
 	}
 
 	if ($backToHome) {
 		$thisClass = array_merge($class_li, ['back-to-home-link']);
 		$thisAClass = array_merge($class_link);
-		$result .= sprintf(PHP_EOL . '<li%s><a href="%s"%s>%s</a>',
+		$result .= sprintf($indent . '<li%s><a href="%s"%s>%s</a>',
 			cssClass($thisClass),
 			pageUrl(),
 			cssClass($thisAClass),	
 			'** Back to ' . variable('abbr'));
 	}
 
-	if (!$noul) $result .= '</ul>' . variable('2nl');
+	if (!$noul) $result .= $indent . '</ul>' . NEWLINE;
 
 	$return = isset($settings['return']) ? $settings['return'] : false;
 	if ($return) return $result;

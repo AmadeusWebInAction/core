@@ -69,12 +69,12 @@ function before_render() {
 			$relative = '';
 			foreach ($innerSlugs as $item) {
 				$thisRelative = $relative;
-				$thisFol = $baseFol . $relative;
+				$thisFol = $baseFol . '/' . $relative;
 				$breadcrumbs[] = $item;
 				$thisBreadcrumbs = $breadcrumbs;
 				$innerReverse[] = compact('item', 'thisFol', 'thisBreadcrumbs', 'thisRelative');
 				//for next
-				$relative .= $item . '/';
+				$relative .= $item;
 			}
 			$innerReverse = array_reverse($innerReverse);
 
@@ -89,7 +89,7 @@ function before_render() {
 				}
 			}
 
-			if (setFileIfExists($slug, $baseFol . 'home.', $breadcrumbs, false)) return;
+			if (setFileIfExists($slug, $baseFol . 'home.', [], false)) return;
 		} else {
 			if (setFileIfExists($slug, $baseFol . 'home.', false, false)) return;
 			continue;

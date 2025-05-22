@@ -1,18 +1,20 @@
 <?php
+//D:\AmadeusWeb\html\Canvas 7 Files\js\modules\menus.js
+//D:\AmadeusWeb\html\Canvas 7 Files\page-submenu.html
 renderNodeMenu();
 
 function renderNodeMenu() {
 	extract(variable('menu-settings'));
-	_menuULStart(NOPAGESTART);
 
-	$mainMenu = variable('nodeSiteName');
-	if ($wrapTextInADiv) $mainMenu = '<div>' . $mainMenu . '</div>';
+	//$bc = true;
+	if (isset($bc)) echo $bc ? 'BREADCRUMBS (Messed Up)' : 'WORKING NODE MENU';
 
-	$bc = false;
-	//if ($bc)
+	if (!isset($bc) || $bc)
 	renderBreadcrumbsMenu();
 
-	//if ($bc) return;
+	if (isset($bc) && $bc) die('done');
+
+	_menuULStart(NOPAGESTART);
 
 	$files = _skipNodeFiles(disk_scandir(NODEPATH));
 	foreach ($files as $page) {
@@ -33,14 +35,13 @@ function renderNodeMenu() {
 		}
 
 		echo '<li class="' . $itemClass . '"><a class="' . $anchorClass . '">' . $page_r . '</a>';
-
 		if (disk_is_dir(NODEPATH . '/' . $page)) {
 			menu('/' . variable('section') . '/' . variable('node') . '/' . $page . '/', [
 				'link-to-home' => variable('link-to-site-home'),
 				'files' => $files, 'this-is-standalone-section' => $tiss,
+				'ul-class' => $ulClass,
 				'li-class' => $itemClass,
 				'a-class' => $anchorClass,
-				'ul-class' => $ulClass,
 				'parent-slug' => $tiss ? '' : variable('node') . '/' . $page . '/',
 			]);
 		}
@@ -58,44 +59,45 @@ function renderNodeMenu() {
 	}
 
 	_menuULStart('page');
+	if (isset($bc)) die('');
 }
 
 function renderBreadcrumbsMenu() {
 	if (variable('dont-show-current-menu')) return; //TODO: high - rename setting
 
-	extract(variable('menu-settings'));
 	$items = _getBreadcrumbs();
 
-	//peDie('menu', $items);
 	if (count($items) == 0) return;
 
 	extract(variable('menu-settings'));
 
+	_menuULStart(NOPAGESTART);
+
 	$section = variable('section');
 
-	echo '<li class="' . $itemClass . '"><a class="' . $anchorClass . '"><i class="bi-asterisk"></i> Breadcrumbs</a>';
-	echo NEWLINE . '<ul class="' . $ulClass . '">';
-
+	$ix = 0;
 	foreach ($items as $relativeFol => $nodeSlug) {
-		$menuName = humanize($nodeSlug);
-		if ($wrapTextInADiv) $menuName = '<div>' . $menuName . '</div>';
+		$menuName = '<abbr title="level ' . ++$ix . '">' . $ix . '</abbr>: ' . humanize($nodeSlug);
+		if ($wrapTextInADiv) $menuName = '<div>' . $menuName . $topLevelAngle . '</div>';
 
 		//echo NEWLINE . '<ul class="' . $ulClass . '">';
 
-		echo '<li class="' . $itemClass . '"><a class="' . $anchorClass . '">' . $menuName . '</a>';
+		echo MENUPADLEFT . '		  <li class="' . $itemClass . '"><a class="' . $anchorClass . '">' . $menuName . '</a>';
 
 		menu('/' . $section . '/' . $relativeFol, [
+			'ul-class' => $ulClass . (false ? ' of-node node-' . $nodeSlug : ''),
+			'li-class' => $itemClass,
 			'a-class' => $anchorClass,
-			'ul-class' => $ulClass . (true ? ' of-node node-' . $nodeSlug : ''),
 			'link-to-home' => true,
 			'parent-slug-for-home-link' => $relativeFol,
 			'parent-slug' => $relativeFol,
+			'indent' => '			',
 		]);
 
-		echo '</li>' . NEWLINE;
+		echo MENUPADLEFT . '		  </li>' . NEWLINES2;
 	}
 
-	echo '</ul></li>' . NEWLINE;
+	_menuULStart('breadcrumbs');
 }
 
 function _getBreadcrumbs() {
