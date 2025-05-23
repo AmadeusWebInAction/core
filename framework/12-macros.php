@@ -184,7 +184,7 @@ function processAudioShortcode($html) {
 
 function processSpacerShortcode($html) {
 	return replaceItems($html, [
-		'[spacer]' => cbCloseAndOpen() . '<div class="divider divider-center"><h1>',
+		'[spacer]' => cbCloseAndOpen() . '<div class="divider divider-center" style="margin: 0"><h1>',
 		'[/spacer]' => NEWLINE . '</h1></div>' . cbCloseAndOpen(),
 	]);
 }

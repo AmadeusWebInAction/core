@@ -63,70 +63,22 @@ function _skipExcludedFiles($files, $excludeNames = 'home', $excludeExtensions =
 	return $op;
 }
 
-//TODO: HIGH - Fix and reinstate - this is in .container at bottom
 function pageMenu($file) {
-	if (!(variable('section')) || variable('no-page-menu')) return;
-	$folder = concatSlugs([SITEPATH, variable('section'), $node = variable('node')]) . '/';
+	if (variable('no-page-menu')) return;
 
-	$subPage1 = variable('page_parameter1');
-	$subPage2 = variable('page_parameter2');
-	$subPage3 = variable('page_parameter3');
-	$tailSlug = $subPage3 ? $subPage3 : ($subPage2 ? $subPage2 : ($subPage1 ? $subPage1 : $node));
-	$columnSlug = urlize($subPage3 ? 'Sub Sub Page' : ($subPage2 ? 'Sub Page' : ($subPage1 ? 'Page' : 'Site')));
-	$tailLevel = currentLevel(true);
-
-	$levels = []; $levelAbove = false;
-
-	if ($subPage2)
-		$levels[] = [ 'base' => 'sub-page-url', 'tsv' => $folder . $subPage1 . '/' . $subPage2 . '/_subpages.tsv' ];
-	if ($subPage1)
-		$levels[] = [ 'base' => 'page-url', 'tsv' => $folder . $subPage1 . '/_subpages.tsv' ];
-	$levels[] = [ 'base' => 'node-url', 'tsv' => $folder . '_pages.tsv' ];
-
-	//parameterError('levels', $levels, false);
-	$levelFound = false;
-	foreach ($levels as $item) {
-		if (disk_file_exists($item['tsv'])) {
-			$levelFound = $item;
-			break;
+	$breadcrumbs = variable('breadcrumbs');
+	if (!$breadcrumbs) {
+		if (variable('section') != variable('node')) {
+			variable('in-node', true);
+			variable('breadcrumbs', [variable('section')]);
+			variable('directory_of', variable('section') . '/' . variable('node'));
+			runFeature('directory');
 		}
-		$levelAbove = $item;
-	}
-
-	if ($levelFound && $levelAbove) {
-		$folAbove = dirname($levelAbove['tsv']) . '/';
-		if (disk_file_exists($folAbove . '/home.md')) { //has files but no tsv
-			$levelFound = false;
-			$folder = $folAbove;
-		}
-	}
-
-	if (!$levelFound) {
-		//TODO: read meta and build table - do that if home.md has meta, expect for all
-		contentBox('pages-menu', 'block-links container after-content');
-
-
-		$params = str_replace(SITEPATH, '', $folder);
-		$parentSlug = variable('node') . '/'; //also known as site
-		if ($subPage1) $parentSlug .= $subPage1 . '/';
-		if ($subPage2) $parentSlug .= $subPage2 . '/';
-
-		h2(humanize($tailSlug) . $tailLevel);
-		menu($params, ['parent-slug' => $parentSlug, 'link-to-home' => true, 'ul-class' => 'block-links']);
-		contentBox('end');
-		print_seo();
 		return;
 	}
 
-	$tsv = $levelFound['tsv'];
-	contentBox('pages', 'container after-content');
-	h2(humanize($tailSlug) . currentLevel(true));
-	runFeature('tables');
-
-	add_table('pages-table', $tsv, ($subPage1 ? 'sub-' : '') . 'page-name, about, tags',
-		'<tr><td><a href="%' . $levelFound['base'] . '%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
-	contentBox('end');
-	print_seo();
+	variable('directory_of', variable('section') . '/' . variable('node') . '/' . concatSlugs($breadcrumbs));
+	runFeature('directory');
 }
 
 DEFINE('ABSOLUTEPATHPREFIX', 'ABSOLUTE=');
@@ -190,7 +142,9 @@ function menu($folderRelative = false, $settings = []) {
 					$namesOfFiles[$thisFile] = $thisItem[0][$snoIndex] . '. ' . humanize($thisFile);
 			}
 		} else {
-			$files = _skipExcludedFiles(disk_scandir($folder));
+			$files = disk_scandir($folder);
+			natsort($files);
+			$files = _skipExcludedFiles($files);
 		}
 
 		$config = getConfigValues($folder . '_menu-config-values.txt'); //for some reason, . in the filename doesnt work - does for .template.html though

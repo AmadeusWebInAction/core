@@ -1,6 +1,6 @@
 <?php
-$of = variable('directory_of');
-$section = variable('section');
+$where = variableOr('directory_of', variable('section'));
+variable('omit-long-keywords', true);
 
 sectionId('directory', 'container');
 function _sections($current) {
@@ -17,48 +17,49 @@ function _sections($current) {
 	contentBox('end');
 }
 
-$folder = SITEPATH . '/' . $of . '/';
+$folder = SITEPATH . '/' . $where . '/';
+
 if (disk_file_exists($home = $folder . 'home.md')) {
-	h2(humanize($section) . currentLevel(), 'amadeus-icon');
-	contentBox('home');
-	renderFile($home);
-	contentBox('end');
+	if (!variable('in-node'))
+		h2(humanize($where) . currentLevel(), 'amadeus-icon');
+
+	if (variable('node') != 'index' && !variable('in-node')) {
+		contentBox('home');
+		renderFile($home);
+		contentBox('end');
+	}
+
+	$breadcrumbs = variable('breadcrumbs');
 
 	contentBox('nodes', 'after-content');
-	_sections($section);
-	$nodeItems = false;
-	$sectionItems = [];
-	if (!disk_file_exists($folder . '_nodes.tsv')) {
-		$nodes = _skipNodeFiles(disk_scandir($folder));
-		variable('seo-handled', false);
-		//print_r($nodes);
-		foreach ($nodes as $fol) {
-			$home = $folder . $fol . '/home.md';
-			$about = 'No About Set';
-			$tags = 'No Tags Set';
-			if (disk_file_exists($home)) {
-				$meta = read_seo($home);
-				if ($meta && $meta['about'])
-					$about = pipeToBR($meta['about']);
-				else if ($meta && $meta['description'])
-					$about = pipeToBR($meta['description']);
 
-				if ($meta && $meta['keywords'])
-					$tags = csvToHashtags($meta['keywords']);
-			}
+	if (!$breadcrumbs)
+		_sections($where);
 
-			$sectionItems[] = [
-				'site' => '#unused',
-				'name_urlized' => $fol,
-				'about' => $about,
-				'tags' => $tags
-			];
-		}
+	variable('seo-handled', false);
+
+
+	if ($breadcrumbs) {
+		//TODO: develop asap!
+		$sectionItems = [];
+	} else {
+		$sectionItems = [getFolderMeta($folder, false, $where)];
 	}
+
+	$files = disk_scandir($folder);
+	natsort($files);
+	$nodes = _skipNodeFiles($files);
+
+	foreach ($nodes as $fol) {
+		$sectionItems[] = getFolderMeta($folder, $fol);
+	}
+
+	$relativeUrl = $breadcrumbs ? variable('node') . '/' . implode($breadcrumbs) . '/' : '';
 	runFeature('tables');
-	add_table('sections-table', $sectionItems ? $sectionItems : ($folder . '_nodes.tsv'),
+
+	add_table('sections-table', $sectionItems,
 		$sectionItems ? ['site, about, tags', 'name_urlized'] : 'site-name, about, tags',
-		'<tr><td><a href="%url%%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
+		'<tr><td><a href="%url%' . $relativeUrl . '%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
 	contentBox('end');
 }
 
