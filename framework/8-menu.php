@@ -64,12 +64,15 @@ function _skipExcludedFiles($files, $excludeNames = 'home', $excludeExtensions =
 }
 
 function pageMenu($file) {
+	print_seo();
+
 	if (variable('no-page-menu')) return;
+
+	variable('in-node', true);
 
 	$breadcrumbs = variable('breadcrumbs');
 	if (!$breadcrumbs) {
 		if (variable('section') != variable('node')) {
-			variable('in-node', true);
 			variable('breadcrumbs', [variable('section')]);
 			variable('directory_of', variable('section') . '/' . variable('node'));
 			runFeature('directory');

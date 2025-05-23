@@ -69,6 +69,8 @@ function print_seo() {
 	foreach ($show as $col) {
 		if (!isset($meta[$col])) return;
 		$val = $meta[$col];
+		if (contains($col, 'key'))
+			$val = csvToHashtags($val);
 		$info[$col] = $val;
 	}
 
@@ -79,13 +81,34 @@ function print_seo() {
 	contentBox('end');
 }
 
+function inlineMeta($meta) {
+	$show = ['Date', 'Primary Keyword', 'Prompted By', 'Meta Author', 'Page Author'];
+	$info = [];
+
+	foreach ($show as $col) {
+		if (!isset($meta[$col])) return;
+		$val = $meta[$col];
+		if (contains($col, 'key'))
+			$val = 'Tagged As: #<b>' . $val . '</b>';
+		if (contains($col, 'Author') || contains($col, 'Prompt'))
+			$val = '<span title="' . $col . '">' . $val . '</span>';
+		$info[$col] = $val;
+	}
+	return empty($info) ? '<i>No Inline Info Found</i>' : '<hr>' . implode(' / ', $info);
+}
+
 function getFolderMeta($folder, $fol, $folName = false) {
 	$home = $folder . ($fol ? $fol . '/' : ''). 'home.md';
+	$page = $folder . ($fol ? $fol : ''). '.md';
 	$about = 'No About Set';
 	$tags = 'No Tags Set';
+	$inline = '';
 
-	if (disk_file_exists($home)) {
-		$vars = read_seo($home);
+	$homeFound = disk_file_exists($home);
+	$pageFound = !$homeFound ? disk_file_exists($page) : false;
+
+	if ($homeFound || $pageFound) {
+		$vars = read_seo($pageFound ? $page : $home);
 
 		if ($vars) {
 			if (isset($vars['about']))
@@ -95,13 +118,15 @@ function getFolderMeta($folder, $fol, $folName = false) {
 
 			if (isset($vars['keywords']))
 				$tags = csvToHashtags($vars['keywords']);
+
+			$inline = inlineMeta($vars['meta']);
 		}
 	}
 
 	return [
 		'site' => '#unused',
 		'name_urlized' => $folName ? $folName : $fol,
-		'about' => $about,
+		'about' => $about . $inline,
 		'tags' => $tags
 	];
 

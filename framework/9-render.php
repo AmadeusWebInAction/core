@@ -102,10 +102,13 @@ function renderExcerpt($file, $link, $prefix = '', $echo = true) {
 	echo $result;
 }
 
+DEFINE('GOOGLEOFF', '<!--googleoff: all-->');
+DEFINE('GOOGLEON', '<!--googleon: all-->');
+
 function _excludeFromGoogleSearch($raw) {
-	return '<!--googleoff: all-->'
+	return GOOGLEOFF
 		. variable('nl') . $raw
-		. variable('nl') . '<!--googleon: all-->'
+		. variable('nl') . GOOGLEON
 		. variable('2nl');
 }
 
