@@ -20,16 +20,18 @@ function _sections($current) {
 $folder = SITEPATH . '/' . $where . '/';
 
 if (disk_file_exists($home = $folder . 'home.md')) {
-	if (!variable('in-node'))
+	$breadcrumbs = variable('breadcrumbs');
+
+	if (!$breadcrumbs && !variable('in-node'))
 		h2(humanize($where) . currentLevel(), 'amadeus-icon');
 
-	if (variable('node') != 'index' && !variable('in-node')) {
+	$isIndex = variable('node') == 'index';
+	$isSection = variable('section') == variable('node');
+	if ($isIndex || $isSection) {
 		contentBox('home');
 		renderFile($home);
 		contentBox('end');
 	}
-
-	$breadcrumbs = variable('breadcrumbs');
 
 	echo GOOGLEOFF;
 	contentBox('nodes', 'after-content');
@@ -56,13 +58,26 @@ if (disk_file_exists($home = $folder . 'home.md')) {
 	}
 
 	$relativeUrl = $breadcrumbs ? variable('node') . '/' . implode($breadcrumbs) . '/' : '';
-	runFeature('tables');
 
-	add_table('sections-table', $sectionItems,
-		$sectionItems ? ['site, about, tags', 'name_urlized'] : 'site-name, about, tags',
-		'<tr><td><a href="%url%' . $relativeUrl . '%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
+	if (hasPageParameter('generate-index')) {
+		addScript('engage', 'app-static--common-assets'); //TODO: better way than against DRY?	
+		echo '<textarea class="autofit">' . NEWLINE;
+		echo '<!--use-blocks-->' . NEWLINES2;
+		foreach ($sectionItems as $item) {
+			echo '## ' . humanize($item['name_urlized']) . NEWLINE;
+			echo 'Keyworkds ' . $item['tags'] . NEWLINES2;
+			echo $item['about'] . NEWLINES2;
+		}
+
+		echo '</textarea>' . NEWLINE;
+	} else {
+		runFeature('tables');
+		add_table('sections-table', $sectionItems,
+			$sectionItems ? ['site, about, tags', 'name_urlized'] : 'site-name, about, tags',
+			'<tr><td><a href="%url%' . $relativeUrl . '%name_urlized%">%name_humanized%</a></td><td>%about%</td><td>%tags%</td></tr>');
+	}
+
 	contentBox('end');
-
 	echo GOOGLEON;
 }
 

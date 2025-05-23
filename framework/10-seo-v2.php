@@ -74,11 +74,13 @@ function print_seo() {
 		$info[$col] = $val;
 	}
 
+	echo GOOGLEOFF;
 	contentBox('meta', 'container');
 	h2('About This Page / SEO Information');
 	runFeature('tables');
 	_tableHeadingsOnLeft(['id' => 'piece'], $info);
 	contentBox('end');
+	echo GOOGLEON;
 }
 
 function inlineMeta($meta) {
@@ -117,9 +119,9 @@ function getFolderMeta($folder, $fol, $folName = false) {
 				$about = pipeToBR($meta['description']);
 
 			if (isset($vars['keywords']))
-				$tags = csvToHashtags($vars['keywords']);
+				$tags = hasPageParameter('generate-index') ? $vars['keywords'] : csvToHashtags($vars['keywords']);
 
-			$inline = inlineMeta($vars['meta']);
+			$inline = hasPageParameter('generate-index') ? '' : inlineMeta($vars['meta']);
 		}
 	}
 

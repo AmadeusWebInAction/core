@@ -68,10 +68,9 @@ function pageMenu($file) {
 
 	if (variable('no-page-menu')) return;
 
-	variable('in-node', true);
-
 	$breadcrumbs = variable('breadcrumbs');
 	if (!$breadcrumbs) {
+		variable('in-node', true);
 		if (variable('section') != variable('node')) {
 			variable('breadcrumbs', [variable('section')]);
 			variable('directory_of', variable('section') . '/' . variable('node'));
