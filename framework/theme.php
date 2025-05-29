@@ -46,9 +46,11 @@ function run_theme_part($what) {
 	];
 
 	if ($what == 'header') {
-		$icon = replaceItems('<link rel="icon" href="%url%%safeName%-icon.png%version%" sizes="192x192">',
-			['url' => variableOr('node-static', fileUrl()), 'safeName' => variableOr('nodeSafeName', variable('safeName')),
-				'version' => assetMeta('site', 'version')], '%'); //TODO: simplify this version stuff?
+		$iconLink = replaceItems('%url%%safeName%-icon.png%version%',
+			[ 'url' => variableOr('node-static', fileUrl()), 'safeName' => variableOr('nodeSafeName', variable('safeName')),
+				'version' => assetMeta('site', 'version')], '%');
+
+		$icon = '<link rel="icon" href="' . $iconLink . '" sizes="192x192">';
 
 		$vars['head-includes'] = '<title>' . title(true) . '</title>' . NEWLINE . '	' . $icon . NEWLINE . main::runAndReturn();
 		$vars['seo'] = seo_tags(true);
@@ -60,7 +62,7 @@ function run_theme_part($what) {
 		$vars['logo'] = concatSlugs(['<a href="', $baseUrl, '"><img src="', $logo2x, '" class="img-fluid img-max-',
 			variableOr('footer-logo-max-width', '500'), '" alt="', variableOr('nodeSiteName', variable('name')), '"></a><br>'], '');
 
-		$vars['optional-page-menu'] = _page_menu();
+		$vars['optional-page-menu'] = _page_menu($iconLink);
 
 		$header = _substituteThemeVars($content, 'header', $vars);
 
@@ -128,14 +130,18 @@ function run_theme_part($what) {
 	}
 }
 
-function _page_menu() {
+function _page_menu($iconLink) {
 	if (!variable('submenu-at-node')) return '<!--no-page-menu-->';
 
 	$menuFile = getThemeFile('page-menu.html');
 	$menuContent = disk_file_get_contents($menuFile);
 
 	$menuVars = [
-		'menu-title' => variable('nodeSiteName'),
+		'menu-title' => 
+			   '<a href="' . pageUrl() . '"><img height="40" src="' . $iconLink . '" /></a>&nbsp;&nbsp;&nbsp;'
+			 . '<a href="' . pageUrl(variable('node'))
+			 . '"><abbr title="sub-site home"><i class="fa-solid fa-home-user text-white"></i></abbr></a>&nbsp;&nbsp;&nbsp;'
+			 . variable('nodeSiteName'),
 	];
 	$menuContent = replaceItems($menuContent, $menuVars, '##');
 
